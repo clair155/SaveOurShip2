@@ -33,7 +33,7 @@ namespace SaveOurShip2
 
 				return;
 			}
-			if (!ModLister.HasActiveModWithName("Harmony"))
+			if (!ModIntegration.HasActiveModWithIdentifierAndOptionalSuffix("brrainz.harmony"))
 			{
 				string error = TranslatorFormattedStringExtensions.Translate("SoS.Error.NoHarmony");
 				Log.Error(error);
@@ -41,7 +41,7 @@ namespace SaveOurShip2
 				LongEventHandler.QueueLongEvent(() => Find.WindowStack.Add(new Dialog_MessageBox(errorLong, null, null, null, null, "ERROR: ".Colorize(Color.red), false, null, null, WindowLayer.Super)), null, false, null);
 				return;
 			}
-			if (!ModLister.HasActiveModWithName("Vehicle Framework"))
+			if (!ModIntegration.HasActiveModWithIdentifierAndOptionalSuffix("SmashPhil.VehicleFramework"))
 			{
 				string error = TranslatorFormattedStringExtensions.Translate("SoS.Error.NoVehicleFramework");
 				Log.Error(error);
@@ -49,7 +49,7 @@ namespace SaveOurShip2
 				LongEventHandler.QueueLongEvent(() => Find.WindowStack.Add(new Dialog_MessageBox(errorLong, null, null, null, null, "ERROR: ".Colorize(Color.red), false, null, null, WindowLayer.Super)), null, false, null);
 				return;
 			}
-			ShipInteriorMod2.HasSoS2CK = ModLister.HasActiveModWithName("Save Our Ship Creation Kit");
+			ShipInteriorMod2.HasSoS2CK = ModIntegration.HasActiveModWithIdentifierAndOptionalSuffix("kentington.saveourshipck");
 			//Legacy methods. All of these could technically be merged
 			ShipInteriorMod2.DefsLoaded();
 			Harmony pat = new Harmony("ShipInteriorMod2");
