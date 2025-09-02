@@ -241,9 +241,12 @@
     <building>
       <joyKind>Telescope</joyKind>
     </building>
+	<researchPrerequisites>
+      <li>ComplexFurniture</li>
+    </researchPrerequisites>
     <costList>
       <Plasteel>25</Plasteel>
-      <ComponentSpacer>1</ComponentSpacer>
+      <ComponentIndustrial>1</ComponentIndustrial>
     </costList>
     <statBases>
       <MaxHitPoints>75</MaxHitPoints>
