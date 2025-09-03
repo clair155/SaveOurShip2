@@ -825,6 +825,13 @@
 						<DecompressionResistance>0.75</DecompressionResistance>
 					</value>
 				</li>
+				<!-- Archotech Skin -->
+				<li Class="PatchOperationAdd">
+					<xpath>Defs/HediffDef[defName="SoSArchotechSkin"]/stages/li</xpath>
+					<value>
+						<preventVacuumBurns>true</preventVacuumBurns>
+					</value>
+				</li>
 				<!-- Odyssey Space Headgear -->
 				<li Class="PatchOperationAdd">
 					<xpath>Defs/ThingDef[defName="Apparel_VacsuitHelmet"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
