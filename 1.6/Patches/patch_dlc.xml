@@ -845,6 +845,13 @@
 						<HypoxiaResistance>1</HypoxiaResistance>
 					</value>
 				</li>
+				<!-- Odyssey Space gear nas not enoug insulation for -100C space -->
+				<li Class="PatchOperationReplace">
+					<xpath>Defs/ThingDef[defName="Apparel_VacsuitHelmet"]/statBases/Insulation_Cold</xpath>
+					<value>
+						<Insulation_Cold>25</Insulation_Cold>
+					</value>
+				</li>
 				<!-- Odyssey Space Suits -->
 				<li Class="PatchOperationAdd">
 					<xpath>Defs/ThingDef[defName="Apparel_Vacsuit" or defName="Apparel_VacsuitChildren"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
@@ -857,6 +864,19 @@
 					<xpath>Defs/ThingDef[defName="Apparel_Vacsuit" or defName="Apparel_VacsuitChildren"]/equippedStatOffsets[not(VacuumSpeedMultiplier)]</xpath>
 					<value>
 						<VacuumSpeedMultiplier>4</VacuumSpeedMultiplier>
+					</value>
+				</li>
+				<!-- Odyssey Space gear nas not enoug insulation for -100C space -->
+				<li Class= "PatchOperationReplace">
+					<xpath>Defs/ThingDef[defName="Apparel_Vacsuit"]/statBases/Insulation_Cold</xpath>
+					<value>
+						<Insulation_Cold>100</Insulation_Cold>
+					</value>
+				</li>
+				<li Class="PatchOperationReplace">
+					<xpath>Defs/ThingDef[defName="Apparel_VacsuitChildren"]/statBases/Insulation_Cold</xpath>
+					<value>
+						<Insulation_Cold>100</Insulation_Cold>
 					</value>
 				</li>
 				<!-- To make orbit empty tile selectable in dev mode -->
