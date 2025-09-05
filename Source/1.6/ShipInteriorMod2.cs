@@ -33,7 +33,7 @@ namespace SaveOurShip2
 
 				return;
 			}
-			if (!ModLister.HasActiveModWithName("Harmony"))
+			if (!ModIntegration.HasActiveModWithIdentifierAndOptionalSuffix("brrainz.harmony"))
 			{
 				string error = TranslatorFormattedStringExtensions.Translate("SoS.Error.NoHarmony");
 				Log.Error(error);
@@ -41,7 +41,7 @@ namespace SaveOurShip2
 				LongEventHandler.QueueLongEvent(() => Find.WindowStack.Add(new Dialog_MessageBox(errorLong, null, null, null, null, "ERROR: ".Colorize(Color.red), false, null, null, WindowLayer.Super)), null, false, null);
 				return;
 			}
-			if (!ModLister.HasActiveModWithName("Vehicle Framework"))
+			if (!ModIntegration.HasActiveModWithIdentifierAndOptionalSuffix("SmashPhil.VehicleFramework"))
 			{
 				string error = TranslatorFormattedStringExtensions.Translate("SoS.Error.NoVehicleFramework");
 				Log.Error(error);
@@ -49,7 +49,7 @@ namespace SaveOurShip2
 				LongEventHandler.QueueLongEvent(() => Find.WindowStack.Add(new Dialog_MessageBox(errorLong, null, null, null, null, "ERROR: ".Colorize(Color.red), false, null, null, WindowLayer.Super)), null, false, null);
 				return;
 			}
-			ShipInteriorMod2.HasSoS2CK = ModLister.HasActiveModWithName("Save Our Ship Creation Kit");
+			ShipInteriorMod2.HasSoS2CK = ModIntegration.HasActiveModWithIdentifierAndOptionalSuffix("kentington.saveourshipck");
 			//Legacy methods. All of these could technically be merged
 			ShipInteriorMod2.DefsLoaded();
 			Harmony pat = new Harmony("ShipInteriorMod2");
@@ -63,7 +63,7 @@ namespace SaveOurShip2
 			{
 				Section dummySection = new Section(new IntVec3(0, 0, 0), null);
 				SectionLayer_Gas dummyGasLayer = new SectionLayer_Gas(dummySection);
-			}, "PrepareGasLayer", false, null);
+			}, "", false, null);
 			// SectionLayer_Gas dummyGasLayer = new SectionLayer_Gas(null);
 		}
 	}
@@ -126,7 +126,7 @@ namespace SaveOurShip2
 		{
 			base.GetSettings<ModSettings_SoS>();
 		}
-		public const string SOS2version = "GithubV2.8.11";
+		public const string SOS2version = "GithubV2.8.12";
 		public const int SOS2ReqCurrentMinor = 5;
 		// 1.5.4063 public build (4062 constant) was not enough as there is no AnomalyUtility.TryDuplicatePawn_NewTemp method to harmony patch it.
 		// Historical builds are not available, so for sure can be increased just to next build, 4066

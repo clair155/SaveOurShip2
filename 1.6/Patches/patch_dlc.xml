@@ -808,7 +808,6 @@
 					<xpath>Defs/GeneDef[defName="VacuumResistance_Total"]/statOffsets</xpath>
 					<value>
 						<HypoxiaResistance>1</HypoxiaResistance>
-						<DecompressionResistance>1</DecompressionResistance>
 					</value>
 				</li>
 				<!-- Vacuum Resistant Gene -->
@@ -823,6 +822,13 @@
 					<xpath>Defs/HediffDef[defName="VacskinGland"]/stages/li/statOffsets</xpath>
 					<value>
 						<DecompressionResistance>0.75</DecompressionResistance>
+					</value>
+				</li>
+				<!-- Archotech Skin -->
+				<li Class="PatchOperationAdd">
+					<xpath>Defs/HediffDef[defName="SoSArchotechSkin"]/stages/li</xpath>
+					<value>
+						<preventVacuumBurns>true</preventVacuumBurns>
 					</value>
 				</li>
 				<!-- Odyssey Space Headgear -->
