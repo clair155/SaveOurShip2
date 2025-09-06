@@ -142,7 +142,8 @@ namespace SaveOurShip2
 		private static readonly SimpleCurve DodgeChanceMultiplierFromPiloting = new SimpleCurve
 		{
 			new CurvePoint(0f, 0.5f),
-			new CurvePoint(20f, 1.5f)
+			new CurvePoint(20f, 1.5f),
+			new CurvePoint(25f, 1.65f)    // Can go above 20 with skill bonuses, diminishing return in this case
 		};
 		private float GetDodgeCanceImpl(float weaponRange)
 		{
@@ -301,7 +302,13 @@ namespace SaveOurShip2
 					{
 						if (bridge.mannableComp?.MannedNow ?? false)
 						{
-							int skill = bridge.mannableComp.ManningPawn.skills?.GetSkill(SkillDefOf.Intellectual).Level ?? 0;
+							Pawn pilot = bridge.mannableComp.ManningPawn;
+							int skill = pilot.skills?.GetSkill(SkillDefOf.Intellectual)?.Level ?? 0;
+							// Odyssey pilot assistant
+							if (pilot.health.hediffSet.hediffs.Any((Hediff h) => h.def.defName == "PilotAssistant"))
+							{
+								skill += 4;
+							}
 							result = Mathf.Max(result, skill);
 						}
 					}

@@ -40,7 +40,7 @@ namespace SaveOurShip2.Vehicles
                         {
                             // CHANGE 1.6 LaunchTargeter.FlightPath = new List<FlightNode> { new FlightNode(Vehicle.Map.Tile) };
                             TargetData<GlobalTargetInfo> targetData = new TargetData<GlobalTargetInfo>();
-                            targetData.targets.Add(new GlobalTargetInfo(Vehicle.Map.Tile));
+                            targetData.targets.Add(Vehicle.Map.Parent != null ? new GlobalTargetInfo(Vehicle.Map.Parent) : new GlobalTargetInfo(Vehicle.Map.Tile));
                             Vehicle.CompVehicleLauncher.Launch(targetData, new ArrivalAction_LandToCell(Vehicle, Vehicle.Map.Parent, target.Cell, rot));
                         }, (LocalTargetInfo targetInfo) => !Ext_Vehicles.IsRoofRestricted(Vehicle.VehicleDef, targetInfo.Cell, Vehicle.Map), null, null, true);
                     },

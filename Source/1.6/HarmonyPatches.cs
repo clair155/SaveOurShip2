@@ -5656,11 +5656,37 @@ namespace SaveOurShip2
 
 	// Odyssey
 	[HarmonyPatch(typeof(GravshipUtility), "AbandonMap")]
-	public class NoSpaceMapDestruction
+	public static class NoSpaceMapDestruction
 	{
 		public static bool Prefix(Map map)
 		{
 			return !map.IsSpace();
+		}
+	}
+
+	[HarmonyPatch(typeof(Designator_MoveGravship), "IsValidCell")]
+	public class CanLandOnSOS2Space
+	{
+		public static void Postfix(IntVec3 cell, Map map, ref AcceptanceReport __result)
+		{
+			if((__result.Reason == "GravshipBlockedByTerrain".Translate(cell.GetTerrain(map)) &&
+				(map.terrainGrid.TerrainAt(cell) == ResourceBank.TerrainDefOf.EmptySpace)))
+			{
+				__result = AcceptanceReport.WasAccepted;
+			}
+
+		}
+	}
+
+	[HarmonyPatch(typeof(GenConstruct), "CanBuildOnTerrain")]
+	public static class CanBuildGravPanelsInSOS2Space
+	{
+		public static void Postfix(BuildableDef entDef, IntVec3 c, Map map, ref bool __result)
+		{
+			if (!__result && c.GetTerrain(map) == ResourceBank.TerrainDefOf.EmptySpace && entDef == TerrainDefOf.Substructure)
+			{
+				__result = !map.thingGrid.ThingsListAt(c).Any(t => t is Building);
+			}
 		}
 	}
 
