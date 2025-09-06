@@ -5,7 +5,16 @@
 	<name>Save Our Ship 2</name>
 	<description>Save Our Ship 2 is an unofficial expansion for RimWorld. Build a liveable spaceship and continue your colonists' stories in orbit - engaging in ship-to-ship combat with pirates, searching derelicts for treasure, and perhaps even discovering a phenomenal cosmic secret or two! SoS2 includes two custom endings: build the Johnson-Tanaka drive to transport your colonists to a different rimworld for a New Game+ experience, or evolve one your colonists to machine godhood using the Archotech Spore.
 
-Newly upgraded with tons of new features and stability upgrades for 1.5 and beyond, SOS2.7 is the best version of Save Our Ship yet.
+Save Our Ship 2.8 Tactical Update
+Featuring new accuracy system:
+- Ships can now completely dodge enemy shots. Small and fast ships have much better chances to dodge than large slow ships.
+- Dodge chance depends hugely on Thrust to Weight Ratio. Large cruisers won't dodge, but small fighters will.
+- Now there is use for manning pilot console in battle! Pilot intellectual skill will increase dodge chance.
+- Dodge chance also depends on weapon range. It is much easier to dodge railgun shots than cannon shots.
+- For shots that weren't dodged completely, weapon accuracy now varies greatly. Mechanics are similar to dodge chance.
+- There is Odyssey integration for new mechanics. Pilot Assistant on player ship pilot will give dodge bonus.
+- Odyssey gravship can land in SOS 2 space, can be built/upgraded there too. Vacuum gear, implants, genes are also compatible.
+- Odyssey compatibility is not final yet.
 
 SoS2's return would not have been possible without the tireless work of community volunteers. Featuring user-created ship designs, major community maintenance updates, and more, SoS2 owes thanks to:
 
