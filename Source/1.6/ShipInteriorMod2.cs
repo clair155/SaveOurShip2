@@ -567,6 +567,11 @@ namespace SaveOurShip2
 				bool foundBetterTile = false;
 				foreach (PlanetTile neighbor in neighbors)
 				{
+					// For each neighbor of current tile, if that neighbor is closer to desired location,
+					// neighbor will replace current
+					// Visited tiles are marked to forbit repetition
+					// So basically this alghorithm "walks" in a stragth line approximation on hex grid,
+					// starting from first tile of orbit layer and usually iterating 5 new neighbors on each step.
 					if (!visitedTileIDs.Contains(neighbor.tileId))
 					{
 						visitedTileIDs.Add(neighbor.tileId);
@@ -576,12 +581,7 @@ namespace SaveOurShip2
 							foundBetterTile = true;
 							current = neighbor;
 							currentDistance = newDistance;
-							// Log.Warning("Tile search:" );
 						}
-					}
-					else
-					{
-						continue;
 					}
 				}
 				if (!foundBetterTile)
@@ -591,12 +591,63 @@ namespace SaveOurShip2
 			}
 			return current;
 		}
+		private static PlanetTile FindFreeTileNear(PlanetTile startTile)
+		{
+			PlanetLayer layer = startTile.Layer;
+			// Starting with initial location as front 
+			HashSet<int> addedTileIDs = new HashSet<int>();
+			List<PlanetTile> front = new List<PlanetTile>();
+			front.Add(startTile);
+			addedTileIDs.Add(startTile.tileId);
+			// This alghorithm shoulld normally run just a few steps like 0-2.
+			// Still there is safety limit in case of "broken" tile set
+			const int maxIterations = 50;
+			int iteration = 0;
+			while (!front.Empty() && iteration < maxIterations)
+			{
+				iteration++;
+				List<PlanetTile> newFront = new List<PlanetTile>();
+				foreach(PlanetTile tile in front)
+				{
+					// Current front check happens here
+					if (!Find.World.worldObjects.AnyWorldObjectAt(tile))
+					{
+						return tile;
+					}
+					addedTileIDs.Add(tile.tileId);
+					List<PlanetTile> newNeightbors = new List<PlanetTile>();
+					layer.GetTileNeighbors(tile.tileId, newNeightbors);
+					foreach(PlanetTile neighbor in newNeightbors)
+					{
+						// For each neighbor of each tile in front, it will be added to new front if not already visited
+						// This is the step of wave algorithm here.
+						if (!addedTileIDs.Contains(neighbor.tileId))
+						{
+							newFront.Add(neighbor);
+							addedTileIDs.Add(tile.tileId);
+						}
+					}
+				}
+				front = newFront;
+			}
+			//Fallback - just some free tile on layer
+			foreach(Tile simpleTile in layer.Tiles)
+			{
+				if (!Find.World.worldObjects.AnyWorldObjectAt(simpleTile.tile))
+				{
+					return simpleTile.tile;
+				}
+			}
+			return PlanetTile.Invalid;
+		}
+
 		private static PlanetTile FindWorldTileInOrbit()
 		{
 			PlanetTile result = PlanetTile.Invalid;
 			if (launchOrigin != PlanetTile.Invalid)
 			{
 				result = FindNearestOrbitTileTo(launchOrigin);
+				result = FindFreeTileNear(result);
 			}
 			else
 			{
