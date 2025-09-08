@@ -888,6 +888,20 @@
 						<li>WorldDrawLayer_MouseTile</li>
 					</value>
 				</li>
+				<!-- Gravship range x2.5. Compared to normal Odyssey playthrough, there is a need to return back home to continue building bigger ship
+					using resources obtained in Odyssy run. Theoretically could be 2x, but it is just too low by default -->
+				<li Class="PatchOperationReplace">
+					<xpath>Defs/ThingDef[defName="SmallThruster"]/comps/li[@Class="CompProperties_GravshipThruster"]/statOffsets/GravshipRange</xpath>
+					<value>
+						<GravshipRange>25</GravshipRange>
+					</value>
+				</li>
+				<li Class="PatchOperationReplace">
+					<xpath>Defs/ThingDef[defName="LargeThruster"]/comps/li[@Class="CompProperties_GravshipThruster"]/statOffsets/GravshipRange</xpath>
+					<value>
+						<GravshipRange>40</GravshipRange>
+					</value>
+				</li>
 			</operations>
 		</match>
 	</Operation>
