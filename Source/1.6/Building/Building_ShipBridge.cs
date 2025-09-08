@@ -1116,6 +1116,7 @@ namespace SaveOurShip2
 							else
 							{
 								ShipInteriorMod2.worldTileOverride = PlanetTile.Invalid;
+								ShipInteriorMod2.launchOrigin = this.Map.Tile;
 								ShipCountdown.InitiateCountdown(this);
 							}
 							QuestUtility.SendQuestTargetSignals(base.Map.Parent.questTags, "LaunchedShip");

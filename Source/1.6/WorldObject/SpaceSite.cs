@@ -45,7 +45,7 @@ namespace SaveOurShip2
 		public override void ExposeData()
 		{
 			base.ExposeData();
-			Scribe_Values.Look<float>(ref theta, "theta", 0, false);
+			WorldObjectMath.SerializeTheta(ref theta, false);
 			Scribe_Values.Look<float>(ref phi, "phi", 0, false);
 			Scribe_Values.Look<float>(ref radius, "radius", 0f, false);
 			const string newCoordsName = "newCoords";
