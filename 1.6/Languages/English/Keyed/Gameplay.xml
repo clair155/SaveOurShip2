@@ -29,6 +29,8 @@
 	<SoS.BurnUpPlayerPrevented>Building a ship bridge has allowed you to stabilize the orbit.</SoS.BurnUpPlayerPrevented>
 	<SoS.BurnUpCountdown>Entering atmosphere in {0}!</SoS.BurnUpCountdown>
 	<SoS.BurnUpCountdownTip>This map will enter atmosphere in {0}. Everything on it will be destroyed.</SoS.BurnUpCountdownTip>
+	<!-- world/orbit - Odyssey -->
+	<SoS.CantLaunchGravshipToCombatMap>It's too dangerous to launch gravship into ongoing ship battle</SoS.CantLaunchGravshipToCombatMap>
 	<!-- combat -->
 	<SoS.CombatTooltip>Shows the enemy ship's distance from your ship, all projectiles and shuttles currently in flight.\n\nRED: laser/canon range\nGREEN: plasma range\nBLUE: railgun range.\nPURPLE: torpedo range\nSmall colored bars: inaccurate maximum range for large weapons\nShuttles can be used at any distance</SoS.CombatTooltip>
 	<SoS.CombatRetreat>Retreat</SoS.CombatRetreat>
