@@ -54,6 +54,7 @@ namespace SaveOurShip2
 			ShipInteriorMod2.DefsLoaded();
 			Harmony pat = new Harmony("ShipInteriorMod2");
 			pat.PatchAll();
+			HarmonyCustomPatches.Apply(pat);
 
 			//Needs an init delay
 			if (useSplashScreen) LongEventHandler.QueueLongEvent(() => ShipInteriorMod2.UseCustomSplashScreen(), "ShipInteriorMod2", false, null);
