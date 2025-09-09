@@ -107,9 +107,10 @@ namespace SaveOurShip2
 			toggleHeatWithPower.icon = ContentFinder<Texture2D>.Get("Things/Building/Misc/TempControl/Heater");
 			yield return toggleHeatWithPower;
 
-			if (Map.IsSpace())
+			// Avoid spending time on get room when not needed
+			Room room = Map.IsSpace() ? ventTo.GetRoom(Map) : null;
+			if (Map.IsSpace() && room != null)
 			{
-				Room room = ventTo.GetRoom(Map);
 				ShipMapComp comp = Map.GetComponent<ShipMapComp>();
 				SpaceShipCache ship = comp.ShipsOnMap[comp.ShipIndexOnVec(Position)];
 				int pointsOfDamage = 0;
