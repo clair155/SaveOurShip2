@@ -10,7 +10,7 @@
 		<genSteps>
 			<li>EmptySpaceTerrain</li>
 			<li>FindPlayerStartSpotSpace</li>
-			<li>FogSpace</li>
+			<li>SoS_FogSpace</li>
 		</genSteps>
 	</MapGeneratorDef>
 	<GenStepDef>
@@ -24,7 +24,7 @@
 		<genStep Class="GenStep_FindPlayerStartSpot"/>
 	</GenStepDef>
 	<GenStepDef>
-		<defName>FogSpace</defName>
+		<defName>SoS_FogSpace</defName>
 		<order>1500</order>
 		<genStep Class="GenStep_Fog"/>
 	</GenStepDef>
