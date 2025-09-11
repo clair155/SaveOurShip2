@@ -3367,7 +3367,8 @@ namespace SaveOurShip2
 			foreach (TabRecord tab in ___tabs)
 			{
 				// Hide Archotech tab
-				if (tab.label.Equals("Archotech") && (!ShipInteriorMod2.WorldComp.Unlocks.Contains("ArchotechUplink")))
+				if (tab.label.Equals(TranslatorFormattedStringExtensions.Translate("SoS.Archotech.ResearchTabName"))
+					&& (!ShipInteriorMod2.WorldComp.Unlocks.Contains("ArchotechUplink")))
 				{
 					hiddenTabs.Add(tab);
 				}
