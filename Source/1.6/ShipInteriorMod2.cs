@@ -64,6 +64,8 @@ namespace SaveOurShip2
 			{
 				Section dummySection = new Section(new IntVec3(0, 0, 0), null);
 				SectionLayer_Gas dummyGasLayer = new SectionLayer_Gas(dummySection);
+				DefDatabase<ResearchTabDef>.GetNamed("ResearchTabArchotech").label = TranslatorFormattedStringExtensions.Translate
+					("SoS.Archotech.ResearchTabName");
 			}, "", false, null);
 			// SectionLayer_Gas dummyGasLayer = new SectionLayer_Gas(null);
 		}
