@@ -15,6 +15,7 @@ namespace SaveOurShip2
 	public class Building_ShipBridge : Building
 	{
 		public string ShipName = "Unnamed Ship"; //for saving
+		public string LoadedDefName; // For special/quest ship identification
 		private int shipIndex = -1; //shipindex in mapcomp cache
 		public int ShipIndex
 		{
@@ -1201,6 +1202,7 @@ namespace SaveOurShip2
 		{
 			base.ExposeData();
 			Scribe_Values.Look<string>(ref ShipName, "ShipName");
+			Scribe_Values.Look<string>(ref LoadedDefName, "LoadedDefName");
 		}
 		public override string GetInspectString()
 		{
@@ -1326,7 +1328,10 @@ namespace SaveOurShip2
 		}
 		private void Success(Pawn pawn)
 		{
-			if (ShipName == ResourceBank.ShipDefOf.MechPsychicAmp.label || ShipName == ResourceBank.ShipDefOf.MechPsychicAmp.label.Translate())
+			// Checking by def name is the proper way to check it, but can't remove checking by name as checking by defName will fail if
+			// game is saved and update applied mid spore battle.
+			if (ShipName == ResourceBank.ShipDefOf.MechPsychicAmp.label || ShipName == ResourceBank.ShipDefOf.MechPsychicAmp.label.Translate() ||
+				LoadedDefName == "MechPsychicAmp")
 			{
 				Find.LetterStack.ReceiveLetter(TranslatorFormattedStringExtensions.Translate("SoS.PsychicAmplifierCaptured"), TranslatorFormattedStringExtensions.Translate("SoS.PsychicAmplifierCapturedDesc"), LetterDefOf.PositiveEvent);
 				ShipInteriorMod2.WorldComp.Unlocks.Add("ArchotechSpore");
