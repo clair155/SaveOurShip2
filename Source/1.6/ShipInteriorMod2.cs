@@ -1178,7 +1178,10 @@ namespace SaveOurShip2
 									}
 								}
 								else if (b is Building_ShipBridge shipBridge)
+								{
 									shipBridge.ShipName = shipDef.label;
+									shipBridge.LoadedDefName = shipDef.defName;
+								}
 								else
 								{
 									var shieldComp = b.TryGetComp<CompShipHeatShield>();
