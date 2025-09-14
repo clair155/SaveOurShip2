@@ -26,6 +26,9 @@ namespace SaveOurShip2
 	public class Projectile_ExplosiveShip : Projectile_Explosive
 	{
 		public float weaponDamageMultiplier = 1f;
+		// Opt out from reduced tick rate when off-map, as that causes projectiles explode at wrong locations,
+		// sometimes before shield and not inflicting proper damage
+		protected override int MaxTickIntervalRate => 1;
 		public override int DamageAmount
 		{
 			get
