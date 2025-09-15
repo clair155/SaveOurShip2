@@ -36,4 +36,40 @@
 		<li>TableMachining</li>
 	</recipeUsers>
   </RecipeDef>
+
+  <RecipeDef>
+    <defName>MakeHullFoam10</defName>
+    <label>make hullfoam canister x10</label>
+    <description>Craft 10 canisters of hullfoam.</description>
+    <jobString>Making hullfoam.</jobString>
+    <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+    <effectWorking>Cook</effectWorking>
+    <soundWorking>Recipe_Machining</soundWorking>
+    <allowMixingIngredients>true</allowMixingIngredients>
+    <workAmount>8000</workAmount>
+    <targetCountAdjustment>50</targetCountAdjustment>
+    <ingredients>
+			<li>
+				<filter>
+          <thingDefs>
+            <li>Steel</li>
+          </thingDefs>
+        </filter>
+        <count>100</count>
+			</li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <thingDefs>
+				<li>Steel</li>
+      </thingDefs>
+    </fixedIngredientFilter>
+    <products>
+      <HullFoam>10</HullFoam>
+    </products>
+    <researchPrerequisite>HullFoam</researchPrerequisite>
+    <workSkill>Crafting</workSkill>
+	<recipeUsers>
+		<li>TableMachining</li>
+	</recipeUsers>
+  </RecipeDef>
 </Defs>
