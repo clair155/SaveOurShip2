@@ -752,22 +752,31 @@ namespace SaveOurShip2
 				}
 				try
 				{
-					foreach (IntVec3 vec in __instance.BorderCells)
+					foreach (IntVec3 vec in __instance.BorderCellsCardinal)
 					{
-						bool hasShipPart = false;
-						foreach (Thing t in vec.GetThingList(__instance.Map))
+						bool hasAirtightPart = false;
+						if (ModsConfig.OdysseyActive)
 						{
-							if (t is Building b)
+							hasAirtightPart = __instance.Map.terrainGrid.TerrainAt(vec)?.IsSubstructure ?? false;
+						}
+						if (!hasAirtightPart)
+						{
+							foreach (Thing t in vec.GetThingList(__instance.Map))
 							{
-								var shipPart = b.TryGetComp<CompShipCachePart>();
-								if (b.def.mineable || (shipPart != null && shipPart.Props.hermetic))
+								if (t is Building b)
 								{
-									hasShipPart = true;
-									break;
+									var shipPart = b.TryGetComp<CompShipCachePart>();
+
+									// def.building.isAirtight is Odyssey property
+									if (b.def.mineable || (shipPart != null && shipPart.Props.hermetic) || b.def.building.isAirtight)
+									{
+										hasAirtightPart = true;
+										break;
+									}
 								}
 							}
 						}
-						if (!hasShipPart)
+						if (!hasAirtightPart)
 						{
 							___cachedOpenRoofCount = 1;
 							return ___cachedOpenRoofCount;

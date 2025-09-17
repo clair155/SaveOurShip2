@@ -516,7 +516,7 @@ namespace SaveOurShip2
 		{
 			if (roof == null)
 				return false;
-			if (roof == ResourceBank.RoofDefOf.RoofShip || roof == RoofDefOf.RoofRockThick)
+			if (roof == ResourceBank.RoofDefOf.RoofShip || roof == RoofDefOf.RoofRockThick || roof == RoofDefOf.RoofConstructed)
 				return true;
 			if (compatibleAirtightRoofs != null)
 			{
