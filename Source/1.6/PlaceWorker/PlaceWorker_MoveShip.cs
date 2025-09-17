@@ -42,7 +42,8 @@ namespace SaveOurShip2
 						result = false;
 						break;
 					}
-					if (GenGrid.InNoBuildEdgeArea(vec, map) || current.IsSpawningBlocked(vec, map) || map.roofGrid.Roofed(vec) || (targetMapLarger && (vec.x > originMap.Size.x || vec.z > originMap.Size.z)))
+					bool isSpawnBlocked = current.IsSpawningBlocked(vec, map) && map.terrainGrid.TerrainAt(vec) != TerrainDefOf.Space;
+					if (GenGrid.InNoBuildEdgeArea(vec, map) || isSpawnBlocked || map.roofGrid.Roofed(vec) || (targetMapLarger && (vec.x > originMap.Size.x || vec.z > originMap.Size.z)))
 					{
 						current.DrawGhost(vec, new Color(0.8f, 0.2f, 0.2f, 0.3f));
 						result = false;
