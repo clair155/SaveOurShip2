@@ -93,6 +93,10 @@ namespace SaveOurShip2
 		public override void MapComponentUpdate()
 		{
 			base.MapComponentUpdate();
+			if (map.IsSpace() && Find.TickManager.TicksGame % 300 == 0)
+			{
+				roomOdysseyVents.Clear();
+			}
 			if ((!heatGridDirty && !breathableZoneDirty) || (Find.TickManager.TicksGame % 60 != 0 && loaded))
 			{
 				return;
@@ -491,6 +495,7 @@ namespace SaveOurShip2
 		public List<CompBuildingConsciousness> Consciousness = new List<CompBuildingConsciousness>();
 		public List<CompShipBay> Bays = new List<CompShipBay>(); //landing checks
 		public HashSet<IntVec3> MapExtenderCells = new HashSet<IntVec3>(); //extender EVA checks
+		public Dictionary<Room, bool> roomOdysseyVents = new Dictionary<Room, bool>();
 		public List<CompEngineTrail> MaxSalvageWeightOnMap(out int maxMass, out float fuel) //for moving/stabilizing wrecks
 		{
 			List<CompEngineTrail> engines = new List<CompEngineTrail>();
@@ -746,10 +751,26 @@ namespace SaveOurShip2
 			int shipIndex = ShipIndexOnVec(vec);
 			if ((shipIndex > 0 && ShipsOnMap[shipIndex].LifeSupports.Any(s => s.active)) || MapExtenderCells.Contains(vec))
 				return true;
+			Room room = vec.GetRoom(map);
+			if (room != null && ModsConfig.OdysseyActive)
+			{
+				if (!roomOdysseyVents.ContainsKey(room))
+				{
+					bool conatinsPump = room.ContainedAndAdjacentThings.Any(t => t.def.defName == "OxygenPump");
+					roomOdysseyVents.Add(room, conatinsPump);
+				}
+				if (roomOdysseyVents[room])
+				{
+					return true;
+				}
+			}
+			else
+			{
+				return false;
+			}
 			//LS if roofed room with thick rock roof and facing in vent that is attached to LS
 			if (vec.Roofed(map) && vec.GetRoof(map) == RoofDefOf.RoofRockThick)
 			{
-				Room room = vec.GetRoom(map);
 				if (!ShipInteriorMod2.ExposedToOutside(room))
 					return false;
 				foreach (IntVec3 v in room.BorderCells)
