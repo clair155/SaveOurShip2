@@ -31,6 +31,7 @@
 	<SoS.BurnUpCountdownTip>This map will enter atmosphere in {0}. Everything on it will be destroyed.</SoS.BurnUpCountdownTip>
 	<!-- world/orbit - Odyssey -->
 	<SoS.CantLaunchGravshipToCombatMap>It's too dangerous to launch gravship into ongoing ship battle</SoS.CantLaunchGravshipToCombatMap>
+	<SoS.CantLaunchToEnemyMap>It's too dangerous to navigate to active enemy ship. It can be reached with shuttles sent to boarding mission from player ship.</SoS.CantLaunchToEnemyMap>
 	<!-- combat -->
 	<SoS.CombatTooltip>Shows the enemy ship's distance from your ship, all projectiles and shuttles currently in flight.\n\nRED: laser/canon range\nGREEN: plasma range\nBLUE: railgun range.\nPURPLE: torpedo range\nSmall colored bars: inaccurate maximum range for large weapons\nShuttles can be used at any distance</SoS.CombatTooltip>
 	<SoS.CombatRetreat>Retreat</SoS.CombatRetreat>

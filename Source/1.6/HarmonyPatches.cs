@@ -4562,6 +4562,31 @@ namespace SaveOurShip2
 		}
 	}
 
+	[HarmonyPatch(typeof(CompLaunchable), "ChoseWorldTarget", new Type[] { typeof(GlobalTargetInfo), typeof(PlanetTile), typeof(IEnumerable<IThingHolder>),
+		typeof(int), typeof(Action<PlanetTile, TransportersArrivalAction>),  typeof(CompLaunchable), typeof(float?)})]
+	public static class CannotLaunchToEnemyShip
+	{
+		public static void Postfix(CompLaunchable __instance, PlanetTile tile, ref bool __result)
+		{
+			if (!__result)
+			{
+				return;
+			}
+			MapParent worldObject;
+			if (Find.WorldObjects.TryGetWorldObjectAt<MapParent>(tile, out worldObject))
+			{
+				if (worldObject is WorldObjectOrbitingShip ship &&
+					ship.Map.GetComponent<ShipMapComp>().ShipMapState == ShipMapState.inCombat &&
+					worldObject.Map != ShipInteriorMod2.FindPlayerShipMap())
+				{
+					Messages.Message(TranslatorFormattedStringExtensions.Translate("SoS.CantLaunchToEnemyMap"),
+						MessageTypeDefOf.RejectInput, historical: false);
+					__result = false;
+				}
+			}
+		}
+	}
+
 	[HarmonyPatch(typeof(CompTransporter), "CompGetGizmosExtra")]
 	public static class CannotControlEnemyPodsB
 	{
