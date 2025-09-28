@@ -641,6 +641,11 @@ namespace SaveOurShip2
 				return false;
 			}).RandomElement();
 		}
+		private static ShipDef LoggedShipDef(ShipDef ship)
+		{
+			Log.Message("SOS2: Picked random ship: " + ship.defName);
+			return ship;
+		}
 		public static ShipDef RandomValidShipFrom(List<ShipDef> ships, float CR, bool tradeShip, bool allowNavyExc, bool randomFleet = false, int minZ = 0, int maxZ = 0)
 		{
 			int rarity = Rand.RangeInclusive(1, 2);
@@ -648,15 +653,17 @@ namespace SaveOurShip2
 			List<ShipDef> check = new List<ShipDef>();
 			check = ships.Where(def => ValidShipDef(def, 0.7f * CR, 1.1f * CR, tradeShip, allowNavyExc, randomFleet, rarity, minZ, maxZ)).ToList();
 			if (check.Any())
-				return check.RandomElement();
+			{
+				return LoggedShipDef(check.RandomElement());
+			}
 			Log.Message("fallback 0");
 			check = ships.Where(def => ValidShipDef(def, 0.5f * CR, 1.3f * CR, tradeShip, allowNavyExc, randomFleet, rarity, minZ, maxZ)).ToList();
 			if (check.Any())
-				return check.RandomElement();
+				return LoggedShipDef(check.RandomElement());
 			Log.Message("fallback 1");
 			check = ships.Where(def => ValidShipDef(def, 0.25f * CR, 2f * CR, tradeShip, allowNavyExc, randomFleet, 0, minZ, maxZ)).ToList();
 			if (check.Any())
-				return check.RandomElement();
+				return LoggedShipDef(check.RandomElement());
 			//too high or too low adjCR - ignore difficulty
 			Log.Warning("SOS2: difficulty set too low/high or no suitable ships found for your CR, using fallback");
 			if (CR < 1000)
@@ -664,23 +671,23 @@ namespace SaveOurShip2
 			else
 				check = ships.Where(def => ValidShipDef(def, 0.5f * CR, 100f * CR, tradeShip, allowNavyExc, randomFleet, 0, minZ, maxZ)).ToList();
 			if (check.Any())
-				return check.RandomElement();
+				return LoggedShipDef(check.RandomElement());
 			//last fallback, not for fleets or navy exclusive
 			if (tradeShip)
 			{
 				Log.Message("trade ship fallback");
 				check = ships.Where(def => ValidShipDef(def, 0, 100000f, tradeShip, allowNavyExc, randomFleet, 0, minZ, maxZ)).ToList();
 				if (check.Any())
-					return check.RandomElement();
+					return LoggedShipDef(check.RandomElement());
 				Log.Warning("SOS2: navy has no trade ships, choosing any random.");
-				return DefDatabase<ShipDef>.AllDefs.Where(def => ValidShipDef(def, 0f, 100000f, tradeShip, false, randomFleet, 0, minZ, maxZ)).RandomElement();
+				return LoggedShipDef(DefDatabase<ShipDef>.AllDefs.Where(def => ValidShipDef(def, 0f, 100000f, tradeShip, false, randomFleet, 0, minZ, maxZ)).RandomElement());
 			}
 			else if (!allowNavyExc && !randomFleet)
 			{
 				Log.Warning("SOS2: found no suitable enemy ship, choosing any random.");
 				check = ships.Where(def => ValidShipDef(def, 0, 100000f, tradeShip, allowNavyExc, randomFleet, 0, minZ, maxZ)).ToList();
 				if (check.Any())
-					return check.RandomElement();
+					return LoggedShipDef(check.RandomElement());
 				ships.Where(def => !def.neverAttacks && !def.neverRandom && (allowNavyExc || !def.navyExclusive)).RandomElement();
 			}
 			Log.Warning($"SOS2: found no suitable enemy ship at all, very final fallback, allowNavyExc: {allowNavyExc}, randomFleet: {randomFleet}");
@@ -688,8 +695,9 @@ namespace SaveOurShip2
 			check = ships.Where(def => ValidShipDef(def, 0, 100000f, tradeShip, allowNavyExc, randomFleet, 0, minZ, maxZ)).ToList();
 			if (check.Any())
 			{
-				return check.RandomElement();
+				return LoggedShipDef(check.RandomElement());
 			}
+			Log.Warning("SOS2: random ship pick failure");
 			return null;
 		}
 		public static bool ValidShipDef(ShipDef def, float CRmin, float CRmax, bool tradeShip, bool allowNavyExc, bool randomFleet, int rarity = 0, int minZ = 0, int maxZ = 0)
