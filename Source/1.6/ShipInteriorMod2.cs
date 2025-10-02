@@ -544,11 +544,136 @@ namespace SaveOurShip2
 
 		// Can override world tile selection in dev Launch sommmand, launching ship over specified tile
 		public static PlanetTile worldTileOverride = PlanetTile.Invalid;
-		public static PlanetTile FindWorldTilePlayer(bool allowSpace = true) //slower, will find tile nearest to ship object pos
+		public static PlanetTile launchOrigin = PlanetTile.Invalid;
+
+		private static PlanetTile FindWorldTileOnSurface()
+		{
+			return PlanetTile.Invalid;
+		}
+
+		private static float LongLatDistance(Vector2 longLatOrigin, Vector2 longLatDest)
+		{
+			// No squares for speed
+			return Mathf.Abs(longLatOrigin.x - longLatDest.x) + Mathf.Abs(longLatOrigin.y - longLatDest.y);
+		}
+		private static PlanetTile FindNearestOrbitTileTo(PlanetTile origin)
+		{
+			Vector2 originLongLat = Find.WorldGrid.LongLatOf(origin);
+			HashSet<int> visitedTileIDs = new HashSet<int>();
+			PlanetTile current = Find.World.grid.Orbit.tiles.First().tile;
+			float currentDistance = LongLatDistance(originLongLat, Find.WorldGrid.LongLatOf(current));
+			const int maxIterations = 200;
+			for (int i =0; i < maxIterations; i++)
+			{
+				List<PlanetTile> neighbors = new List<PlanetTile>();
+				Find.World.grid.Orbit.GetTileNeighbors(current.tileId, neighbors);
+				bool foundBetterTile = false;
+				foreach (PlanetTile neighbor in neighbors)
+				{
+					// For each neighbor of current tile, if that neighbor is closer to desired location,
+					// neighbor will replace current
+					// Visited tiles are marked to forbit repetition
+					// So basically this alghorithm "walks" in a stragth line approximation on hex grid,
+					// starting from first tile of orbit layer and usually iterating 5 new neighbors on each step.
+					if (!visitedTileIDs.Contains(neighbor.tileId))
+					{
+						visitedTileIDs.Add(neighbor.tileId);
+						float newDistance = LongLatDistance(originLongLat, Find.WorldGrid.LongLatOf(neighbor));
+						if (newDistance < currentDistance)
+						{
+							foundBetterTile = true;
+							current = neighbor;
+							currentDistance = newDistance;
+						}
+					}
+				}
+				if (!foundBetterTile)
+				{
+					return current;
+				}
+			}
+			return current;
+		}
+		private static PlanetTile FindFreeTileNear(PlanetTile startTile)
+		{
+			PlanetLayer layer = startTile.Layer;
+			// Starting with initial location as front 
+			HashSet<int> addedTileIDs = new HashSet<int>();
+			List<PlanetTile> front = new List<PlanetTile>();
+			front.Add(startTile);
+			addedTileIDs.Add(startTile.tileId);
+			// This alghorithm shoulld normally run just a few steps like 0-2.
+			// Still there is safety limit in case of "broken" tile set
+			const int maxIterations = 50;
+			int iteration = 0;
+			while (!front.Empty() && iteration < maxIterations)
+			{
+				iteration++;
+				List<PlanetTile> newFront = new List<PlanetTile>();
+				foreach(PlanetTile tile in front)
+				{
+					// Current front check happens here
+					if (!Find.World.worldObjects.AnyWorldObjectAt(tile))
+					{
+						return tile;
+					}
+					addedTileIDs.Add(tile.tileId);
+					List<PlanetTile> newNeightbors = new List<PlanetTile>();
+					layer.GetTileNeighbors(tile.tileId, newNeightbors);
+					foreach(PlanetTile neighbor in newNeightbors)
+					{
+						// For each neighbor of each tile in front, it will be added to new front if not already visited
+						// This is the step of wave algorithm here.
+						if (!addedTileIDs.Contains(neighbor.tileId))
+						{
+							newFront.Add(neighbor);
+							addedTileIDs.Add(tile.tileId);
+						}
+					}
+				}
+				front = newFront;
+			}
+			//Fallback - just some free tile on layer
+			foreach(Tile simpleTile in layer.Tiles)
+			{
+				if (!Find.World.worldObjects.AnyWorldObjectAt(simpleTile.tile))
+				{
+					return simpleTile.tile;
+				}
+			}
+			return PlanetTile.Invalid;
+		}
+
+		private static PlanetTile FindWorldTileInOrbit()
+		{
+			PlanetTile result = PlanetTile.Invalid;
+			if (launchOrigin != PlanetTile.Invalid)
+			{
+				result = FindNearestOrbitTileTo(launchOrigin);
+				result = FindFreeTileNear(result);
+			}
+			else
+			{
+				result = PlanetTile.Invalid;
+			}
+			launchOrigin = PlanetTile.Invalid;
+			return result;
+		}
+
+		public static PlanetTile FindWorldTileOnLayers(bool allowSpace = true) //slower, will find tile nearest to ship object pos
 		{
 			float bestAbsLatitude = float.MaxValue;
 			PlanetTile bestTile = PlanetTile.Invalid;
+			if (allowSpace && Find.World.grid.Orbit != null)
+			{
+				PlanetTile orbitTile = FindWorldTileInOrbit();
+				if (orbitTile != null && orbitTile != PlanetTile.Invalid)
+				{
+					return orbitTile;
+				}
+			}
 			var tiles = (allowSpace ? Find.World.grid.Orbit ?? Find.World.grid.Surface : Find.World.grid.Surface).Tiles;
+
 			for (int i = 0; i < tiles.Count; i+=10)
 			{
 				var tile = tiles[i].tile;
@@ -580,7 +705,7 @@ namespace SaveOurShip2
 			orbiter.SetFaction(Faction.OfPlayer);
 			if (worldTileOverride == PlanetTile.Invalid)
 			{
-				orbiter.Tile = FindWorldTilePlayer();
+				orbiter.Tile = FindWorldTileOnLayers();
 			}
 			else
 			{
@@ -602,7 +727,16 @@ namespace SaveOurShip2
 		}*/
 		public static Map FindPlayerShipMap()
 		{
-			return ((MapParent)Find.WorldObjects.AllWorldObjects.Where(ob => ob.def == ResourceBank.WorldObjectDefOf.ShipOrbiting).FirstOrDefault())?.Map;
+			IEnumerable<WorldObject> orbitingShips = Find.WorldObjects.AllWorldObjects.Where(ob => ob.def == ResourceBank.WorldObjectDefOf.ShipOrbiting);
+			if (!orbitingShips.Any())
+			{
+				return null;
+			}
+			if (orbitingShips.Count() > 1)
+			{
+				Log.Error("More than 1 orbiting ship found. Object count: " + orbitingShips.Count());
+			}
+			return ((MapParent)(orbitingShips.First()))?.Map;
 		}
 		public static WorldObject GenerateSite(string defName)
 		{
@@ -2003,10 +2137,28 @@ namespace SaveOurShip2
 			map.weatherManager.TransitionTo(ResourceBank.WeatherDefOf.OuterSpaceWeather);
 
 			//vars1
-			var mapPar = (WorldObjectOrbitingShip)map.Parent;
-			mapPar.drawPos = originMap.Parent.DrawPos;
+			var mapParent = (WorldObjectOrbitingShip)map.Parent;
+			/*mapPar.drawPos = originMap.Parent.DrawPos;
 			mapPar.originDrawPos = originMap.Parent.DrawPos;
-			mapPar.targetDrawPos = mapPar.NominalPos;
+			mapPar.targetDrawPos = mapPar.NominalPos;*/
+			Vector3 originPos = originMap.Tile.Layer.Origin + Find.WorldGrid.GetTileCenter(originMap.Tile);
+			// originMap.Parent.DrawPos;
+			Vector3 targetPos = map.Tile.Layer.Origin + Find.WorldGrid.GetTileCenter(map.Tile);
+			//map.Tile.Layer.GetTileCenter(map.Tile.tileId);
+			Log.Warning("Target pos for launch: " + targetPos);
+			WorldObjectMath.GetSphericalFromCartesian(targetPos, out float phi, out float theta, out float radius);
+			mapParent.Phi = phi;
+			mapParent.Theta = theta;
+			mapParent.Radius = radius;
+			mapParent.OrbitSet();
+			Log.Warning("Launched to orbit with radius: " + mapParent.Radius.ToString("F2"));
+			Log.Warning("Theta: " + theta);
+			Log.Warning("Phi: " + phi);
+
+			mapParent.drawPos = originPos;
+			mapParent.originDrawPos = originPos;
+			mapParent.targetDrawPos = targetPos;
+
 			mapComp.Heading = 1;
 			mapComp.Altitude = altitudeLand; //startup altitude
 			mapComp.Takeoff = true;
