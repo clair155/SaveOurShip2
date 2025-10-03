@@ -396,7 +396,7 @@
 
 	<ThingDef ParentName="ArmorHelmetMakeableBase">
 		<defName>Apparel_SpaceSuitHelmetHeavy</defName>
-		<label>Heavy EVA helmet</label>
+		<label>heavy EVA helmet</label>
 		<description>A pressure-sealed power armor helmet, designed to keep the occupant alive in outer space. Recycles oxygen and provides resistance to toxic airborne particulates.</description>
 		<techLevel>Spacer</techLevel>
 		<recipeMaker>
