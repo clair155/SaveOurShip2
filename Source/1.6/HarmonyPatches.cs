@@ -5319,6 +5319,15 @@ namespace SaveOurShip2
 		}
 	}
 
+	[HarmonyPatch(typeof(ArrivalAction_LoadMap), "Arrived")]
+	public static class SetQuestLandedShipFactionOnArrival
+	{
+		public static void Postfix(GlobalTargetInfo target)
+		{
+			SOS2MapUtility.FixWorldObjectFaction(target.Tile);
+		}
+	}
+
 	[HarmonyPatch(typeof(ThingOwnerUtility), "TryGetFixedTemperature")]
 	public static class WarmInsideShuttles
 	{
