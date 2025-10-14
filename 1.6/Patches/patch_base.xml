@@ -131,9 +131,9 @@
 	<!-- apparels -->
 	<!-- EVA description -->
 	<Operation Class="PatchOperationConditional">
-		<xpath>Defs/ThingDef[@ParentName="ApparelArmorReconBase" or @ParentName="ApparelArmorPowerBase" or @ParentName="ApparelArmorHelmetPowerBase"][not(comps)]</xpath>
+		<xpath>Defs/ThingDef[@ParentName="ApparelArmorReconBase" or @ParentName="ApparelArmorPowerBase" or @ParentName="ApparelArmorHelmetPowerBase" or @ParentName="ApparelArmorHelmetReconBase"][not(comps)]</xpath>
 		<match Class="PatchOperationAdd">
-			<xpath>Defs/ThingDef[@ParentName="ApparelArmorReconBase" or @ParentName="ApparelArmorPowerBase" or @ParentName="ApparelArmorHelmetPowerBase"][not(comps)]</xpath>
+			<xpath>Defs/ThingDef[@ParentName="ApparelArmorReconBase" or @ParentName="ApparelArmorPowerBase" or @ParentName="ApparelArmorHelmetPowerBase" or @ParentName="ApparelArmorHelmetReconBase"][not(comps)]</xpath>
 			<value>
 				<comps />
 			</value>
@@ -141,9 +141,9 @@
 	</Operation>
 
 	<Operation Class="PatchOperationConditional">
-		<xpath>Defs/ThingDef[@ParentName="ApparelArmorReconBase" or @ParentName="ApparelArmorPowerBase" or @ParentName="ApparelArmorHelmetPowerBase"]/comps[not(li/compClass="SaveOurShip2.CompEVA")]</xpath>
+		<xpath>Defs/ThingDef[@ParentName="ApparelArmorReconBase" or @ParentName="ApparelArmorPowerBase" or @ParentName="ApparelArmorHelmetPowerBase" or @ParentName="ApparelArmorHelmetReconBase"]/comps[not(li/compClass="SaveOurShip2.CompEVA")]</xpath>
 		<match Class="PatchOperationAdd">
-			<xpath>Defs/ThingDef[@ParentName="ApparelArmorReconBase" or @ParentName="ApparelArmorPowerBase" or @ParentName="ApparelArmorHelmetPowerBase"]/comps[not(li/compClass="SaveOurShip2.CompEVA")]</xpath>
+			<xpath>Defs/ThingDef[@ParentName="ApparelArmorReconBase" or @ParentName="ApparelArmorPowerBase" or @ParentName="ApparelArmorHelmetPowerBase" or @ParentName="ApparelArmorHelmetReconBase"]/comps[not(li/compClass="SaveOurShip2.CompEVA")]</xpath>
 			<value>
 				<li>
 					<compClass>SaveOurShip2.CompEVA</compClass>
@@ -154,9 +154,9 @@
 
 	<!-- EVA stats -->
 	<Operation Class="PatchOperationConditional">
-		<xpath>Defs/ThingDef[@ParentName="ApparelArmorReconBase" or @ParentName="ApparelArmorPowerBase" or @ParentName="ApparelArmorHelmetPowerBase"][not(equippedStatOffsets)]</xpath>
+		<xpath>Defs/ThingDef[@ParentName="ApparelArmorReconBase" or @ParentName="ApparelArmorPowerBase" or @ParentName="ApparelArmorHelmetPowerBase" or @ParentName="ApparelArmorHelmetReconBase"][not(equippedStatOffsets)]</xpath>
 		<match Class="PatchOperationAdd">
-			<xpath>Defs/ThingDef[@ParentName="ApparelArmorReconBase" or @ParentName="ApparelArmorPowerBase" or @ParentName="ApparelArmorHelmetPowerBase"][not(equippedStatOffsets)]</xpath>
+			<xpath>Defs/ThingDef[@ParentName="ApparelArmorReconBase" or @ParentName="ApparelArmorPowerBase" or @ParentName="ApparelArmorHelmetPowerBase" or @ParentName="ApparelArmorHelmetReconBase"][not(equippedStatOffsets)]</xpath>
 			<value>
 				<equippedStatOffsets />
 			</value>
@@ -176,9 +176,9 @@
 
 	<!-- Helmets DecompressionResistance -->
 	<Operation Class="PatchOperationConditional">
-		<xpath>Defs/ThingDef[@ParentName="ApparelArmorHelmetPowerBase"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
+		<xpath>Defs/ThingDef[@ParentName="ApparelArmorHelmetPowerBase" or @ParentName="ApparelArmorHelmetReconBase"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
 		<match Class="PatchOperationAdd">
-			<xpath>Defs/ThingDef[@ParentName="ApparelArmorHelmetPowerBase"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
+			<xpath>Defs/ThingDef[@ParentName="ApparelArmorHelmetPowerBase" or @ParentName="ApparelArmorHelmetReconBase"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
 			<value>
 				<DecompressionResistance>0.25</DecompressionResistance>
 			</value>
@@ -187,9 +187,9 @@
 
 	<!-- Helmets HypoxiaResistance -->
 	<Operation Class="PatchOperationConditional">
-		<xpath>Defs/ThingDef[@ParentName="ApparelArmorHelmetPowerBase"]/equippedStatOffsets[not(HypoxiaResistance)]</xpath>
+		<xpath>Defs/ThingDef[@ParentName="ApparelArmorHelmetPowerBase" or @ParentName="ApparelArmorHelmetReconBase"]/equippedStatOffsets[not(HypoxiaResistance)]</xpath>
 		<match Class="PatchOperationAdd">
-			<xpath>Defs/ThingDef[@ParentName="ApparelArmorHelmetPowerBase"]/equippedStatOffsets[not(HypoxiaResistance)]</xpath>
+			<xpath>Defs/ThingDef[@ParentName="ApparelArmorHelmetPowerBase" or @ParentName="ApparelArmorHelmetReconBase"]/equippedStatOffsets[not(HypoxiaResistance)]</xpath>
 			<value>
 				<HypoxiaResistance>1</HypoxiaResistance>
 			</value>
@@ -200,15 +200,31 @@
 	<Operation Class="PatchOperationReplace">
 		<xpath>Defs/ThingDef[@Name="ApparelArmorReconBase"]/statBases/Insulation_Cold</xpath>
 		<value>
-			<Insulation_Cold>80</Insulation_Cold>
+			<Insulation_Cold>100</Insulation_Cold>
 		</value>
 	</Operation>
 
+	<!-- Recon Helmet Insulation_Cold -->
+	<Operation Class="PatchOperationReplace">
+		<xpath>Defs/ThingDef[@Name="ApparelArmorHelmetReconBase"]/statBases/Insulation_Cold</xpath>
+		<value>
+			<Insulation_Cold>25</Insulation_Cold>
+		</value>
+	</Operation>
+	
 	<!-- Marine Armor Insulation_Cold -->
 	<Operation Class="PatchOperationReplace">
 		<xpath>Defs/ThingDef[@Name="ApparelArmorPowerBase"]/statBases/Insulation_Cold</xpath>
 		<value>
-			<Insulation_Cold>90</Insulation_Cold>
+			<Insulation_Cold>100</Insulation_Cold>
+		</value>
+	</Operation>
+
+	<!-- Marine Helmet Insulation_Cold -->
+	<Operation Class="PatchOperationReplace">
+		<xpath>Defs/ThingDef[@Name="ApparelArmorHelmetPowerBase"]/statBases/Insulation_Cold</xpath>
+		<value>
+			<Insulation_Cold>25</Insulation_Cold>
 		</value>
 	</Operation>
 	
