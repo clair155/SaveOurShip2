@@ -256,14 +256,19 @@
 						</value>
 					</match>
 				</li>
-
+				<!-- Cataphract Armor Insulation -->
 				<li Class="PatchOperationReplace">
 					<xpath>Defs/ThingDef[@Name="ApparelArmorCataphractBase"]/statBases/Insulation_Cold</xpath>
 					<value>
 						<Insulation_Cold>100</Insulation_Cold>
 					</value>
 				</li>
-
+				<li Class="PatchOperationReplace">
+					<xpath>Defs/ThingDef[@Name="ApparelArmorHelmetCataphractBase"]/statBases/Insulation_Cold</xpath>
+					<value>
+						<Insulation_Cold>25</Insulation_Cold>
+					</value>
+				</li>
 				<!-- traders -->
 				<li Class="PatchOperationAdd">
 					<xpath>Defs/TraderKindDef[defName="Orbital_Empire" or defName="Empire_Caravan_TraderGeneral"]/stockGenerators</xpath>
