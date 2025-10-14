@@ -6,7 +6,7 @@
 			<li>
 				<key>ArmorMinimal</key>
 				<label>Minimal Armor</label>
-				<description>Retrofit the shuttle's hull to minimize weight, trading armor for speed and fuel efficiency.\n&lt;color=#bb8f04&gt;-10% blunt armor, -20% sharp armor, +6 flight speed, +100 cargo capacity, -10 fuel consumption rate&lt;/color&gt;</description>
+				<description>Retrofit the shuttle's hull to minimize weight, trading armor for speed and fuel efficiency.\n&lt;color=#bb8f04&gt;-10% blunt armor, -20% sharp armor, +6 flight speed, +0.5 ground speed, +100 cargo capacity, -10 fuel consumption rate&lt;/color&gt;</description>
 				<icon>UI/ShuttleUpgrades/ArmorMinimal</icon>
 				<work>6000</work>
 				<gridCoordinate>(1,1)</gridCoordinate>
@@ -35,6 +35,11 @@
 								<value>100</value>
 								<type>Add</type>
 							</li>
+							<li>
+								<def>MoveSpeed</def>
+								<value>0.5</value>
+								<type>Add</type>
+							</li>
 						</vehicleStats>
 						<statCategories>
 							<li>
@@ -60,7 +65,7 @@
 			<li>
 				<key>ArmorHeavy</key>
 				<label>Heavy Armor</label>
-				<description>Retrofit the shuttle's hull with additional armor plating.\n&lt;color=#bb8f04&gt;+40% blunt armor, +40% sharp armor, -6 flight speed, -250 cargo capacity, +10 fuel consumption rate&lt;/color&gt;</description>
+				<description>Retrofit the shuttle's hull with additional armor plating.\n&lt;color=#bb8f04&gt;+40% blunt armor, +40% sharp armor, -6 flight speed, -0.5 ground speed, -250 cargo capacity, +10 fuel consumption rate&lt;/color&gt;</description>
 				<icon>UI/ShuttleUpgrades/ArmorHeavy</icon>
 				<work>6000</work>
 				<gridCoordinate>(4,1)</gridCoordinate>
@@ -87,6 +92,11 @@
 							<li>
 								<def>CargoCapacity</def>
 								<value>-250</value>
+								<type>Add</type>
+							</li>
+							<li>
+								<def>MoveSpeed</def>
+								<value>-0.5</value>
 								<type>Add</type>
 							</li>
 						</vehicleStats>
@@ -194,7 +204,7 @@
 			<li>
 				<key>EngineOverdriven</key>
 				<label>Overdriven Engine</label>
-				<description>Boost reactor output and overdrive the primary engines.\n&lt;color=#bb8f04&gt;+12 flight speed, +20 fuel consumption rate&lt;/color&gt;</description>
+				<description>Boost reactor output and overdrive the primary engines.\n&lt;color=#bb8f04&gt;+12 flight speed, +1 ground move speed, +20 fuel consumption rate&lt;/color&gt;</description>
 				<icon>UI/ShuttleUpgrades/EngineOverdriven</icon>
 				<work>8000</work>
 				<gridCoordinate>(1,4)</gridCoordinate>
@@ -204,6 +214,11 @@
 							<li>
 								<def>FlightSpeed</def>
 								<value>12</value>
+								<type>Add</type>
+							</li>
+							<li>
+								<def>MoveSpeed</def>
+								<value>1</value>
 								<type>Add</type>
 							</li>
 						</vehicleStats>
@@ -270,7 +285,7 @@
 			<li>
 				<key>EngineMule</key>
 				<label>M.U.L.E. Module</label>
-				<description>Utilize momentum-redirection technology to increase the mass of cargo this shuttle can carry, at the cost of greatly reduced flight speed.\n&lt;color=#bb8f04&gt;-8 flight speed, +250 cargo capacity&lt;/color&gt;</description>
+				<description>Utilize momentum-redirection technology to increase the mass of cargo this shuttle can carry, at the cost of greatly reduced flight speed.\n&lt;color=#bb8f04&gt;-8 flight speed, -0.66 ground move speed, +250 cargo capacity&lt;/color&gt;</description>
 				<icon>UI/ShuttleUpgrades/EngineMule</icon>
 				<work>8000</work>
 				<gridCoordinate>(7,4)</gridCoordinate>
@@ -285,6 +300,11 @@
 							<li>
 								<def>CargoCapacity</def>
 								<value>250</value>
+								<type>Add</type>
+							</li>
+							<li>
+								<def>MoveSpeed</def>
+								<value>-0.66</value>
 								<type>Add</type>
 							</li>
 						</vehicleStats>
@@ -307,7 +327,7 @@
 			<li>
 				<key>EngineArcho</key>
 				<label>Archotech Engine</label>
-				<description>[WHAT SAIL CARRIES YOU?\nPUSH AGAINST WHICH FIRMAMENT?\nTHE ANSWER IS: YES]\n&lt;color=#bb8f04&gt;+12 flight speed, +15% ship combat dodge chance, +100 cargo capacity&lt;/color&gt;</description>
+				<description>[WHAT SAIL CARRIES YOU?\nPUSH AGAINST WHICH FIRMAMENT?\nTHE ANSWER IS: YES]\n&lt;color=#bb8f04&gt;+12 flight speed, +1 ground move speed, +15% ship combat dodge chance, +100 cargo capacity&lt;/color&gt;</description>
 				<icon>UI/ShuttleUpgrades/EngineArcho</icon>
 				<work>12000</work>
 				<gridCoordinate>(10,4)</gridCoordinate>
@@ -327,6 +347,11 @@
 							<li>
 								<def>CargoCapacity</def>
 								<value>100</value>
+								<type>Add</type>
+							</li>
+							<li>
+								<def>MoveSpeed</def>
+								<value>1</value>
 								<type>Add</type>
 							</li>
 						</vehicleStats>
