@@ -628,8 +628,8 @@
 					<ArmorRating_Sharp>0.4</ArmorRating_Sharp>
 					<ArmorRating_Blunt>0.2</ArmorRating_Blunt>
 					<ArmorRating_Heat>0.4</ArmorRating_Heat>
-					<ComfyTemperatureMin>-20</ComfyTemperatureMin>
-					<ComfyTemperatureMax>20</ComfyTemperatureMax>
+					<ComfyTemperatureMin>-50</ComfyTemperatureMin>
+					<ComfyTemperatureMax>50</ComfyTemperatureMax>
 					<VacuumResistance MayRequire="Ludeon.RimWorld.Odyssey">1</VacuumResistance>
 				</statOffsets>
 			</li>
