@@ -891,7 +891,25 @@
 				<li Class="PatchOperationAdd">
 					<xpath>Defs/HediffDef[defName="VacskinGland"]/stages/li/statOffsets</xpath>
 					<value>
-						<DecompressionResistance>0.75</DecompressionResistance>
+						<DecompressionResistance>1</DecompressionResistance>
+					</value>
+				</li>
+				<li Class="PatchOperationAdd">
+					<xpath>Defs/HediffDef[defName="VacskinGland"]/stages/li/statOffsets</xpath>
+					<value>
+						<HypoxiaResistance>0.75</HypoxiaResistance>
+					</value>
+				</li>
+				<li Class="PatchOperationReplace">
+					<xpath>Defs/HediffDef[defName="VacskinGland"]/stages/li/statOffsets/ComfyTemperatureMin</xpath>
+					<value>
+						<ComfyTemperatureMin>-25</ComfyTemperatureMin>
+					</value>
+				</li>
+				<li Class="PatchOperationReplace">
+					<xpath>Defs/HediffDef[defName="VacskinGland"]/stages/li/statOffsets/VacuumResistance</xpath>
+					<value>
+						<VacuumResistance>0.9</VacuumResistance>
 					</value>
 				</li>
 				<!-- Archotech Skin -->
