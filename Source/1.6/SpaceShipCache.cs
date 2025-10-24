@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Verse;
+using Verse.AI;
 using RimWorld;
 using UnityEngine;
 using Vehicles;
@@ -1368,5 +1369,51 @@ namespace SaveOurShip2
         {
 			return Core != null && !IsWreck && (Core.PowerComp.PowerNet.HasActivePowerSource || Core.PowerComp.PowerNet.CurrentStoredEnergy() >= 1000);
         }
+
+		public void StartBoardingShuttles(ref List<VehiclePawn> shuttlesWantingBoarders)
+        {
+			List<VehiclePawn> shuttles = new List<VehiclePawn>();
+			List<CompShipBay> bays = new List<CompShipBay>();
+			foreach (VehiclePawn vehicle in ShuttlesOnShip(Faction))
+			{
+				if (ShipInteriorMod2.IsShuttle(vehicle) && (vehicle.CompUpgradeTree == null || !ShipInteriorMod2.ShuttleIsArmed(vehicle)) && vehicle.GetNextAvailableHandler(HandlingType.Movement) != null)
+				{
+					if (ShipInteriorMod2.IsPod(vehicle) || !ModSettings_SoS.shipMapPhysics)
+						shuttles.Add(vehicle);
+					else //for non pods, check if there is room to land
+					{
+						foreach (CompShipBay bay in mapComp.TargetMapComp.Bays)
+						{
+							if (!bays.Contains(bay) && bay.CanFitShuttleSize(vehicle) != IntVec3.Zero)
+							{
+								shuttles.Add(vehicle);
+								bays.Add(bay);
+							}
+						}
+					}
+				}
+			}
+			List<VehiclePawn> shuttlesToBeFilled = new List<VehiclePawn>(shuttles);
+			IEnumerable<Pawn> pawnsToBoard = PawnsOnShip(Faction).Where(pawn => !(pawn is VehiclePawn) && (pawn.CurJob == null || pawn.CurJob.def != ResourceBank.JobDefOf.ManShipBridge) && pawn.kindDef.combatPower > 40);
+			Log.Message("[SoS2] Planning boarding missions. Found " + shuttlesToBeFilled.Count + " boarding-ready shuttles and " + pawnsToBoard.Count() + " potential boarders.");
+			foreach (Pawn p in pawnsToBoard)
+			{
+				if (shuttlesToBeFilled.Count > 0 && p.mindState.duty != null)
+				{
+					p.mindState.duty.transportersGroup = 1;
+					VehiclePawn myShuttle = shuttlesToBeFilled.Where(shuttle => p.CanReserveAndReach(shuttle, PathEndMode.Touch, Danger.Deadly)).RandomElement();
+					if (myShuttle != null && myShuttle.GetNextAvailableHandler(HandlingType.Movement) != null)
+					{
+						myShuttle.PromptToBoardVehicle(p, myShuttle.GetNextAvailableHandler(HandlingType.Movement));
+						if (myShuttle.GetNextAvailableHandler(HandlingType.Movement) == null)
+							shuttlesToBeFilled.Remove(myShuttle);
+						if (!shuttlesWantingBoarders.Contains(myShuttle))
+							shuttlesWantingBoarders.Add(myShuttle);
+						Log.Message("[SoS2] Assigning " + p + " to boarding shuttle");
+					}
+				}
+				Log.Message("[SoS2] " + shuttlesWantingBoarders.Count + " shuttles assigned boarders, " + shuttlesToBeFilled.Count + " shuttles unfilled.");
+			}
+		}
 	}
 }
