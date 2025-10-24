@@ -285,10 +285,12 @@ namespace SaveOurShip2
 			Log.Message("SOS2 " + SOS2version + " active");
 
 			string[] disallowedPlants = new string[]{
-				// Elder ocualr tree from Vanilla Psycasts Expanded
+				// Elder ocular tree from Vanilla Psycasts Expanded
 				"AA_ElderAlienTree",
 				// RA_MetalBean is from Ratkin Anomaly+, causes real bad effects and was requested to not spawn randomly.
-				"RA_MetalBean"
+				"RA_MetalBean",
+				// Archean tree converts soil, so not suitable for placing on ship.
+				"Plant_TreeArchean"
 			};
 
 			randomPlants = DefDatabase<ThingDef>.AllDefs.Where(t => t.plant != null && !t.defName.Contains("Anima") && !disallowedPlants.Contains(t.defName)).ToList();
