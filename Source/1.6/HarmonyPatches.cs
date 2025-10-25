@@ -5763,6 +5763,33 @@ namespace SaveOurShip2
 		}
 	}
 
+	// This is called Royalty permit stuff but re-used in Odyssey shuttle too
+	[HarmonyPatch(typeof(RoyalTitlePermitWorker_CallShuttle), "GetReportFromCell")]
+	public static class CanLandShuttleOnBay
+    {
+		public static void Postfix(IntVec3 cell, Map map, bool interactionSpot, ThingDef shuttleDef, ref string __result)
+        {
+			Log.Message(shuttleDef.defName);
+			if (shuttleDef.defName == "PassengerShuttle")
+            {
+				if (__result == null || !cell.InBounds(map))
+				{
+					return;
+				}
+				var bay = cell.GetThingList(map).Where(t => t.TryGetComp<CompShipBay>() != null)?.FirstOrDefault();
+				if (bay == null)
+				{
+					return;
+				}
+				CellRect rect = CellRect.SingleCell(cell);
+				if (bay.TryGetComp<CompShipBay>().CanFitShuttleAt(rect))
+				{
+					__result = null;
+				}
+			}
+        }
+	}
+
 	/*[HarmonyPatch(typeof(ActiveDropPod),"PodOpen")]
 	public static class ActivePodFix{
 		public static bool Prefix (ref ActiveDropPod __instance)
