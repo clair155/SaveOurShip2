@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
-
 	<!-- override -->
 	<JourneyOffer>A friendly AI from your past named Charlon Whitestone has sent you a message!\n\nHe reveals that he has a spacecraft hidden on this planet, and sends you its world coordinates.\n\nIf you can reach the ship, Charlon will take you into orbit. From there, perhaps you can discover a way to improve the ship's engine and journey to the stars.</JourneyOffer>
 	<EscapeShipFoundLabel>Ship found</EscapeShipFoundLabel>
 	<EscapeShipFound>You've reached the coordinates sent by Charlon Whitestone and discovered the hidden spacecraft.\n\nThe ship is ready for launch, but its chemfuel engines can only get you into orbit. To go further, you will need to somehow acquire a Johnson-Tanaka drive. Perhaps clues can be found amidst orbital debris...</EscapeShipFound>
-	
+	<!-- Tutorial-style letter on how base game difficulty change doesn't affect ship battle-->
+	<SoS.Letter.DifficultyChanged>Base Game Difficulty Change Detected: ship battle difficulty is unchanged</SoS.Letter.DifficultyChanged>
+	<SoS.Letter.DifficultyChangedDesc>Ship battle difficulty for Save our Ship 2 is adjusted separately in Options → Mod options → Save our Ship → Ship combat difficulty factor.</SoS.Letter.DifficultyChangedDesc>
 	<!-- misc -->
 	<SoS.LetterLabelShortCircuitDesc>A fault in an electrical conduit has caused a short circuit. Luckily, your capacitor array's fuse prevented it from discharging.</SoS.LetterLabelShortCircuitDesc>
 	<SoS.EncounterStart>Derelict</SoS.EncounterStart>
