@@ -269,6 +269,28 @@
 						<Insulation_Cold>25</Insulation_Cold>
 					</value>
 				</li>
+				<!-- Gunlink Fixes -->
+				<li Class="PatchOperationAdd">
+					<xpath>Defs/ThingDef[defName="Apparel_Gunlink"]/equippedStatOffsets</xpath>
+						<value>
+							<DecompressionResistance>0</DecompressionResistance>
+						</value>
+				</li>	
+				<li Class="PatchOperationAdd">
+					<xpath>Defs/ThingDef[defName="Apparel_Gunlink"]/equippedStatOffsets</xpath>
+						<value>
+							<HypoxiaResistance>0</HypoxiaResistance>
+						</value>
+				</li>	
+				<!-- SaveOurShip2 comp for helmets -->
+				<li Class="PatchOperationAdd">
+					<xpath>Defs/ThingDef[defName="Apparel_ArmorHelmetReconPrestige"]/comps</xpath>
+						<value>
+							<li>
+								<compClass>SaveOurShip2.CompEVA</compClass>
+							</li>
+						</value>
+				</li>
 				<!-- traders -->
 				<li Class="PatchOperationAdd">
 					<xpath>Defs/TraderKindDef[defName="Orbital_Empire" or defName="Empire_Caravan_TraderGeneral"]/stockGenerators</xpath>
@@ -401,7 +423,16 @@
 						<value>
 							<Insulation_Cold>25</Insulation_Cold>
 						</value>
-				</li>				
+				</li>
+				<!-- SaveOurShip2 comp for helmets -->
+				<li Class="PatchOperationAdd">
+					<xpath>Defs/ThingDef[defName="Apparel_ArmorHelmetMechCommander" or defName="Apparel_ArmorHelmetMechlordHelmet"]/comps</xpath>
+						<value>
+							<li>
+								<compClass>SaveOurShip2.CompEVA</compClass>
+							</li>
+						</value>
+				</li>
 			</operations>
 		</match>
 	</Operation>
@@ -1018,6 +1049,27 @@
 						<VacuumResistance>0.3</VacuumResistance>
 					</value>
 				</li>
+				<!-- SaveOurShip2 comp for Vac Gear -->
+				<li Class="PatchOperationConditional">
+					<xpath>Defs/ThingDef[defName="Apparel_Vacsuit" or defName="Apparel_VacsuitChildren" or defName="Apparel_VacsuitHelmet"][not(comps)]</xpath>
+					<match Class="PatchOperationAdd">
+					<xpath>Defs/ThingDef[defName="Apparel_Vacsuit" or defName="Apparel_VacsuitChildren" or defName="Apparel_VacsuitHelmet"][not(comps)]</xpath>
+						<value>
+							<comps />
+						</value>
+					</match>
+				</li>	
+				<li Class="PatchOperationConditional">
+					<xpath>Defs/ThingDef[defName="Apparel_Vacsuit" or defName="Apparel_VacsuitChildren" or defName="Apparel_VacsuitHelmet"]/comps[not(li/compClass="SaveOurShip2.CompEVA")]</xpath>
+					<match Class="PatchOperationAdd">
+					<xpath>Defs/ThingDef[defName="Apparel_Vacsuit" or defName="Apparel_VacsuitChildren" or defName="Apparel_VacsuitHelmet"]/comps[not(li/compClass="SaveOurShip2.CompEVA")]</xpath>
+						<value>
+							<li>
+								<compClass>SaveOurShip2.CompEVA</compClass>
+							</li>
+						</value>
+					</match>
+				</li>	
 			</operations>
 		</match>
 	</Operation>
