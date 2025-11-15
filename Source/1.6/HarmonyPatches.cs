@@ -5815,7 +5815,6 @@ namespace SaveOurShip2
 		}
 		public static Room GetRoomFixed(this Thing thing, RegionType allowedRegionTypes = RegionType.Set_All)
 		{
-			Log.Warning("Fixed Get room used");
 			if (thing is Building_ShipVent)
             {
 				return (thing as Building_ShipVent).ventTo.GetRoom(thing.Map);
