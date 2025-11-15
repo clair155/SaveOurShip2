@@ -15,7 +15,9 @@ namespace SaveOurShip2
 {
 	public class Building_ShipAirlock : Building_Door
 	{
-		public override bool ExchangeVacuum => false;
+		// Very similar to base door function, overiding to avoid dealing with
+		// Harmony patches to base door function.
+		public override bool ExchangeVacuum => Open;
 
 		List<Building> extenders = new List<Building>();
 

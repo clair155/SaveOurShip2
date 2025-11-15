@@ -24,6 +24,7 @@ namespace SaveOurShip2
 
 		public override void TickRare()
 		{
+			base.TickRare();
 			if (this.compPowerTrader.PowerOn)
 			{
 				bool flag = false; //operating at high power

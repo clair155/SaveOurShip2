@@ -459,6 +459,10 @@
 			<li Class="SaveOurShip2.CompProps_ShipHeat">
 				<compClass>SaveOurShip2.CompShipHeat</compClass>
 			</li>
+			<li MayRequire="Ludeon.RimWorld.Odyssey" Class="CompProperties_OxygenPusher">
+				<requiresPower>true</requiresPower>
+				<airPerSecondPerHundredCells>0.09</airPerSecondPerHundredCells>
+			</li>
 			<li>
 				<compClass>CompColorable</compClass>
 			</li>
@@ -1781,6 +1785,10 @@
 			<li Class="CompProperties_Flickable"/>
 			<li Class="SaveOurShip2.CompProps_LifeSupport"/>
 			<li Class="SaveOurShip2.CompProps_GraphicOnOff"/>
+			<li MayRequire="Ludeon.RimWorld.Odyssey" Class="CompProperties_OxygenPusher">
+				<requiresPower>true</requiresPower>
+				<airPerSecondPerHundredCells>2</airPerSecondPerHundredCells>
+			</li>
 		</comps>
 		<placeWorkers>
 			<li>SaveOurShip2.PlaceWorker_OnShipHull</li>
@@ -1840,6 +1848,10 @@
 			<li Class="CompProperties_Flickable"/>
 			<li Class="SaveOurShip2.CompProps_LifeSupport"/>
 			<li Class="SaveOurShip2.CompProps_GraphicOnOff"/>
+			<li MayRequire="Ludeon.RimWorld.Odyssey" Class="CompProperties_OxygenPusher">
+				<requiresPower>true</requiresPower>
+				<airPerSecondPerHundredCells>1</airPerSecondPerHundredCells>
+			</li>
 		</comps>
 		<placeWorkers>
 			<li>SaveOurShip2.PlaceWorker_OnShipHull</li>

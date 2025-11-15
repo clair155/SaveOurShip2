@@ -424,6 +424,10 @@
 			<li Class="SaveOurShip2.CompProps_ResearchUnlock">
 				<unlock>ArchotechUplink</unlock>
 			</li>
+			<li MayRequire="Ludeon.RimWorld.Odyssey" Class="CompProperties_OxygenPusher">
+				<requiresPower>true</requiresPower>
+				<airPerSecondPerHundredCells>0.18</airPerSecondPerHundredCells>
+			</li>
 			<li>
 				<compClass>CompColorable</compClass>
 			</li>

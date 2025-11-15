@@ -395,6 +395,10 @@
 			<li Class="SaveOurShip2.CompProps_ShipHeat">
 				<compClass>SaveOurShip2.CompShipHeat</compClass>
 			</li>
+			<li MayRequire="Ludeon.RimWorld.Odyssey" Class="CompProperties_OxygenPusher">
+				<requiresPower>true</requiresPower>
+				<airPerSecondPerHundredCells>0.09</airPerSecondPerHundredCells>
+			</li>
 			<li>
 				<compClass>CompColorable</compClass>
 			</li>
