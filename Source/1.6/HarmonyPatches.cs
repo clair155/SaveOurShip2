@@ -5790,6 +5790,40 @@ namespace SaveOurShip2
         }
 	}
 
+	[HarmonyPatch(typeof(CompOxygenPusher), "CompTickRare")]
+	// Resolve the design difference between original ship heat vents being located in the wall, 
+	// while Odyssey oxygen pumps being attached to the wall, but located in the room.
+	public static class GetRoomForShipVent
+	{
+		static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+		{
+			MethodInfo originalGetRoom =
+				AccessTools.Method(typeof(RegionAndRoomQuery), nameof(RegionAndRoomQuery.GetRoom));
+			foreach (CodeInstruction instruction in instructions)
+			{
+				if (instruction.Calls(originalGetRoom))
+				{
+					yield return new CodeInstruction(opcode: OpCodes.Call,
+						operand: AccessTools.Method(typeof(GetRoomForShipVent),
+						nameof(GetRoomForShipVent.GetRoomFixed)));
+				}
+				else
+				{
+					yield return instruction;
+				}
+			}
+		}
+		public static Room GetRoomFixed(this Thing thing, RegionType allowedRegionTypes = RegionType.Set_All)
+		{
+			Log.Warning("Fixed Get room used");
+			if (thing is Building_ShipVent)
+            {
+				return (thing as Building_ShipVent).ventTo.GetRoom(thing.Map);
+            }
+			return thing.GetRoom(allowedRegionTypes);
+		}
+	}
+
 	/*[HarmonyPatch(typeof(ActiveDropPod),"PodOpen")]
 	public static class ActivePodFix{
 		public static bool Prefix (ref ActiveDropPod __instance)
