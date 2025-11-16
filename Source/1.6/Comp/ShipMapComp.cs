@@ -1658,13 +1658,20 @@ namespace SaveOurShip2
 			{
 				if (MapEnginePower > 0)
 				{
+					float transitionSpeed = 0.1f;
+					// Faster transition for map hopping playstyle when takeof and landing happens rather often
+					// vs "classic" playsyle of launching to orbit once in a playthrough an then doing everything on space map
+					if (ModsConfig.OdysseyActive)
+                    {
+						transitionSpeed *= 1.7f;
+                    }
 					if (Heading > 0) //ascend
 					{
-						Altitude += 0.1f * MapEnginePower;
+						Altitude += transitionSpeed * MapEnginePower;
 					}
 					else if (Heading < 0) //descend
 					{
-						Altitude -= 0.1f * MapEnginePower;
+						Altitude -= transitionSpeed * MapEnginePower;
 					}
 				}
 				else if (Altitude > ShipInteriorMod2.altitudeLand) //descend unless in stable or startup altitude
@@ -1790,7 +1797,7 @@ namespace SaveOurShip2
 					{
 						foreach (Building b in ship.OuterNonShipWalls())
 						{
-							if (Rand.Chance(0.5f))
+							if (Rand.Chance(0.5f) && b.Stuff == ThingDefOf.WoodLog)
 								buildings.Add(b);
 						}
 					}

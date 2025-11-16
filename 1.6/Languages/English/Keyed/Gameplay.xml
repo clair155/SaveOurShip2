@@ -557,6 +557,10 @@
 	<SoS.EnergyShieldStatusLabel>Shield</SoS.EnergyShieldStatusLabel>
 	<SoS.EnergyShieldStatusDesc>{0} / {1}</SoS.EnergyShieldStatusDesc>
 
+	<SoS.Sensor.ConfimObserve>Warning! Passively observing quest maps and sites for a prolonged time without sending player pawns there via ship or shuttle can cause pawn logic to break, quest logic to break, etc.
+Observing maps before landing ship there should be fine.
+Are you sure you want to proceed?</SoS.Sensor.ConfimObserve>
+
 	<!-- Ship combat stuff -->
 	<SoS.Combat.MapShipInfo>SOS2 {0} | Ships: {1} | Cells: {2}</SoS.Combat.MapShipInfo>
 
