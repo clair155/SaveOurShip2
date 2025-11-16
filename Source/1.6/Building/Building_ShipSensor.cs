@@ -70,22 +70,29 @@ namespace SaveOurShip2
 			PossiblyDisposeOfObservedMap();
 			if (target.WorldObject != null && target.WorldObject is MapParent p)
 			{
-				if (ShipInteriorMod2.allowedToObserve.Contains(p.def.defName))
+				observedMap = (MapParent)target.WorldObject;
+				Action observeAction = delegate
 				{
-					observedMap = (MapParent)target.WorldObject;
-					// GeneratingMap translation key is from base game
-					LongEventHandler.QueueLongEvent(delegate
+					GetOrGenerateMapUtility.GetOrGenerateMap(target.WorldObject.Tile, target.WorldObject.def);
+					GenStep_Fog.UnfogMapFromEdge(observedMap.Map);
+					SOS2MapUtility.FixWorldObjectFaction(target.Tile);
+				};
+				if (!ShipInteriorMod2.allowedToObserve.Contains(p.def.defName))
+				{
+					Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation(TranslatorFormattedStringExtensions.Translate("SoS.Sensor.ConfimObserve"), delegate
 					{
-						GetOrGenerateMapUtility.GetOrGenerateMap(target.WorldObject.Tile, target.WorldObject.def);
-						GenStep_Fog.UnfogMapFromEdge(observedMap.Map);
-						SOS2MapUtility.FixWorldObjectFaction(target.Tile);
-					}, "GeneratingMap", false, delegate { });
+						// GeneratingMap translation key is from base game
+						LongEventHandler.QueueLongEvent(observeAction, "GeneratingMap", false, delegate { });
+					}
+					));
+					// Actual "result" is behind delegate passed to dialog, but for now can simplify things and just return true here becasue sensor logic
+					// doesn't rely on that result.
 					return true;
 				}
 				else
                 {
-					Messages.Message("SoSNoMapObserve".Translate(), MessageTypeDefOf.RejectInput);
-					return false;
+					LongEventHandler.QueueLongEvent(observeAction, "GeneratingMap", false, delegate { });
+					return true;
                 }
 			}
 			else if (target.WorldObject == null && !Find.World.Impassable(target.Tile))
