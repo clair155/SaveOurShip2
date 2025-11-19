@@ -77,20 +77,22 @@ namespace SaveOurShip2
 				{
 					if ((int)typeof(TravellingTransporters).GetField("initialTile", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(ob) == this.Tile)
                     {
-						Log.Warning("Outgounig transporters prevent map removal");
 						return true;
                     }
                     {
-						Log.Warning("Incoming transporters prevent map removal");
 						return true;
 					}
 				}
 				return false;
 			};
 			if (Find.World.worldObjects.AllWorldObjects.Any(transportersCheck))
+			{
 				return false;
+			}
 			if (this.Map.listerBuildings.allBuildingsNonColonist.Any(t => t.TryGetComp<CompBlackBoxAI>() != null))
+			{
 				return false;
+			}
 			return base.ShouldRemoveMapNow(out alsoRemoveWorldObject);
 		}
 
