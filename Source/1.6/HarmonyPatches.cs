@@ -5704,7 +5704,7 @@ namespace SaveOurShip2
 	{
 		public static bool Prefix(ListerThings __instance, ThingDef def, ref bool __result)
 		{
-			if (def == ThingDefOf.GravAnchor)
+			if (ModsConfig.OdysseyActive && def == ThingDefOf.GravAnchor)
 			{
 				// Get map as thing lister doesn't have it
 				const int searchLimit = 1000;
@@ -5719,8 +5719,12 @@ namespace SaveOurShip2
 				}
 				if (map != null && map.IsSpace())
 				{
-					__result = true;
-					return false;
+					// Only need to pretend that grav anchor exists for map with grav engine, which would be gravship taking off
+					if (map.listerThings.AnyThingWithDef(ThingDefOf.GravEngine))
+					{
+						__result = true;
+						return false;
+					}
 				}
 			}
 			return true;
@@ -5929,7 +5933,7 @@ namespace SaveOurShip2
 			}
 			else if (!TileFinder.TryFindRandomPlayerTile(out arg, allowCaravans,
 				(int x) => findTile(x) != -1 && (Find.World.worldObjects.MapParentAt(x) == null ||
-												 !(Find.World.worldObjects.MapParentAt(x) is WorldObjectOrbitingShip))))
+													!(Find.World.worldObjects.MapParentAt(x) is WorldObjectOrbitingShip))))
 			{
 				tile = -1;
 				__result = false;
@@ -6001,7 +6005,7 @@ namespace SaveOurShip2
 				new CodeMatch(OpCodes.Ldc_I4_2),
 				new CodeMatch(OpCodes.Bne_Un_S)
 			);
-			
+
 			var thing = generator.DeclareLocal(typeof(Thing)); //Store the list[i] into here
 			var label = generator.DefineLabel(); //Prepare a new label
 			var codeWithLabel = new CodeInstruction(OpCodes.Ldloc_S, thing); //This will be injected into the "Jump point" above.
@@ -6027,7 +6031,7 @@ namespace SaveOurShip2
 				.Insert(codeWithLabel)
 				.InstructionEnumeration();
 			}
-			
+
 			Log.Error("[SoS2] BabiesAreSafeInSpaceCaskets transpiler failed to find its target. Did RimWorld update?");
 			return editor.InstructionEnumeration();	
 		}
@@ -6718,8 +6722,8 @@ namespace SaveOurShip2
 			if (Find.WorldSelector.FirstSelectedObject == null || !(Find.WorldSelector.FirstSelectedObject is MapParent) || ((MapParent)Find.WorldSelector.FirstSelectedObject).Map == null || !((MapParent)Find.WorldSelector.FirstSelectedObject).Map.IsPlayerHome)
 			{
 				IEnumerable<TransferableOneWay> source = from x in transferables
-														 where x.ThingDef.category == ThingCategory.Pawn
-														 select x;
+															where x.ThingDef.category == ThingCategory.Pawn
+															select x;
 				widget.AddSection(TranslatorFormattedStringExtensions.Translate("SoSShuttles"), from x in source
 																								where (((Pawn)x.AnyThing).TryGetComp<CompBecomeBuilding>() != null)
 																								select x);
