@@ -266,6 +266,35 @@
 			<li>ShipHeatsink</li>
 		</researchPrerequisites>
 	</ThingDef>
+
+	<ThingDef ParentName="ShipHeatConduit" Name="HiddenShipHeatConduit">
+    <defName>HiddenShipHeatConduit</defName>
+    <label>hidden thermal conduit</label>
+    <description>A liquid conduit for moving heat around a starship. Hidden under ship parts</description>
+	<thingClass>Building</thingClass>
+    <graphicData>
+      <color>(0,0,0,0)</color>
+      <shaderType>Transparent</shaderType>
+    </graphicData>
+    <statBases>
+		<MaxHitPoints>160</MaxHitPoints>
+		<WorkToBuild>100</WorkToBuild>
+		<Flammability>0</Flammability>
+		<Beauty>0</Beauty>
+    </statBases>
+    <uiIconPath>Things/Building/Ship/CoolantConduit_MenuIcon</uiIconPath>
+	<costList>
+		<Steel>2</Steel>
+		<Plasteel>2</Plasteel>
+	</costList>
+    <building>
+      <ai_neverTrashThis>true</ai_neverTrashThis>
+      <isTargetable>false</isTargetable>
+	  <canBeDamagedByAttacks>false</canBeDamagedByAttacks>
+      <expandHomeArea>false</expandHomeArea>
+    </building>
+  </ThingDef>
+
 	<!-- heatsinks -->
 	<DesignatorDropdownGroupDef>
 		<defName>Ship_Heatsinks</defName>
