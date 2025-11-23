@@ -30,8 +30,8 @@
       <li>RewardStandardQualitySuper</li>
     </thingSetMakerTags>
     <costList>
-      <Steel>150</Steel>
-      <ComponentIndustrial>18</ComponentIndustrial>
+      <Steel>75</Steel>
+      <ComponentIndustrial>9</ComponentIndustrial>
     </costList>
     <statBases>
       <WorkToBuild>60000</WorkToBuild>
@@ -101,8 +101,8 @@
       <li>RewardStandardQualitySuper</li>
     </thingSetMakerTags>
     <costList>
-      <Steel>250</Steel>
-      <ComponentSpacer>6</ComponentSpacer>
+      <Steel>125</Steel>
+      <ComponentSpacer>3</ComponentSpacer>
     </costList>
     <statBases>
       <WorkToBuild>80000</WorkToBuild>
@@ -168,8 +168,8 @@
       <li>BuildingsJoy</li>
     </thingCategories>
     <costList>
-      <Plasteel>120</Plasteel>
-      <ComponentSpacer>4</ComponentSpacer>
+      <Plasteel>60</Plasteel>
+      <ComponentSpacer>2</ComponentSpacer>
 	  <AIPersonaCore>1</AIPersonaCore>
     </costList>
     <resourcesFractionWhenDeconstructed>1</resourcesFractionWhenDeconstructed>
