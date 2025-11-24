@@ -250,8 +250,9 @@
     </costList>
     <statBases>
       <MaxHitPoints>75</MaxHitPoints>
-      <Flammability>1.0</Flammability>
-      <MarketValue>600</MarketValue>
+      <WorkToBuild>10000</WorkToBuild>
+	  <Flammability>1.0</Flammability>
+      <MarketValue>300</MarketValue>
       <Mass>7.5</Mass>
       <JoyGainFactor>1.5</JoyGainFactor>
     </statBases>
