@@ -57,9 +57,8 @@
 			<supportsWallAttachments>true</supportsWallAttachments>
 		</building>
 		<costList>
-			<Steel>14</Steel>
+			<Steel>7</Steel>
 			<Plasteel>3</Plasteel>
-			<ComponentIndustrial>1</ComponentIndustrial>
 		</costList>
 		<designationHotKey>Misc1</designationHotKey>
 	</ThingDef>
@@ -123,9 +122,8 @@
 			<supportsWallAttachments>true</supportsWallAttachments>
 		</building>
 		<costList>
-			<Steel>16</Steel>
+			<Steel>8</Steel>
 			<Plasteel>4</Plasteel>
-			<ComponentIndustrial>1</ComponentIndustrial>
 		</costList>
 		<designationHotKey>Misc1</designationHotKey>
 	</ThingDef>
@@ -155,7 +153,6 @@
 			<MaxHitPoints>500</MaxHitPoints>
 		</statBases>
 		<costList>
-			<Steel>8</Steel>
 			<Plasteel>2</Plasteel>
 		</costList>
 	</ThingDef>
@@ -200,7 +197,6 @@
 			<MaxHitPoints>1000</MaxHitPoints>
 		</statBases>
 		<costList>
-			<Steel>16</Steel>
 			<Plasteel>4</Plasteel>
 		</costList>
 		<size>(1,2)</size>
@@ -216,7 +212,6 @@
 			<MaxHitPoints>1500</MaxHitPoints>
 		</statBases>
 		<costList>
-			<Steel>24</Steel>
 			<Plasteel>6</Plasteel>
 		</costList>
 		<size>(1,3)</size>
@@ -232,7 +227,6 @@
 			<MaxHitPoints>1500</MaxHitPoints>
 		</statBases>
 		<costList>
-			<Steel>24</Steel>
 			<Plasteel>6</Plasteel>
 		</costList>
 		<size>(1,3)</size>
@@ -274,7 +268,7 @@
 		</statBases>
 		<selectable>true</selectable>
 		<costList>
-			<Steel>150</Steel>
+			<Steel>50</Steel>
 			<Plasteel>25</Plasteel>
 			<ComponentSpacer>1</ComponentSpacer>
 		</costList>
@@ -362,9 +356,9 @@
 		</statBases>
 		<selectable>true</selectable>
 		<costList>
-			<Steel>30</Steel>
+			<Steel>15</Steel>
 			<Plasteel>5</Plasteel>
-			<ComponentIndustrial>2</ComponentIndustrial>
+			<ComponentIndustrial>1</ComponentIndustrial>
 		</costList>
 		<soundImpactDefault>BulletImpact_Metal</soundImpactDefault>
 		<resourcesFractionWhenDeconstructed>0.5</resourcesFractionWhenDeconstructed>
@@ -436,9 +430,9 @@
 		</graphicData>
 		<uiIconPath>Things/Building/Door/Autodoor_MenuIcon</uiIconPath>
 		<costList>
-			<Steel>40</Steel>
-			<ComponentSpacer>1</ComponentSpacer>
-			<Plasteel>25</Plasteel>
+			<Steel>20</Steel>
+			<ComponentIndustrial>3</ComponentIndustrial>
+			<Plasteel>15</Plasteel>
 		</costList>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
@@ -542,7 +536,7 @@
 		</statBases>
 		<description>Spaceworthy hull plating built by mechanoids.</description>
 		<costList>
-			<Steel>3</Steel>
+			<Steel>1</Steel>
 			<Plasteel>1</Plasteel>
 		</costList>
 		<comps>
