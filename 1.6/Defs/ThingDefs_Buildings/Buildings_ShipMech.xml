@@ -270,7 +270,7 @@
 		<costList>
 			<Steel>50</Steel>
 			<Plasteel>25</Plasteel>
-			<ComponentSpacer>1</ComponentSpacer>
+			<ComponentIndustrial>2</ComponentIndustrial>
 		</costList>
 		<building>
 			<shipPart>true</shipPart>
