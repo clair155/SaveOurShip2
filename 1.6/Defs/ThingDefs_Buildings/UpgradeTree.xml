@@ -59,7 +59,7 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<Plasteel>10</Plasteel>
+					<Plasteel>5</Plasteel>
 				</ingredients>
 			</li>
 			<li>
@@ -118,7 +118,7 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<Plasteel>60</Plasteel>
+					<Plasteel>30</Plasteel>
 				</ingredients>
 			</li>
 			<li>
@@ -160,8 +160,8 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>2</ComponentSpacer>
-					<Steel>25</Steel>
+					<ComponentSpacer>1</ComponentSpacer>
+					<Steel>15</Steel>
 				</ingredients>
 			</li>
 			<li>
@@ -196,9 +196,9 @@
 					<li>ArchotechHullConversion</li>
 				</researchPrerequisites>
 				<ingredients>
-					<Plasteel>10</Plasteel>
-					<Gold>10</Gold>
-					<ArchotechExoticParticles>2</ArchotechExoticParticles>
+					<Plasteel>5</Plasteel>
+					<Gold>5</Gold>
+					<ArchotechExoticParticles>1</ArchotechExoticParticles>
 				</ingredients>
 			</li>
 			<li>
@@ -241,7 +241,7 @@
 				</researchPrerequisites>
 				<ingredients>
 					<ComponentSpacer>1</ComponentSpacer>
-					<Uranium>20</Uranium>
+					<Uranium>10</Uranium>
 				</ingredients>
 			</li>
 			<li>
@@ -278,8 +278,8 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>2</ComponentSpacer>
-					<Plasteel>10</Plasteel>
+					<ComponentSpacer>1</ComponentSpacer>
+					<Plasteel>5</Plasteel>
 				</ingredients>
 			</li>
 			<li>
@@ -320,8 +320,8 @@
 				</researchPrerequisites>
 				<ingredients>
 					<ComponentSpacer>1</ComponentSpacer>
-					<Plasteel>10</Plasteel>
-					<Uranium>10</Uranium>
+					<Plasteel>5</Plasteel>
+					<Uranium>5</Uranium>
 				</ingredients>
 			</li>
 			<li>
@@ -366,9 +366,9 @@
 					<li>ArchotechEngine</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>4</ComponentSpacer>
-					<ArchotechExoticParticles>2</ArchotechExoticParticles>
-					<Gold>20</Gold>
+					<ComponentSpacer>2</ComponentSpacer>
+					<ArchotechExoticParticles>1</ArchotechExoticParticles>
+					<Gold>10</Gold>
 				</ingredients>
 			</li>
 			<li>
@@ -414,10 +414,10 @@
 					<li>ShipShields</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>6</ComponentSpacer>
-					<Steel>120</Steel>
-					<Plasteel>40</Plasteel>
-					<Silver>40</Silver>
+					<ComponentSpacer>3</ComponentSpacer>
+					<Steel>60</Steel>
+					<Plasteel>20</Plasteel>
+					<Silver>20</Silver>
 				</ingredients>
 			</li>
 			<li>
@@ -462,10 +462,10 @@
 					<li>ShipShields</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>10</ComponentSpacer>
-					<Steel>180</Steel>
-					<Plasteel>80</Plasteel>
-					<Silver>100</Silver>
+					<ComponentSpacer>5</ComponentSpacer>
+					<Steel>90</Steel>
+					<Plasteel>40</Plasteel>
+					<Silver>50</Silver>
 				</ingredients>
 			</li>
 			<li>
@@ -512,11 +512,11 @@
 					<li>ArchotechHeatsink</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>12</ComponentSpacer>
-					<Gold>200</Gold>
-					<Silver>200</Silver>
-					<Plasteel>80</Plasteel>
-					<ArchotechExoticParticles>6</ArchotechExoticParticles>
+					<ComponentSpacer>6</ComponentSpacer>
+					<Gold>100</Gold>
+					<Silver>100</Silver>
+					<Plasteel>40</Plasteel>
+					<ArchotechExoticParticles>3</ArchotechExoticParticles>
 				</ingredients>
 			</li>
 			<li>
@@ -551,9 +551,9 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>2</ComponentSpacer>
-					<MedicineIndustrial>10</MedicineIndustrial>
-					<Plasteel>10</Plasteel>
+					<ComponentSpacer>1</ComponentSpacer>
+					<MedicineIndustrial>5</MedicineIndustrial>
+					<Plasteel>5</Plasteel>
 				</ingredients>
 			</li>
 			<li>
@@ -598,10 +598,10 @@
 					<li>ShipCloaking</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>6</ComponentSpacer>
-					<Gold>20</Gold>
-					<Plasteel>60</Plasteel>
-					<Steel>60</Steel>
+					<ComponentSpacer>3</ComponentSpacer>
+					<Gold>10</Gold>
+					<Plasteel>30</Plasteel>
+					<Steel>30</Steel>
 				</ingredients>
 			</li>
 			<li>
@@ -639,10 +639,10 @@
 					<li>ShipHeatsink</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>2</ComponentSpacer>
-					<ComponentIndustrial>2</ComponentIndustrial>
-					<Steel>100</Steel>
-					<Plasteel>25</Plasteel>
+					<ComponentSpacer>1</ComponentSpacer>
+					<ComponentIndustrial>1</ComponentIndustrial>
+					<Steel>50</Steel>
+					<Plasteel>15</Plasteel>
 				</ingredients>
 			</li>
 			<li>
@@ -672,9 +672,9 @@
 					<li>ArchotechExotics</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>8</ComponentSpacer>
-					<Jade>200</Jade>
-					<ArchotechExoticParticles>6</ArchotechExoticParticles>
+					<ComponentSpacer>4</ComponentSpacer>
+					<Jade>100</Jade>
+					<ArchotechExoticParticles>3</ArchotechExoticParticles>
 				</ingredients>
 			</li>
 			<li>
@@ -711,8 +711,8 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentIndustrial>2</ComponentIndustrial>
-					<Steel>10</Steel>
+					<ComponentIndustrial>1</ComponentIndustrial>
+					<Steel>5</Steel>
 				</ingredients>
 			</li>
 			<li>
@@ -749,8 +749,8 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentIndustrial>4</ComponentIndustrial>
-					<Steel>20</Steel>
+					<ComponentIndustrial>2</ComponentIndustrial>
+					<Steel>10</Steel>
 				</ingredients>
 			</li>
 			<li>
@@ -787,8 +787,8 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentIndustrial>6</ComponentIndustrial>
-					<Steel>30</Steel>
+					<ComponentIndustrial>3</ComponentIndustrial>
+					<Steel>15</Steel>
 				</ingredients>
 			</li>
 			<li>
@@ -825,8 +825,8 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentIndustrial>8</ComponentIndustrial>
-					<Steel>40</Steel>
+					<ComponentIndustrial>4</ComponentIndustrial>
+					<Steel>20</Steel>
 				</ingredients>
 			</li>
 			<li>
@@ -863,8 +863,8 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentIndustrial>10</ComponentIndustrial>
-					<Steel>50</Steel>
+					<ComponentIndustrial>5</ComponentIndustrial>
+					<Steel>25</Steel>
 				</ingredients>
 			</li>
 			<li>
@@ -901,8 +901,8 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentIndustrial>12</ComponentIndustrial>
-					<Steel>60</Steel>
+					<ComponentIndustrial>6</ComponentIndustrial>
+					<Steel>30</Steel>
 				</ingredients>
 			</li>
 			<li>
@@ -939,8 +939,8 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentIndustrial>14</ComponentIndustrial>
-					<Steel>70</Steel>
+					<ComponentIndustrial>7</ComponentIndustrial>
+					<Steel>35</Steel>
 				</ingredients>
 			</li>
 			<li>
@@ -977,8 +977,8 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentIndustrial>16</ComponentIndustrial>
-					<Steel>80</Steel>
+					<ComponentIndustrial>8</ComponentIndustrial>
+					<Steel>40</Steel>
 				</ingredients>
 			</li>
 			<li>
