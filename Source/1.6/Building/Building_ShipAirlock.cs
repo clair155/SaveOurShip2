@@ -247,6 +247,10 @@ namespace SaveOurShip2
 			for (int i = 0; i < 2; i++) //find first extender, check opposite for other, same rot, not facing airlock
 			{
 				IntVec3 v = Position + GenAdj.CardinalDirections[i];
+				if (!v.InBounds(Map))
+				{
+					return false;
+				}
 				Thing first = v.GetFirstThingWithComp<CompDockExtender>(Map);
 				if (first == null)
 					continue;
