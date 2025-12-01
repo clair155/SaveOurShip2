@@ -344,10 +344,8 @@
 		<passability>Impassable</passability>
 		<seeThroughFog>true</seeThroughFog>
 		<costList>
-			<Steel>100</Steel>
-			<Plasteel>25</Plasteel>
-			<ComponentSpacer>2</ComponentSpacer>
-			<ComponentIndustrial>2</ComponentIndustrial>
+			<Steel>50</Steel>
+			<ComponentIndustrial>1</ComponentIndustrial>
 		</costList>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipHeat">
@@ -395,10 +393,8 @@
 		<passability>Impassable</passability>
 		<seeThroughFog>true</seeThroughFog>
 		<costList>
-			<Steel>500</Steel>
-			<Plasteel>125</Plasteel>
-			<ComponentSpacer>10</ComponentSpacer>
-			<ComponentIndustrial>10</ComponentIndustrial>
+			<Steel>250</Steel>
+			<ComponentIndustrial>5</ComponentIndustrial>
 		</costList>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipHeat">
@@ -442,9 +438,7 @@
 			<Beauty>-2</Beauty>
 		</statBases>
 		<costList>
-			<Steel>100</Steel>
 			<Plasteel>25</Plasteel>
-			<ComponentSpacer>1</ComponentSpacer>
 			<ComponentIndustrial>1</ComponentIndustrial>
 		</costList>
 		<comps>
@@ -481,10 +475,8 @@
 			<Beauty>-2</Beauty>
 		</statBases>
 		<costList>
-			<Steel>500</Steel>
-			<Plasteel>125</Plasteel>
-			<ComponentSpacer>5</ComponentSpacer>
-			<ComponentIndustrial>5</ComponentIndustrial>
+			<Plasteel>60</Plasteel>
+			<ComponentIndustrial>3</ComponentIndustrial>
 		</costList>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipHeat">
@@ -661,6 +653,7 @@
 					</thingDefs>
 				</fuelFilter>
 				<fuelCapacity>25</fuelCapacity>
+				<fuelMultiplier>2</fuelMultiplier>
 				<initialFuelPercent>1</initialFuelPercent>
 				<autoRefuelPercent>0.9</autoRefuelPercent>
 				<targetFuelLevelConfigurable>true</targetFuelLevelConfigurable>
@@ -835,7 +828,7 @@
 					</thingDefs>
 				</fuelFilter>
 				<fuelCapacity>50</fuelCapacity>
-				<fuelMultiplier>0.5</fuelMultiplier>
+				<fuelMultiplier>1</fuelMultiplier>
 				<initialFuelPercent>1</initialFuelPercent>
 				<autoRefuelPercent>0.9</autoRefuelPercent>
 				<targetFuelLevelConfigurable>true</targetFuelLevelConfigurable>
@@ -995,7 +988,7 @@
 					</thingDefs>
 				</fuelFilter>
 				<fuelCapacity>100</fuelCapacity>
-				<fuelMultiplier>0.25</fuelMultiplier>
+				<fuelMultiplier>0.5</fuelMultiplier>
 				<initialFuelPercent>1</initialFuelPercent>
 				<autoRefuelPercent>0.9</autoRefuelPercent>
 				<targetFuelLevelConfigurable>true</targetFuelLevelConfigurable>
