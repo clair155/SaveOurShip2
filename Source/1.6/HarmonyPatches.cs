@@ -5817,62 +5817,6 @@ namespace SaveOurShip2
 		}
 	}
 
-	/*[HarmonyPatch(typeof(Pawn), "PreApplyDamage")]
-	public static class CheckDamage
-    {
-		public static void Prefix()
-		{
-			Log.Warning("PreApply DMG");
-		}
-    }*/
-
-	[HarmonyPatch(typeof(PawnRenderNodeWorker_Apparel_Head), "CanDrawNow")]
-	class HideHelmetsInside
-    {
-		public static bool Prefix(PawnDrawParms parms, ref bool __result)
-		{
-			if (parms.pawn != null && parms.pawn.Map != null)
-			{
-				Map map = parms.pawn.Map;
-				Room room = parms.pawn.Position.GetRoom(parms.pawn.Map);
-
-				bool isBreathable = !ShipInteriorMod2.ExposedToOutside(room) && map.GetComponent<ShipMapComp>().VecHasLS(parms.pawn.Position);
-				if (isBreathable) 
-				{
-					__result = false;
-					return false;
-				}
-			}
-			return true;
-        }
-    }
-
-	[HarmonyPatch(typeof(PawnRenderNodeWorker_Apparel_Body), "CanDrawNow")]
-	class HidesuitInside
-	{
-		public static bool Prefix(PawnRenderNode node, PawnDrawParms parms, ref bool __result)
-		{
-			if (parms.pawn != null && parms.pawn.Map != null)
-			{
-				Map map = parms.pawn.Map;
-				Room room = parms.pawn.Position.GetRoom(parms.pawn.Map);
-
-				bool isBreathable = !ShipInteriorMod2.ExposedToOutside(room) && map.GetComponent<ShipMapComp>().VecHasLS(parms.pawn.Position);
-				if (isBreathable)
-                {
-                    bool isSuit = node.apparel?.def.defName.Contains("Suit") ?? false;
-					if (isSuit)
-					{
-						__result = false;
-						return false;
-					}
-				}
-			}
-			return true;
-		}
-	}
-
-
 	/*[HarmonyPatch(typeof(ActiveDropPod),"PodOpen")]
 	public static class ActivePodFix{
 		public static bool Prefix (ref ActiveDropPod __instance)
