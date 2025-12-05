@@ -1842,7 +1842,11 @@ namespace SaveOurShip2
 
 			if (ship.Engines.NullOrEmpty())
 				newResult.Add("ShipReportMissingPart".Translate() + ": " + ThingDefOf.Ship_Engine.label);
-			if (ship.FuelNeeded(true) < ship.MassActual)
+			// TODO: Need to calculate fuel burned during takoff animation and include that into this check.
+			// Now 5% of normall takoff cost or 100% of grav takeoff is extremely rough approximation. Gravlike uses such huge nubmer 
+			// because of different design with < 1 TWR.
+			// This check is not good, but previous check was even worse and requuired waay too much when grav engine is involved
+			if (ship.FuelNeeded(true) < Mathf.Min(ship.MassActual * 1.05f, ship.MassTakeoff * 2.0f))
 				newResult.Add("SoS.NeedsMoreFuel".Translate(ship.FuelNeeded(true), ship.MassActual));
 			if (ship.Sensors.NullOrEmpty())
 				newResult.Add("ShipReportMissingPart".Translate() + ": " + ThingDefOf.Ship_SensorCluster.label);
@@ -5757,6 +5761,60 @@ namespace SaveOurShip2
 		}
 	}
 
+	[HarmonyPatch(typeof(Building_GravEngine), "GetInspectString")]
+	public static class GravEngineInspectString
+    {
+		private static bool vanillaDescriptionUsed = true;
+		public static bool Prefix(Building_GravEngine __instance, ref string __result)
+        {
+			vanillaDescriptionUsed = true;
+			if (!__instance.Spawned || !Find.ResearchManager.gravEngineInspected)
+            {
+				return true;
+            }
+			ShipMapComp mapComp = __instance.Map.GetComponent<ShipMapComp>();
+			if (mapComp.ShipIndexOnVec(__instance.Position) == -1)
+            {
+				return true;
+            }
+			vanillaDescriptionUsed = false;
+			// Can't easily grab base inspect string here, but it is empty, so that's ok
+			__result = TranslatorFormattedStringExtensions.Translate("SoS.Ody.GravEngineOnSpaceship");
+			return false;
+		}
+
+		public static void Postfix(Building_GravEngine __instance, ref string __result)
+        {
+			if (vanillaDescriptionUsed)
+            {
+				if (__result.Length > 0)
+                {
+					__result += "\n";
+                }
+				__result += TranslatorFormattedStringExtensions.Translate("SoS.Ody.GravEngineCanBeInstalledOnSpaceship");
+			}
+        }
+	}
+
+	[HarmonyPatch(typeof(CompGravshipFacility), "CompInspectStringExtra")]
+	public static class GravshipFacilityInspectString
+    {
+		public static bool Prefix(CompGravshipFacility __instance, ref string __result)
+        {
+			if (__instance.parent.Spawned)
+            {
+				ShipMapComp mapComp = __instance.parent.Map.GetComponent<ShipMapComp>();
+				if (mapComp.ShipIndexOnVec(__instance.parent.Position) != -1)
+				{
+					// Cancel alerts about not on gravship, not connected to grav engine if installed on spaceship.
+					__result = "";
+					return false;
+				}
+			}
+			return true;
+        }
+    }
+
 	// This is called Royalty permit stuff but re-used in Odyssey shuttle too
 	[HarmonyPatch(typeof(RoyalTitlePermitWorker_CallShuttle), "GetReportFromCell")]
 	public static class CanLandShuttleOnBay
@@ -5814,6 +5872,66 @@ namespace SaveOurShip2
 				return (thing as Building_ShipVent).ventTo.GetRoom(thing.Map);
             }
 			return thing.GetRoom(allowedRegionTypes);
+		}
+	}
+
+	[HarmonyPatch(typeof(GenConstruct), "CanBuildOnTerrain")]
+	public static class CanBuildGravshipBuildingsOnSpacehip
+    {
+		public static readonly List<ThingDef> AllowedGravshipBuildings = new List<ThingDef>()
+			{ ResourceBank.ThingDefOf.GravcorePowerCell,
+			  ResourceBank.ThingDefOf.PilotSubpersonaCore,
+			  ResourceBank.ThingDefOf.GravshipShieldGenerator,
+			  ResourceBank.ThingDefOf.SignalJammer,
+			  ResourceBank.ThingDefOf.FuelOptimizer,
+			  ResourceBank.ThingDefOf.ChemfuelTank,
+			  ResourceBank.ThingDefOf.LargeChemfuelTank,
+		};
+		public static void Postfix(BuildableDef entDef, IntVec3 c, Map map, Rot4 rot, ref bool __result)
+        {
+			if (!__result && ModsConfig.OdysseyActive)
+            {
+				if (entDef != null && /*entDef.defName == "GravcorePowerCell" || entDef.defName == "PilotSubpersonaCore"*/
+					AllowedGravshipBuildings.Contains(entDef))
+                {
+					bool hasPlating, hasRestrictedBay;
+					PlaceWorker_OnShipHull.HasPlatingAndRestrictedBayFor(entDef, c, map, out hasPlating, out hasRestrictedBay);
+					if (!hasPlating || hasRestrictedBay)
+                    {
+						// Exit here if no ship hull plating
+						return;
+                    }
+					foreach (Thing t in c.GetThingList(map))
+                    {
+						if (t is Building b)
+                        {
+							if (b.def.building?.isAttachment ?? false)
+                            {
+								// Continue searching for buildings that block cunstruction, skipping current
+								continue;
+                            }
+							CompShipCachePart shipPart = b.TryGetComp<CompShipCachePart>();
+							if (shipPart != null && shipPart.Props.isPlating)
+                            {
+								continue;
+                            }
+							// Found blocking building
+							return;
+						}
+                    }
+					// No blocking buoildings and has plating means allowed
+					__result = true;
+				}
+            }
+        }
+    }
+
+	[HarmonyPatch(typeof(CompPowerPlantGravcore), "CheckSubstructure")]
+	public static class PowerPlantGravcoreWorksEverywhere
+	{
+		public static void Postfix(CompPowerPlantGravcore __instance)
+		{
+			__instance.onSubstructure = true;
 		}
 	}
 

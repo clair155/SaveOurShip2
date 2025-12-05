@@ -144,6 +144,22 @@ namespace SaveOurShip2
 			public static ThingDef Turret_Sniper;
 			public static ThingDef MechSerumResurrector;
 			public static ThingDef Mote_Bubble;
+			[MayRequireOdyssey]
+			public static ThingDef GravcorePowerCell;
+			[MayRequireOdyssey]
+			public static ThingDef PilotSubpersonaCore;
+			[MayRequireOdyssey]
+			public static ThingDef GravEngine;
+			[MayRequireOdyssey]
+			public static ThingDef GravshipShieldGenerator;
+			[MayRequireOdyssey]
+			public static ThingDef SignalJammer;
+			[MayRequireOdyssey]
+			public static ThingDef FuelOptimizer;
+			[MayRequireOdyssey]
+			public static ThingDef ChemfuelTank;
+			[MayRequireOdyssey]
+			public static ThingDef LargeChemfuelTank;
 		}
 
 		[DefOf]

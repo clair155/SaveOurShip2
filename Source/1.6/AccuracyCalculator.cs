@@ -143,7 +143,7 @@ namespace SaveOurShip2
 		{
 			new CurvePoint(0f, 0.5f),
 			new CurvePoint(20f, 1.5f),
-			new CurvePoint(25f, 1.65f)    // Can go above 20 with skill bonuses, diminishing return in this case
+			new CurvePoint(22f, 1.55f)    // Can go above 20 with skill bonuses, diminishing return in this case
 		};
 		private float GetDodgeCanceImpl(float weaponRange)
 		{
@@ -160,8 +160,10 @@ namespace SaveOurShip2
 			float dodgeMultiplierFromShooting = DodgeChanceMultiplierFromShooting.Evaluate(SourceMapAccuracyBoost);
 			// pilot skill
 			float dodgeMultiplierFromPiloting = DodgeChanceMultiplierFromPiloting.Evaluate(ThisMapEvasionBoost);
-			float finalChance = baseChance * dodgeMultiplierFromShooting * dodgeMultiplierFromPiloting * ThisMapComp.SlowestThrustRatio() / baselineTWR
-				* DodgeChanceSubmodScale;
+			// Extra buildings
+			float dodgeMultiplierFromBuildings = ThisMapEvasionScaleFromBuildings;
+			float finalChance = baseChance * dodgeMultiplierFromShooting * dodgeMultiplierFromPiloting * ThisMapComp.SlowestThrustRatio() / baselineTWR *
+				dodgeMultiplierFromBuildings * DodgeChanceSubmodScale;
 			return Mathf.Clamp(finalChance, 0f, 1f);
 		}
 
@@ -291,6 +293,55 @@ namespace SaveOurShip2
 			}
 		}
 
+		private float thisMapEvasionScaleFromBuildings = 0f;
+		private int thisMapEvasionCalcTick = -GenDate.TicksPerQuadrum;
+
+		public float ThisMapEvasionScaleFromBuildings
+        {
+            get
+            {
+				if (Find.TickManager.TicksGame < thisMapEvasionCalcTick + 60)
+				{
+					return thisMapEvasionScaleFromBuildings;
+				}
+				int gravEngineCount = 0;
+				// Maximum number of buildings of certain type on map that will give bonus. 
+				// Having more may be allowed, but bonus won't increase.
+				const int maxGravEngines = 1;
+				int subpersonaCount = 0;
+				const int maxSubpersonas = 2;
+
+				foreach (SpaceShipCache ship in ThisMapComp.ShipsOnMap.Values)
+				{
+					foreach (Building building in ship.Buildings)
+					{
+						if (building.def == ResourceBank.ThingDefOf.GravEngine)
+						{
+							gravEngineCount++;
+						}
+						if (building.def == ResourceBank.ThingDefOf.PilotSubpersonaCore)
+						{
+							subpersonaCount++;
+						}
+						if (subpersonaCount >= maxSubpersonas && gravEngineCount >= maxGravEngines)
+						{
+							// When found maximum allowed number of bonus buildings
+							break;
+						}
+					}
+				}
+				gravEngineCount = Mathf.Min(gravEngineCount, maxGravEngines);
+				subpersonaCount = Mathf.Min(subpersonaCount, maxSubpersonas);
+				const float gravEngineMonus = 0.055f;
+				const float subpersonaBonus = 0.01f;
+
+				float result = 1f + gravEngineCount * gravEngineMonus + subpersonaCount * subpersonaBonus;
+				thisMapEvasionScaleFromBuildings = result;
+				thisMapEvasionCalcTick = Find.TickManager.TicksGame;
+				return result;
+			}
+        }
+
 		public int ThisMapEvasionBoost
 		{
 			get
@@ -307,7 +358,8 @@ namespace SaveOurShip2
 							// Odyssey pilot assistant
 							if (pilot.health.hediffSet.hediffs.Any((Hediff h) => h.def.defName == "PilotAssistant"))
 							{
-								skill += 4;
+								const int pilotAssistantBonus = 2;
+								skill += pilotAssistantBonus;
 							}
 							result = Mathf.Max(result, skill);
 						}

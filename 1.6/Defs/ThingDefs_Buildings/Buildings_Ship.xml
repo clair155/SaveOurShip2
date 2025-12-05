@@ -3635,6 +3635,7 @@
 		<holdsRoof>true</holdsRoof>
 		<leaveResourcesWhenKilled>false</leaveResourcesWhenKilled>
 	</ThingDef>
+	
 	<!-- other -->
 	<ThingDef>
 		<defName>SoS2DummyObject</defName>

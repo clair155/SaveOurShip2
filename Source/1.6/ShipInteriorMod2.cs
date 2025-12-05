@@ -141,7 +141,9 @@ namespace SaveOurShip2
 		public const float crittersleepBodySize = 0.7f;
 		public const float pctFuelLocal = 0.0f;
 		public const float pctFuelMap = 0.05f;
-		public const float pctFuelSpace = 0.23f; //check is 1 since we dont want ships to crash right after takeoff
+		public const float pctFuelTakeoff = 0.35f; //check is 1 since we dont want ships to crash right after takeoff
+		 // Bonus (= cost reductuion) from 1 fuel optimizer, 2 max.
+		public const float pctFuelTakeoffPerOptimizer = 0.105f;
 		public const float pctFuelLand = 0.1f;
 
 		public static bool loadedGraphics = false;
@@ -2755,7 +2757,7 @@ namespace SaveOurShip2
 				}
 				else //to space
 				{
-					fuelNeeded *= pctFuelSpace;
+					fuelNeeded = ship.MassTakeoff * (pctFuelTakeoff - pctFuelTakeoffPerOptimizer * ship.EffectiveFuelOptimizerCount);
 				}
 				foreach(CompEngineTrail engine in engines)
 					engine.refuelComp.ConsumeFuel(fuelNeeded * engine.refuelComp.Fuel / fuelStored);
