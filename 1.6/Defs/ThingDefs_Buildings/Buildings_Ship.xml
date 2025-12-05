@@ -2580,9 +2580,10 @@
 			<isPlayerEjectable>true</isPlayerEjectable>
 		</building>
 		<costList>
-			<Plasteel>50</Plasteel>
+			<Steel>180</Steel>
 			<Uranium>5</Uranium>
-			<ComponentSpacer>2</ComponentSpacer>
+			<ComponentIndustrial>4</ComponentIndustrial>
+			<ComponentSpacer>1</ComponentSpacer>
 		</costList>
 		<terrainAffordanceNeeded>Heavy</terrainAffordanceNeeded>
 		<designationHotKey>Misc2</designationHotKey>
