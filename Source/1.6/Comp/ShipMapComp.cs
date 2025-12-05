@@ -71,6 +71,21 @@ namespace SaveOurShip2
 			}
 		}
 
+		public bool HasGravEngine
+        {
+			get
+            {
+				foreach(SpaceShipCache ship in ShipsOnMap.Values)
+                {
+					if (ship.HasGravEngine)
+                    {
+						return true;
+                    }
+                }
+				return false;
+            }
+        }
+
 		public ShipMapComp(Map map) : base(map)
 		{
 			grid = new int[map.cellIndices.NumGridCells];
@@ -1659,11 +1674,17 @@ namespace SaveOurShip2
 				if (MapEnginePower > 0)
 				{
 					float transitionSpeed = 0.1f;
-					// Faster transition for map hopping playstyle when takeof and landing happens rather often
-					// vs "classic" playsyle of launching to orbit once in a playthrough an then doing everything on space map
 					if (ModsConfig.OdysseyActive)
                     {
-						transitionSpeed *= 1.7f;
+						// Faster transition for map hopping playstyle when takeof and landing happens rather often
+						// vs "classic" playsyle of launching to orbit once in a playthrough an then doing everything on space map
+						const float transitionScale = 1.6f;
+						transitionSpeed *= transitionScale;
+						if (HasGravEngine)
+                        {
+							// Even faster takeoff with Grav engine
+							transitionSpeed *= transitionScale;
+						}
                     }
 					if (Heading > 0) //ascend
 					{

@@ -156,6 +156,23 @@ namespace SaveOurShip2
 		public int EngineMass = 0;
 		public int MassSum => Mass + EngineMass;
 		public float MassActual => Mathf.Pow(MassSum, 1.2f) / 14;
+		public bool HasGravEngine = false;
+		private int fuelOptimizerCount = 0;
+		public int EffectiveFuelOptimizerCount
+        {
+            get
+            {
+				return Mathf.Min(fuelOptimizerCount, 2);
+            }
+        }
+		public float MassTakeoff
+        {
+            get
+            {
+				const float gravEnineMassMultiplier = 0.4f;
+				return HasGravEngine ? MassActual * gravEnineMassMultiplier : MassActual;
+			}
+        }
 		public float MaxTakeoff = 0;
 		public float ThrustRaw = 0;
 		public float ThrustRatio => 14 * ThrustRaw * 500f / Mathf.Pow(MassSum, 1.2f);
@@ -876,6 +893,14 @@ namespace SaveOurShip2
 				{
 					Mass += b.def.Size.x * b.def.Size.z * 3;
 				}
+				if (b.def == ResourceBank.ThingDefOf.GravEngine)
+                {
+					HasGravEngine = true;
+                }
+				if (b.def == ResourceBank.ThingDefOf.FuelOptimizer)
+				{
+					fuelOptimizerCount++;
+				}
 			}
 		}
 		public void RemoveFromCache(Building b, DestroyMode mode)
@@ -983,6 +1008,15 @@ namespace SaveOurShip2
 				if (!b.IsClearableFreeBuilding)
 				{
 					Mass -= b.def.Size.x * b.def.Size.z * 3;
+				}
+				// Only one should exist, so removal nmeans no grav engines left
+				if (b.def == ResourceBank.ThingDefOf.GravEngine)
+				{
+					HasGravEngine = false;
+				}
+				if (b.def == ResourceBank.ThingDefOf.FuelOptimizer)
+				{
+					fuelOptimizerCount--;
 				}
 			}
 		}

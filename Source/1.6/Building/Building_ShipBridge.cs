@@ -210,6 +210,7 @@ namespace SaveOurShip2
 						stringBuilder.AppendLine(TranslatorFormattedStringExtensions.Translate("SoS.StatsNotoriety", ShipInteriorMod2.WorldComp.PlayerFactionBounty));
 						stringBuilder.AppendLine();
 						stringBuilder.AppendLine(TranslatorFormattedStringExtensions.Translate("SoS.StatsShipMass", Ship.MassActual));
+						stringBuilder.AppendLine(TranslatorFormattedStringExtensions.Translate("SoS.StatsShipTakeoffMass", Ship.MassTakeoff));
 						//stringBuilder.AppendLine("bcount" + Ship.BuildingCount);
 						stringBuilder.AppendLine(TranslatorFormattedStringExtensions.Translate("SoS.StatsShipMaxTakeoff", Ship.MaxTakeoff));
 						stringBuilder.AppendLine(TranslatorFormattedStringExtensions.Translate("SoS.StatsShipEnergy", PowerComp.PowerNet.CurrentStoredEnergy(), capacity));

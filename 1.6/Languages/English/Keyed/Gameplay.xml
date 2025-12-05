@@ -155,6 +155,7 @@
 	<SoS.StatsShipName>Ship name: {0}</SoS.StatsShipName>
 	<SoS.StatsNotoriety>Notoriety: {0}</SoS.StatsNotoriety>
 	<SoS.StatsShipMass>Weight: {0}</SoS.StatsShipMass>
+	<SoS.StatsShipTakeoffMass>Takeoff weight: {0}</SoS.StatsShipTakeoffMass>
 	<SoS.StatsShipMaxTakeoff>Maximum takeoff weight: {0}</SoS.StatsShipMaxTakeoff>
 	<SoS.StatsShipEnergy>Stored power: {0} / {1} Wd</SoS.StatsShipEnergy>
 	<SoS.StatsShipHeat>Stored heat: {0} / {1} HU{2}</SoS.StatsShipHeat>
@@ -623,13 +624,17 @@ Are you sure you want to proceed?</SoS.Sensor.ConfimObserve>
 	<SoS.MechanitesDisassembling>Mechanites disassembling</SoS.MechanitesDisassembling>
 	<SoS.MechaniteSizeLower>Mechanite size: {0}</SoS.MechaniteSizeLower>
 
-	<!-- TranslatorFormattedStringExtensions.Translate -->
 	<!-- Locations/world objects -->
 	<SoS.Location.ObservedArea>Observed area {0}</SoS.Location.ObservedArea>
 	<SoS.Location.ShipFleet>Ship fleet {0}</SoS.Location.ShipFleet>
 	<!-- 0 is ship name, 1 is map ID -->
 	<SoS.Location.ShipNameAndMapID>{0} {1}</SoS.Location.ShipNameAndMapID>
 	<SoS.Location.WreckageNumbered>Wreckage nr. {0}</SoS.Location.WreckageNumbered>
+
+	<!-- Odyssey integration -->
+	<SoS.SoftIncompatibilityWithPlatingIsSubstructure>Using "Ship Hull Plating Is Gravship Substructure" mod is not recommended. Installing gravship buildings on spaceship is recommended instead.</SoS.SoftIncompatibilityWithPlatingIsSubstructure>
+	<SoS.Ody.GravEngineOnSpaceship>Reduces spaceship takeoff weight and makes launching faster.</SoS.Ody.GravEngineOnSpaceship>
+	<SoS.Ody.GravEngineCanBeInstalledOnSpaceship>Can be installed on a spaceship instead of a gravship.</SoS.Ody.GravEngineCanBeInstalledOnSpaceship>
 
 	<!-- Projectiles missing map-->
 	<SoS.ActorPlayer>Player</SoS.ActorPlayer>
