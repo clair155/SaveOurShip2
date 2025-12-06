@@ -55,6 +55,7 @@
 		</costList>
 		<recipeMaker>
 			<researchPrerequisite>ShipTorpedoes</researchPrerequisite>
+			<displayPriority>500</displayPriority>
 		</recipeMaker>
 	</ThingDef>
 	<ThingDef ParentName="BaseBullet">
@@ -127,6 +128,7 @@
 		</costList>
 		<recipeMaker>
 			<researchPrerequisite>ShipTorpedoes</researchPrerequisite>
+			<displayPriority>520</displayPriority>
 		</recipeMaker>
 	</ThingDef>
 	<ThingDef ParentName="BaseBullet">
@@ -200,6 +202,7 @@
 		</costList>
 		<recipeMaker>
 			<researchPrerequisite>ShipTorpedoes</researchPrerequisite>
+			<displayPriority>540</displayPriority>
 		</recipeMaker>
 	</ThingDef>
 	<ThingDef ParentName="BaseBullet">
@@ -258,6 +261,7 @@
 		<allowMixingIngredients>true</allowMixingIngredients>
 		<workAmount>6400</workAmount>
 		<targetCountAdjustment>20</targetCountAdjustment>
+		<displayPriority>510</displayPriority>
 		<ingredients>
 			<li>
 				<filter>
@@ -323,6 +327,7 @@
 		<allowMixingIngredients>true</allowMixingIngredients>
 		<workAmount>6400</workAmount>
 		<targetCountAdjustment>20</targetCountAdjustment>
+		<displayPriority>530</displayPriority>
 		<ingredients>
 			<li>
 				<filter>
@@ -388,6 +393,7 @@
 		<allowMixingIngredients>true</allowMixingIngredients>
 		<workAmount>6400</workAmount>
 		<targetCountAdjustment>20</targetCountAdjustment>
+		<displayPriority>550</displayPriority>
 		<ingredients>
 			<li>
 				<filter>
