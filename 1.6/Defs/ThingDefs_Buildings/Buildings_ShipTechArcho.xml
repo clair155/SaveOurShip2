@@ -61,10 +61,9 @@
 			<supportsWallAttachments>true</supportsWallAttachments>
 		</building>
 		<costList>
-			<Steel>13</Steel>
+			<Steel>6</Steel>
 			<Plasteel>4</Plasteel>
-			<ComponentIndustrial>1</ComponentIndustrial>
-			<Gold>10</Gold>
+			<Gold>5</Gold>
 		</costList>
 		<designationHotKey>Misc1</designationHotKey>
 		<designationCategory>Ship</designationCategory>
@@ -133,10 +132,9 @@
 			<supportsWallAttachments>true</supportsWallAttachments>
 		</building>
 		<costList>
-			<Steel>15</Steel>
+			<Steel>7</Steel>
 			<Plasteel>5</Plasteel>
-			<ComponentIndustrial>1</ComponentIndustrial>
-			<Gold>10</Gold>
+			<Gold>5</Gold>
 		</costList>
 		<designationHotKey>Misc1</designationHotKey>
 		<designationCategory>Ship</designationCategory>
@@ -172,9 +170,8 @@
 			<MaxHitPoints>1000</MaxHitPoints>
 		</statBases>
 		<costList>
-			<Steel>8</Steel>
 			<Plasteel>2</Plasteel>
-			<Gold>5</Gold>
+			<Gold>2</Gold>
 		</costList>
 	</ThingDef>
 	<ThingDef ParentName="ShipCornerArchotech">
@@ -187,9 +184,8 @@
 			<MaxHitPoints>1000</MaxHitPoints>
 		</statBases>
 		<costList>
-			<Steel>8</Steel>
 			<Plasteel>2</Plasteel>
-			<Gold>5</Gold>
+			<Gold>2</Gold>
 		</costList>
 	</ThingDef>
 	<ThingDef ParentName="ShipCornerArchotech">
@@ -203,9 +199,8 @@
 			<MaxHitPoints>1500</MaxHitPoints>
 		</statBases>
 		<costList>
-			<Steel>16</Steel>
 			<Plasteel>4</Plasteel>
-			<Gold>10</Gold>
+			<Gold>5</Gold>
 		</costList>
 		<size>(1,2)</size>
 	</ThingDef>
@@ -220,9 +215,8 @@
 			<MaxHitPoints>1500</MaxHitPoints>
 		</statBases>
 		<costList>
-			<Steel>16</Steel>
 			<Plasteel>4</Plasteel>
-			<Gold>10</Gold>
+			<Gold>5</Gold>
 		</costList>
 		<size>(1,2)</size>
 	</ThingDef>
@@ -237,9 +231,8 @@
 			<MaxHitPoints>2000</MaxHitPoints>
 		</statBases>
 		<costList>
-			<Steel>24</Steel>
 			<Plasteel>6</Plasteel>
-			<Gold>15</Gold>
+			<Gold>7</Gold>
 		</costList>
 		<size>(1,3)</size>
 	</ThingDef>
@@ -254,9 +247,8 @@
 			<MaxHitPoints>2000</MaxHitPoints>
 		</statBases>
 		<costList>
-			<Steel>24</Steel>
 			<Plasteel>6</Plasteel>
-			<Gold>15</Gold>
+			<Gold>7</Gold>
 		</costList>
 		<size>(1,3)</size>
 	</ThingDef>
@@ -297,10 +289,10 @@
 		</statBases>
 		<selectable>true</selectable>
 		<costList>
-			<Steel>150</Steel>
+			<Steel>50</Steel>
 			<Plasteel>25</Plasteel>
 			<Gold>25</Gold>
-			<ComponentSpacer>2</ComponentSpacer>
+			<ComponentSpacer>1</ComponentSpacer>
 		</costList>
 		<building>
 			<shipPart>true</shipPart>
@@ -387,10 +379,10 @@
 		</statBases>
 		<selectable>true</selectable>
 		<costList>
-			<Steel>30</Steel>
+			<Steel>15</Steel>
 			<Plasteel>5</Plasteel>
-			<ComponentIndustrial>2</ComponentIndustrial>
-			<Gold>10</Gold>
+			<ComponentIndustrial>1</ComponentIndustrial>
+			<Gold>5</Gold>
 		</costList>
 		<soundImpactDefault>BulletImpact_Metal</soundImpactDefault>
 		<resourcesFractionWhenDeconstructed>0.5</resourcesFractionWhenDeconstructed>
@@ -466,10 +458,10 @@
 		</graphicData>
 		<uiIconPath>Things/Building/Door/Autodoor_MenuIcon</uiIconPath>
 		<costList>
-			<Steel>40</Steel>
-			<ComponentSpacer>1</ComponentSpacer>
-			<Plasteel>25</Plasteel>
-			<Gold>50</Gold>
+			<Steel>20</Steel>
+			<ComponentIndustrial>3</ComponentIndustrial>
+			<Plasteel>15</Plasteel>
+			<Gold>25</Gold>
 		</costList>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
@@ -577,7 +569,7 @@
 		</statBases>
 		<description>Spaceworthy hull plating designed by an archotech.</description>
 		<costList>
-			<Steel>3</Steel>
+			<Steel>1</Steel>
 			<Plasteel>1</Plasteel>
 			<Gold>1</Gold>
 		</costList>
@@ -674,11 +666,11 @@
 			<shipPart>true</shipPart>
 		</building>
 		<costList>
-			<Steel>50</Steel>
-			<Plasteel>250</Plasteel>
-			<Gold>25</Gold>
-			<Uranium>50</Uranium>
-			<ComponentSpacer>24</ComponentSpacer>
+			<Steel>20</Steel>
+			<Plasteel>125</Plasteel>
+			<Gold>12</Gold>
+			<Uranium>25</Uranium>
+			<ComponentSpacer>12</ComponentSpacer>
 		</costList>
 		<designationHotKey>Misc5</designationHotKey>
 	</ThingDef>
@@ -719,10 +711,10 @@
 			<destroySound>BuildingDestroyed_Metal_Medium</destroySound>
 		</building>
 		<costList>
-			<Plasteel>300</Plasteel>
-			<Silver>200</Silver>
-			<Gold>200</Gold>
-			<ComponentSpacer>18</ComponentSpacer>
+			<Plasteel>225</Plasteel>
+			<Silver>150</Silver>
+			<Gold>150</Gold>
+			<ComponentSpacer>15</ComponentSpacer>
 		</costList>
 		<comps>
 			<li Class="CompProperties_Power">
@@ -798,10 +790,10 @@
 			<Beauty>-1</Beauty>
 		</statBases>
 		<costList>
-			<Steel>25</Steel>
-			<Plasteel>50</Plasteel>
-			<ComponentSpacer>4</ComponentSpacer>
-			<ArchotechExoticParticles>4</ArchotechExoticParticles>
+			<Steel>15</Steel>
+			<Plasteel>25</Plasteel>
+			<ComponentSpacer>2</ComponentSpacer>
+			<ArchotechExoticParticles>2</ArchotechExoticParticles>
 		</costList>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipHeat">
@@ -874,11 +866,11 @@
 			<li>ArchotechShields</li>
 		</researchPrerequisites>
 		<costList>
-			<Plasteel>150</Plasteel>
-			<Gold>400</Gold>
-			<Silver>400</Silver>
-			<ComponentSpacer>12</ComponentSpacer>
-			<ArchotechExoticParticles>12</ArchotechExoticParticles>
+			<Plasteel>75</Plasteel>
+			<Gold>200</Gold>
+			<Silver>200</Silver>
+			<ComponentSpacer>6</ComponentSpacer>
+			<ArchotechExoticParticles>6</ArchotechExoticParticles>
 		</costList>
 		<seeThroughFog>true</seeThroughFog>
         <modExtensions>
@@ -930,10 +922,10 @@
 			</buildingTags>
 		</building>
 		<costList>
-			<Gold>200</Gold>
-			<Plasteel>400</Plasteel>
-			<Uranium>150</Uranium>
-			<ComponentSpacer>20</ComponentSpacer>
+			<Gold>100</Gold>
+			<Plasteel>200</Plasteel>
+			<Uranium>75</Uranium>
+			<ComponentSpacer>10</ComponentSpacer>
 		</costList>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart"/>
@@ -1050,10 +1042,10 @@
 			<Flammability>0</Flammability>
 		</statBases>
 		<costList>
-			<Uranium>40</Uranium>
-			<Plasteel>250</Plasteel>
-			<Gold>100</Gold>
-			<ComponentSpacer>8</ComponentSpacer>
+			<Uranium>20</Uranium>
+			<Plasteel>125</Plasteel>
+			<Gold>50</Gold>
+			<ComponentSpacer>4</ComponentSpacer>
 		</costList>
 		<building>
 			<destroySound>BuildingDestroyed_Metal_Medium</destroySound>
@@ -1107,11 +1099,11 @@
 		<description>A complex and bizarre apparatus which serves no human-comprehensible purpose, but which will apparently advance the plans of your archotech spore in some way.\n\nThere is no benefit to building more than one copy of the same pillar.</description>
 		<size>(1,1)</size>
 		<costList>
-			<Gold>200</Gold>
-			<Uranium>100</Uranium>
-			<Plasteel>250</Plasteel>
-			<ComponentSpacer>20</ComponentSpacer>
-			<ArchotechExoticParticles>12</ArchotechExoticParticles>
+			<Gold>100</Gold>
+			<Uranium>50</Uranium>
+			<Plasteel>125</Plasteel>
+			<ComponentSpacer>10</ComponentSpacer>
+			<ArchotechExoticParticles>6</ArchotechExoticParticles>
 		</costList>
 		<comps>
 			<li Class="CompProperties_Facility">
@@ -1640,9 +1632,9 @@
 		<staticSunShadowHeight>0.20</staticSunShadowHeight>
 		<constructEffect>ConstructMetal</constructEffect>
 		<costList>
-			<Steel>120</Steel>
-			<Plasteel>80</Plasteel>
-			<ComponentSpacer>6</ComponentSpacer>
+			<Steel>60</Steel>
+			<Plasteel>40</Plasteel>
+			<ComponentSpacer>3</ComponentSpacer>
 			<ArchotechMechaniteCore>1</ArchotechMechaniteCore>
 		</costList>
 		<resourcesFractionWhenDeconstructed>1</resourcesFractionWhenDeconstructed>
