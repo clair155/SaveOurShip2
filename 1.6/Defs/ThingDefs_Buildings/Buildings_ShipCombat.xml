@@ -440,8 +440,8 @@
 			<Beauty>-2</Beauty>
 		</statBases>
 		<costList>
-			<Steel>100</Steel>
-			<Plasteel>25</Plasteel>
+			<Steel>80</Steel>
+			<Plasteel>20</Plasteel>
 			<ComponentIndustrial>1</ComponentIndustrial>
 		</costList>
 		<comps>
@@ -478,8 +478,8 @@
 			<Beauty>-2</Beauty>
 		</statBases>
 		<costList>
-			<Steel>500</Steel>
-			<Plasteel>125</Plasteel>
+			<Steel>400</Steel>
+			<Plasteel>100</Plasteel>
 			<ComponentIndustrial>5</ComponentIndustrial>
 		</costList>
 		<comps>
