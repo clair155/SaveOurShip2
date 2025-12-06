@@ -256,7 +256,7 @@
 		<effectWorking>Cook</effectWorking>
 		<soundWorking>Recipe_Machining</soundWorking>
 		<allowMixingIngredients>true</allowMixingIngredients>
-		<workAmount>64000</workAmount>
+		<workAmount>6400</workAmount>
 		<targetCountAdjustment>20</targetCountAdjustment>
 		<ingredients>
 			<li>
@@ -321,7 +321,7 @@
 		<effectWorking>Cook</effectWorking>
 		<soundWorking>Recipe_Machining</soundWorking>
 		<allowMixingIngredients>true</allowMixingIngredients>
-		<workAmount>64000</workAmount>
+		<workAmount>6400</workAmount>
 		<targetCountAdjustment>20</targetCountAdjustment>
 		<ingredients>
 			<li>
@@ -386,7 +386,7 @@
 		<effectWorking>Cook</effectWorking>
 		<soundWorking>Recipe_Machining</soundWorking>
 		<allowMixingIngredients>true</allowMixingIngredients>
-		<workAmount>64000</workAmount>
+		<workAmount>6400</workAmount>
 		<targetCountAdjustment>20</targetCountAdjustment>
 		<ingredients>
 			<li>
