@@ -139,6 +139,9 @@ namespace SaveOurShip2
 		public const float altitudeNominal = 1000f; //nominal altitude for ship map background render
 		public const float altitudeLand = 110f; //min altitude for ship map background render
 		public const float crittersleepBodySize = 0.7f;
+		// Critterslep casket with less slots allowed to hold large anoimals (5 is Alpha Thrumbo body size)
+		// because it is not viable to add separate building with ggraphical asset just for large animals.
+		public const float crittersleepLargeBodySize = 5f;
 		public const float pctFuelLocal = 0.0f;
 		public const float pctFuelMap = 0.05f;
 		public const float pctFuelTakeoff = 0.35f; //check is 1 since we dont want ships to crash right after takeoff

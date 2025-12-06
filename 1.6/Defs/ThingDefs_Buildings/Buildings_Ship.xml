@@ -2655,7 +2655,7 @@
 	</ThingDef>
 	<ThingDef ParentName="BuildingBase">
 		<defName>CrittersleepCasket</defName>
-		<label>crittersleep caskets (8)</label>
+		<label>crittersleep caskets (4)</label>
 		<designatorDropdown>Ship_Cryptos</designatorDropdown>
 		<thingClass>Building_CryptosleepCasket</thingClass>
 		<graphicData>
@@ -2679,7 +2679,7 @@
 			<Flammability>0</Flammability>
 		</statBases>
 		<tickerType>Normal</tickerType>
-		<description>An array of self-powered sarcophagi capable of keeping up to eight small animals in stasis. Animals should be medically anesthetized before being placed into cryptosleep.</description>
+		<description>An array of self-powered sarcophagi capable of keeping up to four large animals in stasis. Animals should be medically anesthetized before being placed into cryptosleep. Animals with body size up to 5 such as Alpha Thrumbo can fit in this casket.</description>
 		<size>(2,1)</size>
 		<designationCategory>Ship</designationCategory>
 		<hasInteractionCell>true</hasInteractionCell>
@@ -2730,7 +2730,7 @@
 			<Flammability>0</Flammability>
 		</statBases>
 		<tickerType>Normal</tickerType>
-		<description>A large array of self-powered sarcophagi capable of keeping up to thirty-two small animals in stasis. Animals should be medically anesthetized before being placed into cryptosleep.</description>
+		<description>A large array of self-powered sarcophagi capable of keeping up to thirty-two small animals in stasis. Animals should be medically anesthetized before being placed into cryptosleep. Animals with body size up to 0.7 such as gazelles can fit in this casket.</description>
 		<size>(3,2)</size>
 		<designationCategory>Ship</designationCategory>
 		<hasInteractionCell>true</hasInteractionCell>
