@@ -8,6 +8,7 @@
 		<recipeMaker>
 			<unfinishedThingDef>UnfinishedTechArmor</unfinishedThingDef>
 			<researchPrerequisite>ShipSpaceSuits</researchPrerequisite>
+			<displayPriority>420</displayPriority>
 			<recipeUsers Inherit="False">
 				<li>FabricationBench</li>
 			</recipeUsers>
@@ -87,6 +88,7 @@
 		<recipeMaker>
 			<unfinishedThingDef>UnfinishedTechArmor</unfinishedThingDef>
 			<researchPrerequisite>ShipSpaceSuits</researchPrerequisite>
+			<displayPriority>430</displayPriority>
 			<recipeUsers Inherit="False">
 				<li>FabricationBench</li>
 			</recipeUsers>
@@ -168,6 +170,7 @@
 		<recipeMaker>
 			<unfinishedThingDef>UnfinishedTechArmor</unfinishedThingDef>
 			<researchPrerequisite>ShipSpaceSuits</researchPrerequisite>
+			<displayPriority>440</displayPriority>
 			<recipeUsers Inherit="False">
 				<li>FabricationBench</li>
 			</recipeUsers>
@@ -234,6 +237,7 @@
 		<recipeMaker>
 			<unfinishedThingDef>UnfinishedTechArmor</unfinishedThingDef>
 			<researchPrerequisite>ShipSpaceSuits</researchPrerequisite>
+			<displayPriority>450</displayPriority>
 			<recipeUsers Inherit="False">
 				<li>FabricationBench</li>
 			</recipeUsers>
@@ -302,6 +306,7 @@
 		<recipeMaker>
 			<unfinishedThingDef>UnfinishedTechArmor</unfinishedThingDef>
 			<researchPrerequisite>ShipSpaceSuitsHeavy</researchPrerequisite>
+			<displayPriority>460</displayPriority>
 			<skillRequirements>
 				<Crafting>11</Crafting>
 			</skillRequirements>
@@ -402,6 +407,7 @@
 		<recipeMaker>
 			<unfinishedThingDef>UnfinishedTechArmor</unfinishedThingDef>
 			<researchPrerequisite>ShipSpaceSuitsHeavy</researchPrerequisite>
+			<displayPriority>470</displayPriority>
 			<skillRequirements>
 				<Crafting>11</Crafting>
 			</skillRequirements>
@@ -475,6 +481,7 @@
 		<recipeMaker>
 			<unfinishedThingDef>UnfinishedTechArmor</unfinishedThingDef>
 			<researchPrerequisite>ShipSpaceSuitsHeavy</researchPrerequisite>
+			<displayPriority>480</displayPriority>
 			<skillRequirements>
 				<Crafting>11</Crafting>
 			</skillRequirements>
@@ -558,6 +565,7 @@
 		<recipeMaker>
 			<unfinishedThingDef>UnfinishedTechArmor</unfinishedThingDef>
 			<researchPrerequisite>ShipSpaceSuitsHeavy</researchPrerequisite>
+			<displayPriority>490</displayPriority>
 			<skillRequirements>
 				<Crafting>11</Crafting>
 			</skillRequirements>
