@@ -2689,8 +2689,9 @@
 			<ai_chillDestination>false</ai_chillDestination>
 		</building>
 		<costList>
-			<Plasteel>20</Plasteel>
+			<Steel>150</Steel>
 			<Uranium>5</Uranium>
+			<ComponentIndustrial>2</ComponentIndustrial>
 			<ComponentSpacer>1</ComponentSpacer>
 		</costList>
 		<comps>
@@ -2739,8 +2740,9 @@
 			<ai_chillDestination>false</ai_chillDestination>
 		</building>
 		<costList>
-			<Plasteel>40</Plasteel>
+			<Steel>300</Steel>
 			<Uranium>20</Uranium>
+			<ComponentIndustrial>2</ComponentIndustrial>
 			<ComponentSpacer>4</ComponentSpacer>
 		</costList>
 		<comps>
