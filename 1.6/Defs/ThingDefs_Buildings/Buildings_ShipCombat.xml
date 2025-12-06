@@ -130,10 +130,10 @@
 			<li>ShipShields</li>
 		</researchPrerequisites>
 		<costList>
-			<Plasteel>120</Plasteel>
-			<Silver>800</Silver>
-			<Steel>40</Steel>
-			<ComponentSpacer>12</ComponentSpacer>
+			<Plasteel>60</Plasteel>
+			<Silver>400</Silver>
+			<Steel>20</Steel>
+			<ComponentSpacer>6</ComponentSpacer>
 		</costList>
 		<seeThroughFog>true</seeThroughFog>
         <modExtensions>
@@ -191,10 +191,10 @@
 			<li>ShipShields</li>
 		</researchPrerequisites>
 		<costList>
-			<Plasteel>30</Plasteel>
-			<Silver>200</Silver>
+			<Plasteel>20</Plasteel>
+			<Silver>150</Silver>
 			<Steel>10</Steel>
-			<ComponentSpacer>4</ComponentSpacer>
+			<ComponentSpacer>3</ComponentSpacer>
 		</costList>
 		<seeThroughFog>true</seeThroughFog>
         <modExtensions>
