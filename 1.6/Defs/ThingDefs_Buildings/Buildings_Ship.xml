@@ -2742,8 +2742,8 @@
 		<costList>
 			<Steel>300</Steel>
 			<Uranium>20</Uranium>
-			<ComponentIndustrial>2</ComponentIndustrial>
-			<ComponentSpacer>4</ComponentSpacer>
+			<ComponentIndustrial>4</ComponentIndustrial>
+			<ComponentSpacer>2</ComponentSpacer>
 		</costList>
 		<comps>
 			<li Class="CompProperties_Explosive">
