@@ -345,7 +345,7 @@
 		<seeThroughFog>true</seeThroughFog>
 		<costList>
 			<Steel>60</Steel>
-			<Plasteel>15</Plasteel>
+			<Plasteel>10</Plasteel>
 			<ComponentSpacer>2</ComponentSpacer>
 		</costList>
 		<comps>
@@ -395,7 +395,7 @@
 		<seeThroughFog>true</seeThroughFog>
 		<costList>
 			<Steel>300</Steel>
-			<Plasteel>75</Plasteel>
+			<Plasteel>50</Plasteel>
 			<ComponentSpacer>10</ComponentSpacer>
 		</costList>
 		<comps>
