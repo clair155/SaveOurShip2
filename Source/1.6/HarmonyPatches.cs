@@ -2659,7 +2659,7 @@ namespace SaveOurShip2
 		{
 			var innerContainer = ((Building_Casket)x).innerContainer;
 			return (x.def == ResourceBank.ThingDefOf.CrittersleepCasket
-				&& p.BodySize <= ShipInteriorMod2.crittersleepBodySize && innerContainer.Count < 8)
+				&& p.BodySize <= ShipInteriorMod2.crittersleepLargeBodySize && innerContainer.Count < 4)
 				|| (x.def == ResourceBank.ThingDefOf.CrittersleepCasketLarge
 				&& p.BodySize <= ShipInteriorMod2.crittersleepBodySize && innerContainer.Count < 32);
 		}
