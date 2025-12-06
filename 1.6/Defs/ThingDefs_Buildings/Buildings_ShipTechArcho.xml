@@ -1198,9 +1198,9 @@
 			<RangedWeapon_DamageMultiplier>1.01</RangedWeapon_DamageMultiplier>
 		</statBases>
 		<costList>
-			<Steel>120</Steel>
-			<Plasteel>120</Plasteel>
-			<ComponentSpacer>4</ComponentSpacer>
+			<Steel>240</Steel>
+			<Plasteel>240</Plasteel>
+			<ComponentSpacer>8</ComponentSpacer>
 			<ArchotechPsychicCore>1</ArchotechPsychicCore>
 		</costList>
 		<resourcesFractionWhenDeconstructed>1</resourcesFractionWhenDeconstructed>
@@ -1345,9 +1345,9 @@
 			<RangedWeapon_DamageMultiplier>1.01</RangedWeapon_DamageMultiplier>
 		</statBases>
 		<costList>
-			<Steel>120</Steel>
-			<Plasteel>120</Plasteel>
-			<ComponentSpacer>4</ComponentSpacer>
+			<Steel>240</Steel>
+			<Plasteel>240</Plasteel>
+			<ComponentSpacer>8</ComponentSpacer>
 			<ArchotechMechaniteCore>1</ArchotechMechaniteCore>
 		</costList>
 		<resourcesFractionWhenDeconstructed>1</resourcesFractionWhenDeconstructed>
