@@ -344,8 +344,9 @@
 		<passability>Impassable</passability>
 		<seeThroughFog>true</seeThroughFog>
 		<costList>
-			<Steel>50</Steel>
-			<ComponentIndustrial>1</ComponentIndustrial>
+			<Steel>60</Steel>
+			<Plasteel>15</Plasteel>
+			<ComponentSpacer>2</ComponentSpacer>
 		</costList>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipHeat">
@@ -393,8 +394,9 @@
 		<passability>Impassable</passability>
 		<seeThroughFog>true</seeThroughFog>
 		<costList>
-			<Steel>250</Steel>
-			<ComponentIndustrial>5</ComponentIndustrial>
+			<Steel>300</Steel>
+			<Plasteel>75</Plasteel>
+			<ComponentSpacer>10</ComponentSpacer>
 		</costList>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipHeat">
@@ -438,7 +440,8 @@
 			<Beauty>-2</Beauty>
 		</statBases>
 		<costList>
-			<Plasteel>25</Plasteel>
+			<Steel>80</Steel>
+			<Plasteel>20</Plasteel>
 			<ComponentIndustrial>1</ComponentIndustrial>
 		</costList>
 		<comps>
@@ -475,8 +478,9 @@
 			<Beauty>-2</Beauty>
 		</statBases>
 		<costList>
-			<Plasteel>60</Plasteel>
-			<ComponentIndustrial>3</ComponentIndustrial>
+			<Steel>400</Steel>
+			<Plasteel>100</Plasteel>
+			<ComponentIndustrial>5</ComponentIndustrial>
 		</costList>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipHeat">
