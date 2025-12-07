@@ -594,7 +594,7 @@
 		<selectable>false</selectable>
 		<neverMultiSelect>true</neverMultiSelect>
 		<soundImpactDefault>BulletImpact_Metal</soundImpactDefault>
-		<terrainAffordanceNeeded>Heavy</terrainAffordanceNeeded>
+		<terrainAffordanceNeeded IsNull="True" />
 		<constructEffect>ConstructMetal</constructEffect>
 		<designationHotKey>Misc1</designationHotKey>
 		<fillPercent>0.0</fillPercent>

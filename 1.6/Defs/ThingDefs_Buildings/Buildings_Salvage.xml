@@ -177,7 +177,7 @@
 		<selectable>false</selectable>
 		<neverMultiSelect>true</neverMultiSelect>
 		<soundImpactDefault>BulletImpact_Metal</soundImpactDefault>
-		<terrainAffordanceNeeded>Heavy</terrainAffordanceNeeded>
+		<terrainAffordanceNeeded IsNull="True" />
 		<constructEffect>ConstructMetal</constructEffect>
 		<fillPercent>0.0</fillPercent>
 		<leaveResourcesWhenKilled>false</leaveResourcesWhenKilled>
