@@ -4558,9 +4558,24 @@ namespace SaveOurShip2
 	[HarmonyPatch(typeof(CompLaunchable), "CompGetGizmosExtra")]
 	public static class CannotControlEnemyPods
 	{
-		public static void Postfix(CompTempControl __instance, ref IEnumerable<Gizmo> __result)
+		public static bool IsEnemyTransportPod(ThingWithComps thing)
+        {
+			Faction faction = thing.Faction;
+			return faction != Faction.OfPlayer && faction != null && thing.def == ThingDefOf.TransportPod;
+		}
+		public static void Postfix(CompLaunchable __instance, ref IEnumerable<Gizmo> __result)
 		{
-			if (__instance.parent.Faction != Faction.OfPlayer)
+			if (IsEnemyTransportPod(__instance.parent))
+				__result = new List<Gizmo>();
+		}
+	}
+
+	[HarmonyPatch(typeof(CompTransporter), "CompGetGizmosExtra")]
+	public static class CannotControlEnemyPodsB
+	{
+		public static void Postfix(CompTransporter __instance, ref IEnumerable<Gizmo> __result)
+		{
+			if (CannotControlEnemyPods.IsEnemyTransportPod(__instance.parent))
 				__result = new List<Gizmo>();
 		}
 	}
@@ -4587,16 +4602,6 @@ namespace SaveOurShip2
 					__result = false;
 				}
 			}
-		}
-	}
-
-	[HarmonyPatch(typeof(CompTransporter), "CompGetGizmosExtra")]
-	public static class CannotControlEnemyPodsB
-	{
-		public static void Postfix(CompTempControl __instance, ref IEnumerable<Gizmo> __result)
-		{
-			if (__instance.parent.Faction != Faction.OfPlayer)
-				__result = new List<Gizmo>();
 		}
 	}
 
