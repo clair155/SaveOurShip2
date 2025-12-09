@@ -1027,6 +1027,23 @@ namespace SaveOurShip2
 			}
 			PostGenerateShipDef(map, clearArea, area, planters);
 		}
+
+		private static void ReplaceMissingDLCDef(string partName, ref ThingDef def)
+        {
+			// When DLC is disabled, even their defs are null, so should compare against strings here
+			if (!ModsConfig.RoyaltyActive && (partName == "Throne" || partName == "GrandThrone"))
+			{
+				def = DefDatabase<ThingDef>.GetNamed("Armchair");
+			}
+			if (!ModsConfig.OdysseyActive)
+            {
+				// For Odyssey the idea is to replace certain buildings, skipping others
+				if (partName == ResourceBank.GravshipBuildingNames.FuelOptimizer)
+                {
+					def = DefDatabase<ThingDef>.GetNamed("InfiniteChemreactor");
+				}
+            }
+		}
 		public static void GenerateShipDef(ShipDef shipDef, Map map, PassingShip passingShip, Faction fac, Lord lord, out List<Building> cores, out List<IntVec3> cellsToFog, out List<Thing> planters, bool shipActive = true, bool clearArea = false, int wreckLevel = 0, int offsetX = -1, int offsetZ = -1, NavyDef navyDef = null)
 		{
 			cellsToFog = new List<IntVec3>();
@@ -1175,58 +1192,64 @@ namespace SaveOurShip2
 							vehicle.ignition.Drafted = false;
 						}
 					}
-					else if (DefDatabase<ThingDef>.GetNamedSilentFail(shape.shapeOrDef) != null)
+					// Some Odyssey buildings are subject to replace when Odysse is not available and their defs are null
+					else if (DefDatabase<ThingDef>.GetNamedSilentFail(shape.shapeOrDef) != null ||
+						ResourceBank.GravshipBuildingNames.AllNames.Contains(shape.shapeOrDef))
 					{
 						bool wreckReplace = false;
 						Thing thing = null;
-						ThingDef def = ThingDef.Named(shape.shapeOrDef);
-						if (def == ResourceBank.ThingDefOf.Ship_DamagedReactor || def == ResourceBank.ThingDefOf.BlackBoxAI)
-							exclusionZones.Add(adjPos);
-						//def replacers
-						if (def.IsBuildingArtificial)
-						{
-							if (wreckLevel > 2 && wreckDictionary.ContainsKey(def)) //replace ship walls/floor
-							{
-								def = wreckDictionary[def];
-								wreckReplace = true;
-							}
-							else if (!unlockedJT && def.HasComp(typeof(CompEngineTrail))) //replace JT drives if not unlocked via story
-							{
-								if (def == ResourceBank.ThingDefOf.Ship_Engine_Interplanetary)
-									def = ResourceBank.ThingDefOf.Ship_Engine;
-								else if (def == ResourceBank.ThingDefOf.Ship_Engine_Interplanetary_Large)
-									def = ResourceBank.ThingDefOf.Ship_Engine_Large;
-							}
-							else if (isMechs && def.building.IsTurret) //replace turets with mech version if ROY active
-							{
-								if (def == ThingDefOf.Turret_MiniTurret)
-									def = ThingDefOf.Turret_AutoMiniTurret;
-								else if (def == ResourceBank.ThingDefOf.Turret_Autocannon)
-									def = DefDatabase<ThingDef>.GetNamed("Turret_AutoChargeBlaster");
-								else if (def == ResourceBank.ThingDefOf.Turret_Sniper)
-									def = DefDatabase<ThingDef>.GetNamed("Turret_AutoInferno");
-							}
-							// When Royaly is disabled, even their defs are null, so should compare against explicitly specified strings here
-							else if (!royActive && (def.defName == "Throne" || def.defName == "GrandThrone"))
-							{
-								def = DefDatabase<ThingDef>.GetNamed("Armchair");
-							}
+						ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(shape.shapeOrDef);
+						if (def == null)
+                        {
+							ReplaceMissingDLCDef(shape.shapeOrDef, ref def);
 						}
-						//make thing
-						if (def.MadeFromStuff)
+						if (def != null)
 						{
-							if (shape.stuff != null)
-								thing = ThingMaker.MakeThing(def, ThingDef.Named(shape.stuff));
-							else
-								thing = ThingMaker.MakeThing(def, GenStuff.DefaultStuffFor(def));
-						}
-						else
-							thing = ThingMaker.MakeThing(def);
+							if (def == ResourceBank.ThingDefOf.Ship_DamagedReactor || def == ResourceBank.ThingDefOf.BlackBoxAI)
+							{
+								exclusionZones.Add(adjPos);
+							}
+							//def replacers
+							if (def.IsBuildingArtificial)
+							{
+								if (wreckLevel > 2 && wreckDictionary.ContainsKey(def)) //replace ship walls/floor
+								{
+									def = wreckDictionary[def];
+									wreckReplace = true;
+								}
+								else if (!unlockedJT && def.HasComp(typeof(CompEngineTrail))) //replace JT drives if not unlocked via story
+								{
+									if (def == ResourceBank.ThingDefOf.Ship_Engine_Interplanetary)
+										def = ResourceBank.ThingDefOf.Ship_Engine;
+									else if (def == ResourceBank.ThingDefOf.Ship_Engine_Interplanetary_Large)
+										def = ResourceBank.ThingDefOf.Ship_Engine_Large;
+								}
+								else if (isMechs && def.building.IsTurret) //replace turets with mech version if ROY active
+								{
+									if (def == ThingDefOf.Turret_MiniTurret)
+										def = ThingDefOf.Turret_AutoMiniTurret;
+									else if (def == ResourceBank.ThingDefOf.Turret_Autocannon)
+										def = DefDatabase<ThingDef>.GetNamed("Turret_AutoChargeBlaster");
+									else if (def == ResourceBank.ThingDefOf.Turret_Sniper)
+										def = DefDatabase<ThingDef>.GetNamed("Turret_AutoInferno");
+								}
+							}
 
-						//spawn thing
-						GenSpawn.Spawn(thing, adjPos, map, shape.rot);
-						//post spawn
-						thing.TryGetComp<CompQuality>()?.SetQuality(QualityUtility.GenerateQualityBaseGen(), ArtGenerationContext.Outsider);
+							//make thing
+							if (def.MadeFromStuff)
+							{
+								if (shape.stuff != null)
+									thing = ThingMaker.MakeThing(def, ThingDef.Named(shape.stuff));
+								else
+									thing = ThingMaker.MakeThing(def, GenStuff.DefaultStuffFor(def));
+							}
+							else
+								thing = ThingMaker.MakeThing(def);
+							//spawn thing
+							GenSpawn.Spawn(thing, adjPos, map, shape.rot);
+							//post spawn
+							thing.TryGetComp<CompQuality>()?.SetQuality(QualityUtility.GenerateQualityBaseGen(), ArtGenerationContext.Outsider);
+						}
 						if (thing is Building b)
 						{
 							var glowerComp = thing.TryGetComp<CompGlower>();
@@ -1403,7 +1426,7 @@ namespace SaveOurShip2
 								}
 							}
 						}
-						else
+						else if (thing != null)
 						{
 							if (thing.def.stackLimit > 1)
 							{
