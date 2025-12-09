@@ -162,6 +162,21 @@ namespace SaveOurShip2
 			public static ThingDef LargeChemfuelTank;
 		}
 
+		// Base game makes Defs from missing DLCs null so can't even use names, have to declare them separately:
+		public static class GravshipBuildingNames
+        {
+			public static string GravcorePowerCell = "GravcorePowerCell";
+			public static string PilotSubpersonaCore = "PilotSubpersonaCore";
+			public static string GravEngine = "GravEngine";
+			public static string GravshipShieldGenerator = "GravshipShieldGenerator";
+			public static string SignalJammer = "SignalJammer";
+			public static string FuelOptimizer = "FuelOptimizer";
+			public static string ChemfuelTank = "ChemfuelTank";
+			public static string LargeChemfuelTank = "LargeChemfuelTank";
+			public static readonly string[] AllNames = { GravcorePowerCell , PilotSubpersonaCore, GravEngine, GravshipShieldGenerator, SignalJammer ,
+				FuelOptimizer, ChemfuelTank, LargeChemfuelTank};
+		}
+
 		[DefOf]
 		public static class TerrainDefOf
 		{
