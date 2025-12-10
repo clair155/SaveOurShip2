@@ -2224,6 +2224,8 @@ namespace SaveOurShip2
 			List<Room> roomsToTemp = new List<Room>();
 			List<IntVec3> fogToCopy = new List<IntVec3>();
 			List<Tuple<IntVec3, float>> posTemp = new List<Tuple<IntVec3, float>>();
+			// Points in sealed rooms to protect from Odyssey vacuum
+			List<IntVec3> sealedLocations = new List<IntVec3>();
 			List<Tuple<IntVec3, TerrainDef, ColorDef>> terrainToCopy = new List<Tuple<IntVec3, TerrainDef, ColorDef>>();
 			List<Tuple<IntVec3, RoofDef>> roofToCopy = new List<Tuple<IntVec3, RoofDef>>();
 			List<IntVec3> fireExplosions = new List<IntVec3>();
@@ -2335,6 +2337,10 @@ namespace SaveOurShip2
 					roomsToTemp.Add(room);
 					float temp = room.Temperature;
 					posTemp.Add(new Tuple<IntVec3, float>(adjustedPos, temp));
+					if (!ExposedToOutside(room))
+					{
+						sealedLocations.Add(adjustedPos);
+					}
 				}
 				//add to target area and ship
 				targetArea.Add(adjustedPos);
@@ -2877,6 +2883,15 @@ namespace SaveOurShip2
 				Room room = t.Item1.GetRoom(targetMap);
 				room.Temperature = t.Item2;
 			}
+
+			if (targetMap.Biome.inVacuum)
+            {
+				foreach(IntVec3 vec in sealedLocations)
+				{
+					Room room = vec.GetRoom(targetMap);
+					room.Vacuum = 0f;
+                }
+            }
 
 			//landing - remove space map if no pawns or cores
 			if (!targetMapIsSpace && !sourceMap.spawnedThings.Any((Thing t) => (t is Pawn || (t is Building_ShipBridge b && b.mannableComp == null)) && !t.Destroyed))
@@ -3462,6 +3477,7 @@ namespace SaveOurShip2
 		{
 			return pawn.health.hediffSet.GetFirstHediff<HediffPawnIsHologram>() != null;
 		}
+		public static float SpaceTemperature = -100f;
 		public static bool ExposedToOutside(Room room)
 		{
 			return room == null || room.OpenRoofCount > 0 || room.TouchesMapEdge;
