@@ -5947,6 +5947,15 @@ namespace SaveOurShip2
 		}
 	}
 
+	[HarmonyPatch(typeof(VacuumComponent), "MergeRoomsIntoGroups")]
+	public static class UpdateRoomsOnGravshipTakeoff
+	{
+		public static void Prefix(VacuumComponent __instance)
+		{
+			__instance.map.regionAndRoomUpdater.TryRebuildDirtyRegionsAndRooms();
+		}
+	}
+
 	/*[HarmonyPatch(typeof(ActiveDropPod),"PodOpen")]
 	public static class ActivePodFix{
 		public static bool Prefix (ref ActiveDropPod __instance)
