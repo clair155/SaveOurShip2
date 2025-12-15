@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
+using System.Diagnostics;
 using RimWorld;
 using RimWorld.Planet;
 using Verse;
@@ -5852,6 +5853,12 @@ namespace SaveOurShip2
 	// while Odyssey oxygen pumps being attached to the wall, but located in the room.
 	public static class GetRoomForShipVent
 	{
+		public static bool Prefix(CompOxygenPusher __instance)
+        {
+			// Room for oxyden pusher belonging to ship vent can be null if that vent exhaust is blocked by impassable building
+			return GetRoomFixed(__instance.parent) != null;
+
+        }
 		static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
 		{
 			MethodInfo originalGetRoom =
