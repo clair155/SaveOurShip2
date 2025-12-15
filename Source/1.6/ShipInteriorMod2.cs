@@ -1028,8 +1028,18 @@ namespace SaveOurShip2
 			PostGenerateShipDef(map, clearArea, area, planters);
 		}
 
+		private static Dictionary<string, string> odysseyPartsReplacements = null;
 		private static void ReplaceMissingDLCDef(string partName, ref ThingDef def)
         {
+			if (odysseyPartsReplacements == null)
+            {
+				odysseyPartsReplacements = new Dictionary<string, string>
+					{
+						{ ResourceBank.GravshipBuildingNames.FuelOptimizer, "InfiniteChemreactor" },
+						{ ResourceBank.GravshipBuildingNames.GravcorePowerCell, ThingDefOf.Ship_SensorCluster.defName },
+						{ ResourceBank.GravshipBuildingNames.PilotSubpersonaCore, ThingDefOf.Ship_SensorCluster.defName },
+					};
+			}
 			// When DLC is disabled, even their defs are null, so should compare against strings here
 			if (!ModsConfig.RoyaltyActive && (partName == "Throne" || partName == "GrandThrone"))
 			{
@@ -1037,10 +1047,10 @@ namespace SaveOurShip2
 			}
 			if (!ModsConfig.OdysseyActive)
             {
-				// For Odyssey the idea is to replace certain buildings, skipping others
-				if (partName == ResourceBank.GravshipBuildingNames.FuelOptimizer)
+				// For Odyssey the idea is to replace with non-Odyssey buildings with the same size
+				if (odysseyPartsReplacements.ContainsKey(partName))
                 {
-					def = DefDatabase<ThingDef>.GetNamed("InfiniteChemreactor");
+					def = DefDatabase<ThingDef>.GetNamed(odysseyPartsReplacements[partName]);
 				}
             }
 		}
