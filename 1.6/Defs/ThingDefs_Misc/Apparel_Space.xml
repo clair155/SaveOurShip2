@@ -44,7 +44,7 @@
 		</stuffCategories>
 		<costStuffCount>60</costStuffCount>
 		<costList>
-			<ComponentSpacer>2</ComponentSpacer>
+			<ComponentIndustrial>5</ComponentIndustrial>
 			<Plasteel>20</Plasteel>
 		</costList>
 		<generateCommonality>2</generateCommonality>
@@ -124,7 +124,7 @@
 		</stuffCategories>
 		<costStuffCount>30</costStuffCount>
 		<costList>
-			<ComponentSpacer>1</ComponentSpacer>
+			<ComponentIndustrial>2</ComponentIndustrial>
 			<Plasteel>10</Plasteel>
 		</costList>
 		<generateCommonality>2</generateCommonality>
@@ -203,7 +203,7 @@
 			<li>ArmorHeadgear</li>
 		</thingCategories>
 		<costList>
-			<ComponentSpacer>1</ComponentSpacer>
+			<ComponentIndustrial>3</ComponentIndustrial>
 			<Plasteel>15</Plasteel>
 			<Gold>1</Gold>
 		</costList>
@@ -270,7 +270,7 @@
 			<li>ArmorHeadgear</li>
 		</thingCategories>
 		<costList>
-			<ComponentSpacer>1</ComponentSpacer>
+			<ComponentIndustrial>2</ComponentIndustrial>
 			<Plasteel>5</Plasteel>
 			<Gold>1</Gold>
 		</costList>
@@ -341,7 +341,7 @@
 			<li>ApparelArmor</li>
 		</thingCategories>
 		<costList>
-			<ComponentSpacer>6</ComponentSpacer>
+			<ComponentSpacer>5</ComponentSpacer>
 			<Plasteel>100</Plasteel>
 			<Uranium>20</Uranium>
 		</costList>
@@ -442,7 +442,7 @@
 			<VacuumResistance MayRequire="Ludeon.RimWorld.Odyssey">0.7</VacuumResistance>
 		</equippedStatOffsets>
 		<costList>
-			<ComponentSpacer>2</ComponentSpacer>
+			<ComponentSpacer>1</ComponentSpacer>
 			<Plasteel>45</Plasteel>
 			<Gold>2</Gold>
 		</costList>
