@@ -95,7 +95,8 @@ namespace SaveOurShip2
 			//enemy pawns can pass through their doors if outside or with EVA when player is present
 			if (p.Map.IsSpace() && p.Faction != Faction.OfPlayer && Outerdoor())
 			{
-				if (!(ShipInteriorMod2.ExposedToOutside(p.GetRoom()) || (p.CanSurviveVacuum() && (mapComp.ShipMapState != ShipMapState.inCombat || p.Map.mapPawns.AnyColonistSpawned)) || p.CurJobDef == ResourceBank.JobDefOf.FleeVacuum))
+				bool colonistPresent = p.Map.mapPawns.AllPawnsSpawned.Any(pawn => pawn.Faction == Faction.OfPlayer);
+				if (!(ShipInteriorMod2.ExposedToOutside(p.GetRoom()) || (p.CanSurviveVacuum() && (mapComp.ShipMapState != ShipMapState.inCombat || colonistPresent)) || p.CurJobDef == ResourceBank.JobDefOf.FleeVacuum))
 					return false;
 			}
 			Lord lord = p.GetLord();
