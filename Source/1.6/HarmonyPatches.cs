@@ -5947,6 +5947,30 @@ namespace SaveOurShip2
 		}
 	}
 
+	[HarmonyPatch(typeof(VacuumComponent), "MergeRoomsIntoGroups")]
+	public static class UpdateRoomsOnGravshipTakeoff
+	{
+		public static void Prefix(VacuumComponent __instance)
+		{
+			__instance.map.regionAndRoomUpdater.TryRebuildDirtyRegionsAndRooms();
+		}
+	}
+
+	[HarmonyPatch(typeof(PlanetLayer), "ApproxDistanceInTiles", new Type[] { typeof(PlanetTile), typeof(PlanetTile) })]
+	public static class DistanceBetweendifferentLayersFix
+	{
+		public static bool Prefix(PlanetTile tileA, PlanetTile tileB, ref float __result)
+		{
+			const float approximateDistanceBetweenLayers = 1000f;
+			// Base game just doesn't check this and gives out of range errors
+			if (tileA.Layer != tileB.Layer)
+            {
+				__result = approximateDistanceBetweenLayers;
+				return false;
+            }
+			return true;
+		}
+	}
 	/*[HarmonyPatch(typeof(ActiveDropPod),"PodOpen")]
 	public static class ActivePodFix{
 		public static bool Prefix (ref ActiveDropPod __instance)
