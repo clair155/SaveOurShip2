@@ -692,14 +692,15 @@ namespace SaveOurShip2
 		public override string GetInspectString()
 		{
 			StringBuilder stringBuilder = new StringBuilder();
+			// That is the most important line, if can't fire, all energy costs etc don't matter
+			if (!ConnectedToBridge)
+			{
+				stringBuilder.AppendLine(TranslatorFormattedStringExtensions.Translate("SoS.TurretNotConnected"));
+			}
 			string inspectString = base.GetInspectString();
 			if (!inspectString.NullOrEmpty())
 			{
 				stringBuilder.AppendLine(inspectString);
-			}
-			if (!ConnectedToBridge)
-			{
-				stringBuilder.AppendLine(TranslatorFormattedStringExtensions.Translate("SoS.TurretNotConnected"));
 			}
 			if (AttackVerb.verbProps.minRange > 0f && GroundDefenseMode)
 			{
