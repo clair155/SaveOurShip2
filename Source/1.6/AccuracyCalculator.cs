@@ -24,16 +24,29 @@ namespace SaveOurShip2
 				dodgeChanceSubmodScale = Mathf.Clamp(value, 0.1f, 1f);
 			}
 		}
-		// Weapon spread increased based on target map TWR
-		// This goes to XML likely
-		private const float magnitudeForDodge = 6.5f;
-		// Maybe better curve - this is not so proven
+		// Dodge chance based on target map TWR. Previusly it was TWR/3.5, linear
 		private static readonly SimpleCurve DodgeChanceMultiplier = new SimpleCurve
 		{
-			new CurvePoint(7f, 7f * magnitudeForDodge),
-			new CurvePoint(5f, 5f * magnitudeForDodge),
-			new CurvePoint(3f, 4f * magnitudeForDodge),
-			new CurvePoint(2f, 1.8f * magnitudeForDodge),
+			new CurvePoint(21f, 1.7f ), // Archo thrusers or Spinal Engines submod, very high values get diminishing return
+			new CurvePoint(7f, 1.5f),
+			new CurvePoint(5f, 1.3f), // Was 1.43 at linear - above 3.5 TW is is diminishing return in dodge chance now
+			new CurvePoint(3.5f, 1f),
+			new CurvePoint(3f, 0.88f), // Was 0.86 at linear
+			new CurvePoint(2f, 0.55f), // Was 0.57 at linear
+			new CurvePoint(1f, 0.26f), // Was 0.29 at linear - the idea is dodge cance falls faster than linear as TWR goes vely low
+			new CurvePoint(0.5f, 0.11f),
+			new CurvePoint(0f, 0f)
+		};
+		// This migh to XML for adjustablity
+		private const float magnitudeForDodge = 6.5f;
+
+		private static readonly SimpleCurve DodgeAngleMultiplier = new SimpleCurve
+		{
+			new CurvePoint(21f, 6.0f * magnitudeForDodge), //  Archo thrusers or Spinal Engines submod, very high values get diminishing return
+			new CurvePoint(7f, 5.1f * magnitudeForDodge),
+			new CurvePoint(5f, 4.8f * magnitudeForDodge), // Diminishing return
+			new CurvePoint(3f, 4f * magnitudeForDodge), // Dodge still grows fast with TWR
+			new CurvePoint(2f, 1.8f * magnitudeForDodge), // It is hard to get 3 TWRS, so those gets great dodge. But 2 is achievable for strong medium ships, non-fighters, so much lower dodge
 			new CurvePoint(1f, 1.5f * magnitudeForDodge),
 			new CurvePoint(0.5f, 1.2f * magnitudeForDodge),
 			new CurvePoint(0f, 1f * magnitudeForDodge)
@@ -153,18 +166,17 @@ namespace SaveOurShip2
 				baseChance *= 1.5f;
 			else if (weaponRange < (LaserOptimalRange + PlasmaOptimalRange) / 2f)
 				baseChance *= 0.5f;
-			// lower chances for lower TWR, higher chances for higher TWR
-			// Complete/critical miss system is mainly for fighters, so firhter TWR is baseline
-			const float baselineTWR = 3.5f;
 			// attacker tactician shooting skill
 			float dodgeMultiplierFromShooting = DodgeChanceMultiplierFromShooting.Evaluate(SourceMapAccuracyBoost);
 			// pilot skill
 			float dodgeMultiplierFromPiloting = DodgeChanceMultiplierFromPiloting.Evaluate(ThisMapEvasionBoost);
 			// Extra buildings
 			float dodgeMultiplierFromBuildings = ThisMapEvasionScaleFromBuildings;
-			float finalChance = baseChance * dodgeMultiplierFromShooting * dodgeMultiplierFromPiloting * ThisMapComp.SlowestThrustRatio() / baselineTWR *
+			// TWR
+			float dodgeMultiplierFromTWR = DodgeChanceMultiplier.Evaluate(ThisMapComp.SlowestThrustRatio());
+			float finalChance = baseChance * dodgeMultiplierFromShooting * dodgeMultiplierFromPiloting * dodgeMultiplierFromTWR *
 				dodgeMultiplierFromBuildings * DodgeChanceSubmodScale;
-			return Mathf.Clamp(finalChance, 0f, 1f);
+			return Mathf.Clamp(finalChance, 0f, 0.9f);
 		}
 
 		private bool ShouldLogDataNow
@@ -213,7 +225,7 @@ namespace SaveOurShip2
 			//shooter adj 0-50%
 			missAngle *= (100 - proj.accBoost * 2.5f) / 100;
 			// Use reasonable clamp when working with MapEnginePower
-			dodgeAngle = Mathf.Clamp(DodgeChanceMultiplier.Evaluate(ThisMapComp.SlowestThrustRatio()), 0f, 40f);
+			dodgeAngle = Mathf.Clamp(DodgeAngleMultiplier.Evaluate(ThisMapComp.SlowestThrustRatio()), 0f, 40f);
 			if (ModSettings_SoS.debugMode)
 			{
 				Log.Warning("===Base DodgeAngle:" + dodgeAngle.ToString("F2"));
