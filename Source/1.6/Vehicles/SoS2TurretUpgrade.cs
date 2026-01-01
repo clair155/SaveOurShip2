@@ -27,6 +27,8 @@ namespace SaveOurShip2.Vehicles
                 newTurret.shellCount = newTurret.def.magazineCapacity;
 
             vehicle.CompVehicleTurrets.AddTurret(newTurret, node.key);
+            // Force matching to hardpoint
+            newTurret.MatchToHardpoint();
         }
     }
 }
