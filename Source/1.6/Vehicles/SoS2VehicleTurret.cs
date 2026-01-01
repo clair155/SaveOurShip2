@@ -85,13 +85,19 @@ namespace SaveOurShip2.Vehicles
             Scribe_Values.Look<int>(ref hardpoint, "hardpoint");
         }
 
+        public void MatchToHardpoint()
+        {
+            matchedToHardpoint = true;
+            // To be investigated why framework calls init on loaded turrets, but not newly upgraded turrets
+            MatchTurretToHardpoint.Postfix(this);
+        }
+
 		public override bool Tick()
 		{
+            // TODO: Test if all spawn, upgrade, game load etc cases are covered and turret position update on tick can be removed
             if (!matchedToHardpoint && vehicle != null && vehicle.Spawned)
             {
-                matchedToHardpoint = true;
-                // To be inmvestigated why framework calls init on loaded turrets, but not newlu ypgraded turrets
-                MatchTurretToHardpoint.Postfix(this);
+                MatchToHardpoint();
             }
             return base.Tick();
 		}
