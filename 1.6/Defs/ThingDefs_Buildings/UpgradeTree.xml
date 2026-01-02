@@ -1021,10 +1021,10 @@
 					<li>ShipTurretLaser</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>6</ComponentSpacer>
-					<Plasteel>100</Plasteel>
-					<Steel>100</Steel>
-					<Uranium>20</Uranium>
+					<ComponentSpacer>4</ComponentSpacer>
+					<Plasteel>75</Plasteel>
+					<Steel>75</Steel>
+					<Uranium>15</Uranium>
 				</ingredients>
 			</li>
 			<li>
@@ -1067,10 +1067,10 @@
 					<li>ShipTurretPlasma</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>6</ComponentSpacer>
-					<Plasteel>100</Plasteel>
-					<Steel>100</Steel>
-					<Uranium>20</Uranium>
+					<ComponentSpacer>4</ComponentSpacer>
+					<Plasteel>75</Plasteel>
+					<Steel>75</Steel>
+					<Uranium>15</Uranium>
 				</ingredients>
 			</li>
 			<li>
@@ -1157,10 +1157,10 @@
 					<li>ShipTurretLaser</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>6</ComponentSpacer>
-					<Plasteel>100</Plasteel>
-					<Steel>100</Steel>
-					<Uranium>20</Uranium>
+					<ComponentSpacer>4</ComponentSpacer>
+					<Plasteel>75</Plasteel>
+					<Steel>75</Steel>
+					<Uranium>15</Uranium>
 				</ingredients>
 			</li>
 			<li>
@@ -1203,10 +1203,10 @@
 					<li>ShipTurretPlasma</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>6</ComponentSpacer>
-					<Plasteel>100</Plasteel>
-					<Steel>100</Steel>
-					<Uranium>20</Uranium>
+					<ComponentSpacer>4</ComponentSpacer>
+					<Plasteel>75</Plasteel>
+					<Steel>75</Steel>
+					<Uranium>15</Uranium>
 				</ingredients>
 			</li>
 			<li>
@@ -1293,10 +1293,10 @@
 					<li>ShipTurretLaser</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>6</ComponentSpacer>
-					<Plasteel>100</Plasteel>
-					<Steel>100</Steel>
-					<Uranium>20</Uranium>
+					<ComponentSpacer>4</ComponentSpacer>
+					<Plasteel>75</Plasteel>
+					<Steel>75</Steel>
+					<Uranium>15</Uranium>
 				</ingredients>
 			</li>
 			<li>
@@ -1339,10 +1339,10 @@
 					<li>ShipTurretPlasma</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>6</ComponentSpacer>
-					<Plasteel>100</Plasteel>
-					<Steel>100</Steel>
-					<Uranium>20</Uranium>
+					<ComponentSpacer>4</ComponentSpacer>
+					<Plasteel>75</Plasteel>
+					<Steel>75</Steel>
+					<Uranium>15</Uranium>
 				</ingredients>
 			</li>
 			<li>
