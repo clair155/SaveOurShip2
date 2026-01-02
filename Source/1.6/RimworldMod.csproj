@@ -150,6 +150,7 @@
     <Compile Include="CompProps\CompProps_Archolife.cs" />
     <Compile Include="CompProps\CompProps_ArcholifeCosmetics.cs" />
     <Compile Include="CloakThresholdGizmo.cs" />
+    <Compile Include="ShipImorter.cs" />
     <Compile Include="SOS2MapUtility.cs" />
     <Compile Include="SoSDebugActions.cs" />
     <Compile Include="SoSSpawnOverride.cs" />
