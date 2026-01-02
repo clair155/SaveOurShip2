@@ -24,6 +24,13 @@ namespace SaveOurShip2
 			return color.r < 0.02 && color.g > 0.98 && color.b < 0.02;
 		}
 
+		private static bool PickFlippedCornerAt(IntVec3 pos, Map map)
+        {
+			int xSign = Math.Sign(pos.x - map.Size.x / 2);
+			int zSign = Math.Sign(pos.z - map.Size.z / 2);
+			return xSign * zSign > 0;
+		}
+
 		private static bool IsCornerHere(IntVec3 pos, int cornerLength, out Rot4 cornerRotation, out bool isFlipped)
 		{
 			cornerRotation = Rot4.Invalid;
@@ -70,6 +77,12 @@ namespace SaveOurShip2
 			}
 			return false;
 		}
+
+		private static void SpawnAndSetFaction(ThingDef def, IntVec3 position, Map map, Rot4 rot)
+        {
+			Thing thing = GenSpawn.Spawn(def, position, map, rot);
+			thing.factionInt = Faction.OfPlayer;
+        }
 
 		private static IntVec3 AdjustSpawnPos(IntVec3 origin, Rot4 rot, int length, bool isFlipped)
         {
@@ -144,11 +157,11 @@ namespace SaveOurShip2
 						{
 							if (!useNanameWalls)
 							{
-								GenSpawn.Spawn(ThingDefOf.Ship_Beam, item, map);
+								SpawnAndSetFaction(ThingDefOf.Ship_Beam, item, map, Rot4.North);
 							}
                             else
                             {
-								GenSpawn.Spawn(ThingDef.Named("Ship_Beam_NAWDiagonal"), item, map);
+								SpawnAndSetFaction(ThingDef.Named("Ship_Beam_NAWDiagonal"), item, map, Rot4.North);
 							}
 						}
 						if(!useNanameWalls)
@@ -164,12 +177,12 @@ namespace SaveOurShip2
 									if (!isFlipped)
 									{
 										IntVec3 spawnPos = AdjustSpawnPos(cornerBase, cornerRotaion, 3, isFlipped);
-										GenSpawn.Spawn(ThingDef.Named("Ship_Corner_OneThree"), spawnPos, map, cornerRotaion);
+										SpawnAndSetFaction(ThingDef.Named("Ship_Corner_OneThree"), spawnPos, map, cornerRotaion);
 									}
                                     else 
 									{
 										IntVec3 spawnPos = AdjustSpawnPos(cornerBase, cornerRotaion, 3, isFlipped);
-										GenSpawn.Spawn(ThingDef.Named("Ship_Corner_OneThreeFlip"), spawnPos, map, cornerRotaion);
+										SpawnAndSetFaction(ThingDef.Named("Ship_Corner_OneThreeFlip"), spawnPos, map, cornerRotaion);
 									}
 								}
 								else if (IsCornerHere(cornerBase, 2, out cornerRotaion, out isFlipped))
@@ -177,19 +190,24 @@ namespace SaveOurShip2
 									if (!isFlipped)
 									{
 										IntVec3 spawnPos = AdjustSpawnPos(cornerBase, cornerRotaion, 2, isFlipped);
-										GenSpawn.Spawn(ThingDef.Named("Ship_Corner_OneTwo"), spawnPos, map, cornerRotaion);
+										SpawnAndSetFaction(ThingDef.Named("Ship_Corner_OneTwo"), spawnPos, map, cornerRotaion);
 									}
 									else
 									{
 										IntVec3 spawnPos = AdjustSpawnPos(cornerBase, cornerRotaion, 2, isFlipped);
-										GenSpawn.Spawn(ThingDef.Named("Ship_Corner_OneTwoFlip"), spawnPos, map, cornerRotaion);
+										SpawnAndSetFaction(ThingDef.Named("Ship_Corner_OneTwoFlip"), spawnPos, map, cornerRotaion);
 									}
 								}
 								else if (IsCornerHere(cornerBase, 1, out cornerRotaion, out isFlipped))
 								{
-									// Doesn't recognize difference between flipped and non-flipped 1x1 corners
 									IntVec3 spawnPos = AdjustSpawnPos(cornerBase, cornerRotaion, 1, isFlipped);
-									GenSpawn.Spawn(ThingDef.Named("Ship_Corner_OneOne"), spawnPos, map, cornerRotaion);
+									string cornerDef = "Ship_Corner_OneOne";
+									if (PickFlippedCornerAt(spawnPos, map))
+									{
+										cornerDef = "Ship_Corner_OneOneFlip";
+										cornerRotaion.Rotate(RotationDirection.Counterclockwise);
+									}
+									SpawnAndSetFaction(ThingDef.Named(cornerDef), spawnPos, map, cornerRotaion);
 								}
 							}
 						}
@@ -206,7 +224,7 @@ namespace SaveOurShip2
 					{
 						if (map.thingGrid.ThingAt(item, ThingCategory.Building) == null)
 						{
-							GenSpawn.Spawn(ResourceBank.ThingDefOf.ShipHullTile, item, map);
+							SpawnAndSetFaction(ResourceBank.ThingDefOf.ShipHullTile, item, map, Rot4.North);
 						}
 					}
 					catch (Exception e)
@@ -221,7 +239,5 @@ namespace SaveOurShip2
 				adder.PlanCells(cellsToDesignate);
 			}
 		}
-
-
 	}
 }
