@@ -3255,12 +3255,12 @@
 		<comps>
 			<li Class="CompProperties_Power">
 				<compClass>CompPowerTrader</compClass>
-				<basePowerConsumption>1100</basePowerConsumption>
+				<basePowerConsumption>1500</basePowerConsumption>
 			</li>
 			<li Class="CompProperties_Styleable"/>
 			<li Class="CompProperties_Glower">
-				<overlightRadius>5</overlightRadius>
-				<glowRadius>8</glowRadius>
+				<overlightRadius>6</overlightRadius>
+				<glowRadius>9</glowRadius>
 				<glowColor>(370,370,370,0)</glowColor>
 				<colorPickerEnabled>false</colorPickerEnabled>
 				<darklightToggle>false</darklightToggle>
@@ -3276,7 +3276,7 @@
 				<heatPerSecond>1</heatPerSecond>
 			</li>
 		</comps>
-		<specialDisplayRadius>4.2</specialDisplayRadius>
+		<specialDisplayRadius>4.5</specialDisplayRadius>
 	</ThingDef>
 	<!-- blueprints -->
 	<ThingDef ParentName="BuildingBase" Name="ShipBlueprintBase" Abstract="True">
