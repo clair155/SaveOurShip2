@@ -62,8 +62,17 @@ namespace SaveOurShip2
 			// doesn't result in those resources loading from separate thread, whiuch is an error. 
 			LongEventHandler.QueueLongEvent(delegate
 			{
-				Section dummySection = new Section(new IntVec3(0, 0, 0), null);
-				SectionLayer_Gas dummyGasLayer = new SectionLayer_Gas(dummySection);
+				try
+				{
+					Section dummySection = new Section(new IntVec3(0, 0, 0), null);
+					SectionLayer_Gas dummyGasLayer = new SectionLayer_Gas(dummySection);
+				}
+				catch (Exception e)
+                {
+					Log.Message("An exception was thrown when making SectionLayer_Gas initialize on main thread. This is likely ignoreable.");
+					Log.Message("Message: " + e.Message);
+					Log.Message("Trace: " + e.StackTrace);
+				}
 				DefDatabase<ResearchTabDef>.GetNamed("ResearchTabArchotech").label = TranslatorFormattedStringExtensions.Translate
 					("SoS.Archotech.ResearchTabName");
 			}, "", false, null);
