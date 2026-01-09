@@ -105,7 +105,6 @@
     <Compile Include="Alert_ArchotechSporeMoodLow.cs" />
     <Compile Include="Alert_MechanitesInHomeArea.cs" />
     <Compile Include="ApparelHolographic.cs" />
-    <Compile Include="ArrivalAction\AerialVehicleArrivalAction_LoadMapAndDefog.cs" />
     <Compile Include="ArrivalAction\AerialVehicleArrivalAction_ShipAssault.cs" />
     <Compile Include="ArrivalAction\PawnPublicizer.cs" />
     <Compile Include="Comp\CompHyperchargingBattery.cs" />
