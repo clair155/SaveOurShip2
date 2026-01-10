@@ -1418,7 +1418,7 @@
 				<shotsPerBurst>6</shotsPerBurst>
 				<ticksBetweenShots>4</ticksBetweenShots>
 				<ticksBetweenBursts>4</ticksBetweenBursts>
-				<spreadRadius>1</spreadRadius>
+				<forcedMissRadius>1</forcedMissRadius>
 				<label>Pulse</label>
 				<texPath>UI/Gizmos/FireRate_Single</texPath>
 			</li>
@@ -1494,7 +1494,7 @@
 		<fireModes>
 			<li>
 				<shotsPerBurst>1</shotsPerBurst>
-				<spreadRadius>2</spreadRadius>
+				<forcedMissRadius>2</forcedMissRadius>
 				<label>Single Shot</label>
 				<texPath>UI/Gizmos/FireRate_Single</texPath>
 			</li>
@@ -1548,7 +1548,7 @@
 		<fireModes>
 			<li>
 				<shotsPerBurst>1</shotsPerBurst>
-				<spreadRadius>4.9</spreadRadius>
+				<forcedMissRadius>4.9</forcedMissRadius>
 				<ticksBetweenBursts>1500</ticksBetweenBursts>
 				<label>Single</label>
 				<texPath>UI/Gizmos/FireRate_Single</texPath>
