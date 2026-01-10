@@ -131,7 +131,8 @@ namespace SaveOurShip2
 			if (Mood < 0.8f && tick > lastPrankTick)
 				PlayPrank(tick);
 
-			if (!ideoCrisis && tick % 20000 == 0 && ModsConfig.IdeologyActive)
+			// In classic mode (ideology system incactive in the UI), Archotech spore ideo feature will cause errors and likely not intended to be expirienced by player
+			if (!ideoCrisis && tick % 20000 == 0 && ModsConfig.IdeologyActive && !(Find.IdeoManager?.classicMode ?? true))
 			{
 				ideoCrisis = true;
 
