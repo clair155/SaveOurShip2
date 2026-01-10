@@ -729,7 +729,13 @@ namespace SaveOurShip2
 			}
 			Find.WorldObjects.Add(orbiter);
 			Map map = MapGenerator.GenerateMap(size, orbiter, orbiter.MapGeneratorDef,null,null,false);
-			//map.fogGrid.ClearAllFog();
+
+			// When generating space map for the first time
+			if(WorldComp.LastFoundAmplifierTick == 0)
+            {
+				WorldComp.LastFoundAmplifierTick = Find.TickManager.TicksGame;
+			}
+
 			return map;
 		}
 		/*public static Map GeneratePocketSpaceMap(IntVec3 size, WorldObjectDef worldObjectDef, IEnumerable<GenStepWithParams> extraGenStepDefs = null, Map sourceMap = null) //unusable, shuttles need tiles, etc.
