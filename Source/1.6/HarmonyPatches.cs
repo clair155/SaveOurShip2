@@ -4342,23 +4342,58 @@ namespace SaveOurShip2
 	[HarmonyPatch(typeof(IncidentWorker_PsychicEmanation), "TryExecuteWorker")]
 	public static class TogglePsychicAmplifierQuest
 	{
-		public static void Postfix(IncidentParms parms)
-		{
+		public static float DaysFromLastAmplifier()
+        {
+			int currentDay = (int)Find.TickManager.TicksGame.TicksToDays();
+			return (Find.TickManager.TicksGame - ShipInteriorMod2.WorldComp.LastFoundAmplifierTick).TicksToDays();
+		}
+		public static void AddAmplifierShip(bool useEmanationText)
+        {
+			// Old code checked for all maps, leaving that as is for not changing logic,
+			// but adding ship specifically to player ship map.
+
+			Map map = ShipInteriorMod2.FindPlayerShipMap();
+			Find.LetterStack.ReceiveLetter("SoS.PsychicAmplifier".Translate(), 
+				(useEmanationText ? "SoS.PsychicAmplifierDesc" : "SoS.PsychicAmplifierDescNoEmanation").Translate(), LetterDefOf.PositiveEvent);
+			AttackableShip ship = new AttackableShip();
+			ship.attackableShip = DefDatabase<ShipDef>.GetNamed("MechPsychicAmp");
+			ship.spaceNavyDef = DefDatabase<NavyDef>.GetNamed("Mechanoid_SpaceNavy");
+			ship.shipFaction = Faction.OfMechanoids;
+			map.passingShipManager.AddShip(ship);
+			ShipInteriorMod2.WorldComp.LastFoundAmplifierTick = Find.TickManager.TicksGame;
+		}
+
+		public static bool AmplifierShipAllowed()
+        {
+			// If there is no player ship map, amplifier won't appear in attacksable ships gizmos.
+			if (ShipInteriorMod2.FindPlayerShipMap() == null)
+            {
+				return false;
+            }
+			Map spaceMap = ShipInteriorMod2.FindPlayerShipMap();
+			if (spaceMap.passingShipManager.passingShips.Any(ship => ship is AttackableShip attackable &&
+				attackable.attackableShip == DefDatabase<ShipDef>.GetNamed("MechPsychicAmp")))
+            {
+				return false;
+			}
 			if (!ShipInteriorMod2.WorldComp.Unlocks.Contains("ArchotechSpore"))
 			{
 				foreach (Map map in Find.Maps)
 				{
 					if (map.IsSpace() && map.spawnedThings.Where(t => t.def == ThingDefOf.Ship_ComputerCore && t.Faction == Faction.OfPlayer).Any())
 					{
-						Find.LetterStack.ReceiveLetter("SoS.PsychicAmplifier".Translate(), "SoS.PsychicAmplifierDesc".Translate(), LetterDefOf.PositiveEvent);
-						AttackableShip ship = new AttackableShip();
-						ship.attackableShip = DefDatabase<ShipDef>.GetNamed("MechPsychicAmp");
-						ship.spaceNavyDef = DefDatabase<NavyDef>.GetNamed("Mechanoid_SpaceNavy");
-						ship.shipFaction = Faction.OfMechanoids;
-						map.passingShipManager.AddShip(ship);
-						break;
+						return true;
 					}
 				}
+			}
+			return false;
+		}
+
+		public static void Postfix(IncidentParms parms)
+		{
+			if (AmplifierShipAllowed())
+			{
+				AddAmplifierShip(useEmanationText:true);
 			}
 		}
 	}
