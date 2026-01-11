@@ -142,10 +142,7 @@ namespace SaveOurShip2
 				else if(enemyShuttlesInRange.Any())
                 {
 					VehiclePawn shuttleHit = enemyShuttlesInRange.First();
-					int? targetIntellectualSkill = (shuttleHit.FindPawnWithBestStat(StatDefOf.ResearchSpeed, (Pawn p) => true)?.skills?.GetSkill(SkillDefOf.Intellectual)?.Level);
-					int skill = 0;
-					if (targetIntellectualSkill.HasValue)
-						skill = targetIntellectualSkill.Value;
+					int skill = shuttleHit.GetPilotIntellectualSkill();
 					if(verbProps.defaultProjectile.thingClass!=typeof(Projectile_ExplosiveShipLaser) && Rand.Chance(0.75f))
                     {
 						Log.Message("Shuttle dodged non-laser weapon");

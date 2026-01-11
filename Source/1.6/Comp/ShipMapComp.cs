@@ -1449,10 +1449,7 @@ namespace SaveOurShip2
 							mission.weaponCooldown -= 1;
 							if (mission.weaponCooldown <= 0 && mission.rangeTraveled >= OriginMapComp.Range - 50f)
 							{
-								int? bestSkill = mission.shuttle.FindPawnWithBestStat(StatDefOf.ShootingAccuracyPawn, (Pawn p) => true)?.skills?.GetSkill(SkillDefOf.Shooting)?.Level;
-								int skill = 0;
-								if (bestSkill.HasValue)
-									skill = bestSkill.Value;
+								int skill = mission.shuttle.GetGunnerShootingSkill();
 								float missAngle = Mathf.Lerp(1.5f, 0.5f, skill / 20f);
 								IntVec3 targetCell;
 								if(mission.shuttle.Faction==Faction.OfPlayer)
@@ -1495,10 +1492,7 @@ namespace SaveOurShip2
 							mission.weaponCooldown -= 1;
 							if (mission.weaponCooldown <= 0 && mission.rangeTraveled >= OriginMapComp.Range - 10f)
 							{
-								int? bestSkill = mission.shuttle.FindPawnWithBestStat(StatDefOf.ShootingAccuracyPawn, (Pawn p) => true)?.skills?.GetSkill(SkillDefOf.Shooting)?.Level;
-								int skill = 0;
-								if (bestSkill.HasValue)
-									skill = bestSkill.Value;
+								int skill = mission.shuttle.GetGunnerShootingSkill();
 								float missAngle = Mathf.Lerp(4f, 2f, skill / 20f);
 								IntVec3 targetCell = (mission.shuttle.Faction == Faction.OfPlayer ? ShipCombatTargetMap.listerBuildings.allBuildingsNonColonist.RandomElement().Position : ShipCombatTargetMap.listerBuildings.allBuildingsColonist.RandomElement().Position);
 								IntVec3 spawnCell = FindClosestEdgeCell(ShipCombatTargetMap, targetCell);
@@ -1556,16 +1550,13 @@ namespace SaveOurShip2
 							mission.weaponCooldown -= 1;
 							if (mission.weaponCooldown <= 0)
 							{
-								int? bestSkill = mission.shuttle.FindPawnWithBestStat(StatDefOf.ShootingAccuracyPawn, (Pawn p) => true)?.skills?.GetSkill(SkillDefOf.Shooting)?.Level;
-								int pilotShootingSkill = 0;
-								if (bestSkill.HasValue)
-									pilotShootingSkill = bestSkill.Value;
+								int gunnerShootingSkill = mission.shuttle.GetGunnerShootingSkill();
 								if (TargetMapComp.TorpsInRange.Any())
 								{
 									int numLasers = mission.shuttle.CompVehicleTurrets.turrets.Where(turret => turret.def == ResourceBank.VehicleTurretDefOf.SoS2ShuttleLaser).Count();
 									for (int i = 0; i < numLasers; i++)
 									{
-										if (Rand.Chance(Mathf.Lerp(0.75f, 1.25f, pilotShootingSkill / 20f)))
+										if (Rand.Chance(Mathf.Lerp(0.75f, 1.25f, gunnerShootingSkill / 20f)))
 										{
 											ShipCombatProjectile projtr = TargetMapComp.TorpsInRange.RandomElement();
 											TargetMapComp.Projectiles.Remove(projtr);
@@ -1580,11 +1571,8 @@ namespace SaveOurShip2
 									foreach (VehicleTurret laser in mission.shuttle.CompVehicleTurrets.turrets.Where(turret => turret.def == ResourceBank.VehicleTurretDefOf.SoS2ShuttleLaser))
 									{
 										VehiclePawn shuttleHit = TargetMapComp.ShuttlesInRange.Where(shuttle => shuttle.Faction != mission.shuttle.Faction).RandomElement();
-										int? bestIntellectual = shuttleHit.FindPawnWithBestStat(StatDefOf.ResearchSpeed, (Pawn p) => true)?.skills?.GetSkill(SkillDefOf.Intellectual)?.Level;
-										int targetIntellectualSkill = 0;
-										if (bestIntellectual.HasValue)
-											targetIntellectualSkill = bestIntellectual.Value;
-										if (Rand.Chance(Mathf.Lerp(0.85f, 1.15f, pilotShootingSkill / 20f) - (shuttleHit.GetStatValue(ResourceBank.VehicleStatDefOf.SoS2CombatDodgeChance) / Mathf.Lerp(120, 80, targetIntellectualSkill / 20f))))
+										int targetIntellectualSkill = shuttleHit.GetPilotIntellectualSkill();
+										if (Rand.Chance(Mathf.Lerp(0.85f, 1.15f, gunnerShootingSkill / 20f) - (shuttleHit.GetStatValue(ResourceBank.VehicleStatDefOf.SoS2CombatDodgeChance) / Mathf.Lerp(120, 80, targetIntellectualSkill / 20f))))
 										{
 											CompVehicleHeatNet heatNet = shuttleHit.GetComp<CompVehicleHeatNet>();
 											if (shuttleHit.GetComp<CompShipHeatShield>() != null && shuttleHit.statHandler.componentsByKeys["shieldGenerator"].health > 10 && heatNet != null && heatNet.myNet.StorageUsed < heatNet.myNet.StorageCapacity) //Shield takes the hit
