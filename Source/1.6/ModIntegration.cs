@@ -14,7 +14,9 @@ namespace SaveOurShip2
 		}
 
 		// Todo: it is to be verified with mod maintainers that mod identification can be switched from name to mod ID
-		public static string CEModName = "Combat Extended";
+		public const string CEModName = "Combat Extended";
+
+		public const string UnlockModID = "Boris.SOS2uas";
 		public static bool IsCEEnabled()
 		{
 			return ModLister.HasActiveModWithName(CEModName);
