@@ -403,6 +403,7 @@
     <Compile Include="Vehicles\SoS2VehicleTurret.cs" />
     <Compile Include="Vehicles\SoS2VehicleUtility.cs" />
     <Compile Include="Vehicles\VehicleEventMethods.cs" />
+    <Compile Include="Vehicles\VehicleExtensions.cs" />
     <Compile Include="WorldObject\MoonBase.cs" />
     <Compile Include="Obsolete\Building_Radiator.cs" />
     <Compile Include="Obsolete\Bullet_HologramLaser.cs" />

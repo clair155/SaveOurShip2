@@ -12,6 +12,9 @@ namespace SaveOurShip2
 		// Submods are known to allow player to reach far better TWRs for decently strong/large combat ships.
 		// With dodge chance necghanics, it means that chance can go over roof and enemies 
 		private float dodgeChanceSubmodScale = 1;
+
+		// Bonus from Odyssey implant
+		public const int pilotAssistantIntellectualBonus = 2;
 		public float DodgeChanceSubmodScale
 		{
 			get
@@ -370,8 +373,7 @@ namespace SaveOurShip2
 							// Odyssey pilot assistant
 							if (pilot.health.hediffSet.hediffs.Any((Hediff h) => h.def.defName == "PilotAssistant"))
 							{
-								const int pilotAssistantBonus = 2;
-								skill += pilotAssistantBonus;
+								skill += pilotAssistantIntellectualBonus;
 							}
 							result = Mathf.Max(result, skill);
 						}
