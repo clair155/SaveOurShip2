@@ -237,7 +237,6 @@
 			<MaxHitPoints>1000</MaxHitPoints>
 		</statBases>
 		<costList>
-			<Steel>16</Steel>
 			<Plasteel>4</Plasteel>
 		</costList>
 		<size>(1,2)</size>
