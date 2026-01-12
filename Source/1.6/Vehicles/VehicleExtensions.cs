@@ -45,11 +45,14 @@ namespace SaveOurShip2.Vehicles
         public static int GetPilotIntellectualSkill(this VehiclePawn vehicle)
         {
             int result = vehicle.GetVehicleCrewSkill(SkillDefOf.Intellectual);
-            foreach (var (upgradeKey, skillValue) in upgrades)
+            if (upgrades != null)
             {
-                if(vehicle.CompUpgradeTree.upgrades.Contains(upgradeKey))
+                foreach (var (upgradeKey, skillValue) in upgrades)
                 {
-                    result = Math.Max(result, skillValue);
+                    if (vehicle.CompUpgradeTree.upgrades.Contains(upgradeKey))
+                    {
+                        result = Math.Max(result, skillValue);
+                    }
                 }
             }
             return result;
@@ -58,11 +61,14 @@ namespace SaveOurShip2.Vehicles
         public static int GetGunnerShootingSkill(this VehiclePawn vehicle)
         {
             int result = vehicle.GetVehicleCrewSkill(SkillDefOf.Shooting);
-            foreach (var (upgradeKey, skillValue) in upgrades)
+            if (upgrades != null)
             {
-                if (vehicle.CompUpgradeTree.upgrades.Contains(upgradeKey))
+                foreach (var (upgradeKey, skillValue) in upgrades)
                 {
-                    result = Math.Max(result, skillValue);
+                    if (vehicle.CompUpgradeTree.upgrades.Contains(upgradeKey))
+                    {
+                        result = Math.Max(result, skillValue);
+                    }
                 }
             }
             return result;
