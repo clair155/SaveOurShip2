@@ -135,8 +135,9 @@ namespace SaveOurShip2
 	
 	public class ExtraShipGenOptions
     {
-		public int CustomCrewLimit = 5;
-		// Non-standard staritingship is requested
+		// Saving thisa setting is managed by submod
+		public int CustomCrewLimit = 200;
+		// Non-standard staritingship is requested. runtime-only flag, not saved
 		public bool RequestCustomShip = false;
     }
 	public class ShipInteriorMod2 : Mod
@@ -1092,7 +1093,10 @@ namespace SaveOurShip2
 		}
 		public static void GenerateShipDef(ShipDef shipDef, Map map, PassingShip passingShip, Faction fac, Lord lord, out List<Building> cores, out List<IntVec3> cellsToFog, out List<Thing> planters, bool shipActive = true, bool clearArea = false, int wreckLevel = 0, int offsetX = -1, int offsetZ = -1, NavyDef navyDef = null)
 		{
-			Log.Message("Custom limit:" + extraShipGenOptions.CustomCrewLimit);
+			if (ModLister.GetActiveModWithIdentifier(ModIntegration.UnlockModID) != null && extraShipGenOptions.RequestCustomShip)
+			{
+				Log.Message("Custom limit:" + extraShipGenOptions.CustomCrewLimit);
+			}
 			cellsToFog = new List<IntVec3>();
 			//List<IntVec3> cellsNotToFog = new List<IntVec3>();
 			planters = new List<Thing>();
