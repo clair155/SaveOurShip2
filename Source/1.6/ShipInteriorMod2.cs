@@ -132,6 +132,14 @@ namespace SaveOurShip2
 			enemyMapSize = 250,
 			shuttlesToDisplay = 5;
 	}
+	
+	public class ExtraShipGenOptions
+    {
+		// Saving thisa setting is managed by submod
+		public int CustomCrewLimit = 200;
+		// Non-standard staritingship is requested. runtime-only flag, not saved
+		public bool RequestCustomShip = false;
+    }
 	public class ShipInteriorMod2 : Mod
 	{
 		public ShipInteriorMod2(ModContentPack content) : base(content)
@@ -192,6 +200,20 @@ namespace SaveOurShip2
 				}
 			}
 		}
+
+		// When umlocking all ships, set crew limit to spawn, as player is more likely to be able to handle destroyer (not intended as starting ship)
+		// with a few pawns. While managing full destroyer (or above!) crew is waay too tedious
+		private static ExtraShipGenOptions extraShipGenOptions = new ExtraShipGenOptions();
+
+		public static void ReqestCustomShip()
+        {
+			extraShipGenOptions.RequestCustomShip = true;
+		}
+
+		public static void SetCustomCrewLimit(int newLimit)
+        {
+			extraShipGenOptions.CustomCrewLimit = newLimit;
+        }
 
 		private static ShipWorldComp worldComp = null;
 		public static ShipWorldComp WorldComp
@@ -1071,6 +1093,10 @@ namespace SaveOurShip2
 		}
 		public static void GenerateShipDef(ShipDef shipDef, Map map, PassingShip passingShip, Faction fac, Lord lord, out List<Building> cores, out List<IntVec3> cellsToFog, out List<Thing> planters, bool shipActive = true, bool clearArea = false, int wreckLevel = 0, int offsetX = -1, int offsetZ = -1, NavyDef navyDef = null)
 		{
+			if (ModLister.GetActiveModWithIdentifier(ModIntegration.UnlockModID) != null && extraShipGenOptions.RequestCustomShip)
+			{
+				Log.Message("Custom limit:" + extraShipGenOptions.CustomCrewLimit);
+			}
 			cellsToFog = new List<IntVec3>();
 			//List<IntVec3> cellsNotToFog = new List<IntVec3>();
 			planters = new List<Thing>();
@@ -1085,6 +1111,7 @@ namespace SaveOurShip2
 			bool isMechs = false; //for roy mech turret override
 			bool isDungeon = shipDef.defName == "StarshipBowDungeon";
 			HashSet<IntVec3> exclusionZones = new HashSet<IntVec3>();
+			int spawnedPawnCount = 0;
 			if (ModsConfig.RoyaltyActive)
 			{
 				royActive = true;
@@ -1170,17 +1197,25 @@ namespace SaveOurShip2
 					IntVec3 adjPos = new IntVec3(offset.x + shape.x, 0, offset.z + shape.z);
 					if (shape.shapeOrDef.Equals("PawnSpawnerGeneric"))
 					{
-						if (shape.faction != null) //faction override
+						// Mod check is extra safeguard to ensure crew pawn generation is ONLY prevented in very speicic case
+						if (ModLister.GetActiveModWithIdentifier(ModIntegration.UnlockModID) == null ||
+							!extraShipGenOptions.RequestCustomShip ||
+							spawnedPawnCount < extraShipGenOptions.CustomCrewLimit)
 						{
-							var facOver = Find.FactionManager.FirstFactionOfDef(FactionDef.Named(shape.faction));
-							if (facOver != null)
-								fac = facOver;
+							if (shape.faction != null) //faction override
+							{
+								var facOver = Find.FactionManager.FirstFactionOfDef(FactionDef.Named(shape.faction));
+								if (facOver != null)
+									fac = facOver;
+							}
+							PawnGenerationRequest req = new PawnGenerationRequest(DefDatabase<PawnKindDef>.GetNamed(shape.stuff), fac);
+							Pawn pawn = PawnGenerator.GeneratePawn(req);
+							lord?.AddPawn(pawn);
+							GenSpawn.Spawn(pawn, adjPos, map);
+							pawnsOnShip.Add(pawn);
+							spawnedPawnCount++;
+							Log.Message("Generic spawned");
 						}
-						PawnGenerationRequest req = new PawnGenerationRequest(DefDatabase<PawnKindDef>.GetNamed(shape.stuff), fac);
-						Pawn pawn = PawnGenerator.GeneratePawn(req);
-						lord?.AddPawn(pawn);
-						GenSpawn.Spawn(pawn, adjPos, map);
-						pawnsOnShip.Add(pawn);
 					}
 					else if (DefDatabase<ShipPartDef>.GetNamedSilentFail(shape.shapeOrDef) != null)
 					{
@@ -1188,22 +1223,30 @@ namespace SaveOurShip2
 					}
 					else if (DefDatabase<PawnKindDef>.GetNamedSilentFail(shape.shapeOrDef) != null)
 					{
-						PawnGenerationRequest req;
-						if (navyDef != null)
+						// Mod check is extra safeguard to ensure crew pawn generation is ONLY prevented in very speicic case
+						if (ModLister.GetActiveModWithIdentifier(ModIntegration.UnlockModID) == null ||
+							!extraShipGenOptions.RequestCustomShip ||
+							spawnedPawnCount < extraShipGenOptions.CustomCrewLimit)
 						{
-							if (shape.shapeOrDef.Equals("SpaceCrewMarineHeavy"))
-								req = new PawnGenerationRequest(navyDef.marineHeavyDef, fac);
-							else if (shape.shapeOrDef.Equals("SpaceCrewMarine"))
-								req = new PawnGenerationRequest(navyDef.marineDef, fac);
+							PawnGenerationRequest req;
+							if (navyDef != null)
+							{
+								if (shape.shapeOrDef.Equals("SpaceCrewMarineHeavy"))
+									req = new PawnGenerationRequest(navyDef.marineHeavyDef, fac);
+								else if (shape.shapeOrDef.Equals("SpaceCrewMarine"))
+									req = new PawnGenerationRequest(navyDef.marineDef, fac);
+								else
+									req = new PawnGenerationRequest(navyDef.crewDef, fac);
+							}
 							else
-								req = new PawnGenerationRequest(navyDef.crewDef, fac);
+								req = new PawnGenerationRequest(DefDatabase<PawnKindDef>.GetNamed(shape.shapeOrDef), fac);
+							Pawn pawn = PawnGenerator.GeneratePawn(req);
+							lord?.AddPawn(pawn);
+							GenSpawn.Spawn(pawn, adjPos, map);
+							pawnsOnShip.Add(pawn);
+							spawnedPawnCount++;
+							Log.Message("PawnKindDef spawned");
 						}
-						else
-							req = new PawnGenerationRequest(DefDatabase<PawnKindDef>.GetNamed(shape.shapeOrDef), fac);
-						Pawn pawn = PawnGenerator.GeneratePawn(req);
-						lord?.AddPawn(pawn);
-						GenSpawn.Spawn(pawn, adjPos, map);
-						pawnsOnShip.Add(pawn);
 					}
 					else if (DefDatabase<VehicleDef>.GetNamedSilentFail(shape.shapeOrDef) != null)
 					{
@@ -1774,6 +1817,7 @@ namespace SaveOurShip2
 					}
 				}
 			}
+			extraShipGenOptions.RequestCustomShip = false;
 		}
 		private static void ShipPawnGen(Pawn p, bool isDungeon, Lord lord) //td make proper pawngen req?
 		{

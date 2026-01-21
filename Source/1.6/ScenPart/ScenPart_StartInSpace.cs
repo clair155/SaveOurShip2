@@ -174,6 +174,11 @@ namespace SaveOurShip2
 			Current.ProgramState = ProgramState.MapInitializing;
 
 			List<Building> cores = new List<Building>();
+			if (ModLister.GetActiveModWithIdentifier(ModIntegration.UnlockModID) != null &&
+				(!scen.spaceShipDef.startingShip && !scen.spaceShipDef.startingDungeon))
+			{
+				ShipInteriorMod2.ReqestCustomShip();
+			}
 			ShipInteriorMod2.GenerateShip(scen.spaceShipDef, spaceMap, null, Faction.OfPlayer, null, out cores, false, false, scen.damageStart ? 1 : 0, (spaceMap.Size.x - scen.spaceShipDef.sizeX) / 2, (spaceMap.Size.z - scen.spaceShipDef.sizeZ) / 2);
 
 			Current.ProgramState = ProgramState.Playing;
