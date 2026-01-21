@@ -125,11 +125,11 @@ namespace SaveOurShip2
 			}
 			else if (mapComp.MapThreat() > 1900)
             {
-				daysToFindAmplifier = 16;
+				daysToFindAmplifier = 14;
 			}
 			else if (mapComp.MapThreat() > 2200)
 			{
-				daysToFindAmplifier = 12;
+				daysToFindAmplifier = 10;
 			}
 			return TogglePsychicAmplifierQuest.DaysFromLastAmplifier() > daysToFindAmplifier;
 		}
