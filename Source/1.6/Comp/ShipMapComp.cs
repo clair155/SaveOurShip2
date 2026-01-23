@@ -970,9 +970,9 @@ namespace SaveOurShip2
 				phiExtraOffset = -Mathf.Sign(phi) * 0.05f * Mathf.PI / 2;
 			}
 			// -0.08 on theta angle is the main part of enemy ship offset
-			theta += -0.08f + thetaOffsetScale * 0.002f * Rand.Range(0, 10);
+			theta += (-0.08f + thetaOffsetScale * 0.002f * Rand.Range(0, 10)) * ModIntegration.NewOdyOffsetScale;
 			// 0.01 is base phi offset
-			phi += 0.007f +  0.001f * Rand.Range(-20, 20) + phiExtraOffset;
+			phi += (0.007f +  0.001f * Rand.Range(-20, 20) + phiExtraOffset) * ModIntegration.NewOdyOffsetScale;
 
 			if (passingShip is AttackableShip attackableShip)
 			{
@@ -2600,7 +2600,7 @@ namespace SaveOurShip2
 			if (ShipCombatOrigin)
 				thetaOffsetSign = 1;
 			// Numbers picked for graveyard to be visually near parent map.
-			float thetaOffset = thetaOffsetSign * Rand.Range(0.008f, 0.022f);
+			float thetaOffset = thetaOffsetSign * Rand.Range(0.008f, 0.022f) * ModIntegration.NewOdyOffsetScale;
 			ShipGraveyard = GetOrGenerateMapUtility.GetOrGenerateMap(ShipInteriorMod2.FindWorldTile(), map.Size, ResourceBank.WorldObjectDefOf.WreckSpace);
 			ShipGraveyard.fogGrid.ClearAllFog();
 			var mp = (WorldObjectOrbitingShip)ShipGraveyard.Parent;
