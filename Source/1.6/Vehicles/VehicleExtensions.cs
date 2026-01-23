@@ -73,5 +73,18 @@ namespace SaveOurShip2.Vehicles
             }
             return result;
         }
+
+        public static float GetPDDodgeChance(this VehiclePawn vehicle)
+        {
+            float dodgeChance = vehicle.GetStatValue(ResourceBank.VehicleStatDefOf.SoS2CombatDodgeChance) /
+                Mathf.Lerp(120, 80, vehicle.GetPilotIntellectualSkill() / 20f);
+            // PD damage to shuttle isn't really high, so should have some chance to hit even against max upgraded shuttle
+            // 95%, dodge, resulting in 5% hits would be too few. Like even Cruiser class ships have < 20 PDS, so
+            // Less than 1 hit in full PD salvo would be too clse to invincible
+            const float maxDodgeChance = 0.85f;
+            dodgeChance = Mathf.Clamp(dodgeChance, 0, maxDodgeChance);
+            Log.Message("+DodgeChance:" + dodgeChance.ToString("P2"));
+            return dodgeChance;
+        }
     }
 }

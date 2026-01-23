@@ -1572,7 +1572,11 @@ namespace SaveOurShip2
 									{
 										VehiclePawn shuttleHit = TargetMapComp.ShuttlesInRange.Where(shuttle => shuttle.Faction != mission.shuttle.Faction).RandomElement();
 										int targetIntellectualSkill = shuttleHit.GetPilotIntellectualSkill();
-										if (Rand.Chance(Mathf.Lerp(0.85f, 1.15f, gunnerShootingSkill / 20f) - (shuttleHit.GetStatValue(ResourceBank.VehicleStatDefOf.SoS2CombatDodgeChance) / Mathf.Lerp(120, 80, targetIntellectualSkill / 20f))))
+										const float minAccuracy = 0.85f;
+										const float maxAccuracy = 1.15f;
+										float gunnerAccuracy = Mathf.Lerp(minAccuracy, maxAccuracy, gunnerShootingSkill / 20f);
+										float shuttleEvasion = shuttleHit.GetPDDodgeChance();
+										if (Rand.Chance(gunnerAccuracy - shuttleEvasion))
 										{
 											CompVehicleHeatNet heatNet = shuttleHit.GetComp<CompVehicleHeatNet>();
 											if (shuttleHit.GetComp<CompShipHeatShield>() != null && shuttleHit.statHandler.componentsByKeys["shieldGenerator"].health > 10 && heatNet != null && heatNet.myNet.StorageUsed < heatNet.myNet.StorageCapacity) //Shield takes the hit
