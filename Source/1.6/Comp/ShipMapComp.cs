@@ -928,8 +928,8 @@ namespace SaveOurShip2
 			TargetMapComp.ShipCombatTargetMap = ShipCombatOriginMap;
 			TargetMapComp.ShipCombatOriginMap = ShipCombatOriginMap;
 
-			accuracyCalculator = new AccuracyCalculator(this, TargetMapComp, DodgeChanceSubmodScaleDef.GetEffectiveMultiplier());
-			TargetMapComp.accuracyCalculator = new AccuracyCalculator(TargetMapComp, this, DodgeChanceSubmodScaleDef.GetEffectiveMultiplier());
+			accuracyCalculator = new AccuracyCalculator(this, TargetMapComp);
+			TargetMapComp.accuracyCalculator = new AccuracyCalculator(TargetMapComp, this);
 			//start caches
 			RepathMap();
 			ResetCombatVars();

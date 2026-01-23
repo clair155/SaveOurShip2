@@ -17,6 +17,8 @@ namespace SaveOurShip2
 		public const string CEModName = "Combat Extended";
 
 		public const string UnlockModID = "Boris.SOS2uas";
+
+		public const string SpinalEnginesModID = "TheCafFiend.SOS2SpinalEngines";
 		public static bool IsCEEnabled()
 		{
 			return ModLister.HasActiveModWithName(CEModName);
