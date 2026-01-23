@@ -114,11 +114,11 @@ namespace SaveOurShip2
 		public AccuracyCalculator()
 		{
 		}
-		public AccuracyCalculator(ShipMapComp thisMapComp, ShipMapComp sourceMapComp, float dodgeChanceSubmodScaleArg)			
+		public AccuracyCalculator(ShipMapComp thisMapComp, ShipMapComp sourceMapComp)
 		{
 			thisMap = thisMapComp.map;
 			sourceMap = sourceMapComp.map;
-			DodgeChanceSubmodScale = dodgeChanceSubmodScaleArg;
+			DodgeChanceSubmodScale = DodgeChanceSubmodScaleDef.GetEffectiveMultiplier();
 		}
 		public float DodgeCance(ShipCombatProjectile proj)
 		{
