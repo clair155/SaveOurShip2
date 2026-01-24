@@ -12,7 +12,9 @@ namespace SaveOurShip2
 {
 	class JobDriver_Holodeck : JobDriver_WatchTelevision
 	{
-		const int delta = 60;
+		// Joy optimizaion with giving it every delta tick causes loy meter to flick between increading/decreasing state
+		// So doesn't work well for nowm, maybe later
+		const int delta = 1;
 		protected override IEnumerable<Toil> MakeNewToils()
 		{
 			this.EndOnDespawnedOrNull(TargetIndex.A);
@@ -88,7 +90,10 @@ namespace SaveOurShip2
 			CompHolodeck deck = TargetThingA.TryGetComp<CompHolodeck>();
 			if(deck.CurSkill!=null && pawn.skills!=null && pawn.skills.GetSkill(deck.CurSkill)!=null)
 				pawn.skills.GetSkill(deck.CurSkill).Learn(job.def.joyXpPerTick*TargetThingA.GetStatValue(StatDefOf.JoyGainFactor));
-			JoyUtility.JoyTickCheckEnd(pawn, delta, JoyTickFullJoyAction.EndJob, 1f, (Building)TargetThingA);
+			if (Find.TickManager.TicksGame % delta == 0)
+			{
+				JoyUtility.JoyTickCheckEnd(pawn, delta, JoyTickFullJoyAction.EndJob, 1f, (Building)TargetThingA);
+			}
 		}
 	}
 }
