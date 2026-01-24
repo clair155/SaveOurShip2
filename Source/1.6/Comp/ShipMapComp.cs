@@ -2020,10 +2020,11 @@ namespace SaveOurShip2
 								VehiclePawn myShuttle = shuttlesToBeFilled.Where(shuttle => p.CanReserveAndReach(shuttle, PathEndMode.Touch, Danger.Deadly)).RandomElement();
 								if (myShuttle != null)
 								{
-									Job job = new Job(JobDefOf_Vehicles.Board, myShuttle);
-									p.jobs.StopAll();
-									p.jobs.StartJob(job);
-									map.GetComponent<VehicleReservationManager>().Reserve<VehicleRoleHandler, VehicleHandlerReservation>(myShuttle, p, job, myShuttle.GetNextAvailableHandler(HandlingType.Movement));
+									VehicleRoleHandler handler = myShuttle.GetNextAvailableHandler(p, HandlingType.Movement);
+									if (handler != null)
+                                    {
+										myShuttle.PromptToBoardVehicle(p, handler);
+                                    }
 									shuttlesToBeFilled.Remove(myShuttle);
 									shuttlesYetToLaunch.Add(myShuttle);
 									Log.Message("[SoS2] Assigning " + p + " to shuttle (laser: " + ShipInteriorMod2.ShuttleHasLaser(myShuttle) + ") (plasma: " + ShipInteriorMod2.ShuttleHasPlasma(myShuttle) + ") (torpedo: " + ShipInteriorMod2.ShuttleHasTorp(myShuttle) + ")");

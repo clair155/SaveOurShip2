@@ -1436,10 +1436,10 @@ namespace SaveOurShip2
 				{
 					p.mindState.duty.transportersGroup = 1;
 					VehiclePawn myShuttle = shuttlesToBeFilled.Where(shuttle => p.CanReserveAndReach(shuttle, PathEndMode.Touch, Danger.Deadly)).RandomElement();
-					if (myShuttle != null && myShuttle.GetNextAvailableHandler(HandlingType.Movement) != null)
+					if (myShuttle != null && myShuttle.GetNextAvailableHandler(p, HandlingType.Movement) != null)
 					{
-						myShuttle.PromptToBoardVehicle(p, myShuttle.GetNextAvailableHandler(HandlingType.Movement));
-						if (myShuttle.GetNextAvailableHandler(HandlingType.Movement) == null)
+						myShuttle.PromptToBoardVehicle(p, myShuttle.GetNextAvailableHandler(p, HandlingType.Movement));
+						if (myShuttle.GetNextAvailableHandler(p, HandlingType.Movement) == null)
 							shuttlesToBeFilled.Remove(myShuttle);
 						if (!shuttlesWantingBoarders.Contains(myShuttle))
 							shuttlesWantingBoarders.Add(myShuttle);
