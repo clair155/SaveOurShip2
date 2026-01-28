@@ -114,7 +114,7 @@
 	<SoS.RemoveWrecksCommand>Remove wreck</SoS.RemoveWrecksCommand>
 	<SoS.RemoveWrecksCommandDesc>Remove target wreck from this map</SoS.RemoveWrecksCommandDesc>
 	<!-- placeworkers -->
-	<SoS.PlaceOnShipHull>Must place on owned ship hull.</SoS.PlaceOnShipHull>
+	<SoS.PlaceOnShipHull>Must place on owned ship hull plating (floor).</SoS.PlaceOnShipHull>
 	<SoS.EnginePlaceRotation>Engines must face the same way!</SoS.EnginePlaceRotation>
 	<!-- comms/trade -->
 	<SoS.TradeComms>Communicating with {0}</SoS.TradeComms>
