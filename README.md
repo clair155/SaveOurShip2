@@ -19,9 +19,9 @@ SoS2's return would not have been possible without the tireless work of communit
 
 2.7 and 2.8 Maintainer: Boris(Bqr1s on Github)
 
-Testers: Dreamingofstarlight(Lunarium), I Forgot, Sym/Grimmy, Clever Ape, Dragoncri, Epoch_soc, Doubleface1369, Stylish, Splinter, TheGruntBox, Zeah, Svanovsky, Rappers101, Pikita, the pelusho, Destro, Djrvywfbjr, Ms Mommy Memer, Zym, Balarak, H.G., touhou_lover, Alerios, paradox
+Testers: Dreamingofstarlight(Lunarium), I Forgot, Sym/Grimmy, Clever Ape, Dragoncri, Epoch_soc, Doubleface1369, Stylish, Splinter, TheGruntBox, Zeah, Svanovsky, Rappers101, Pikita, the pelusho, Destro, Djrvywfbjr, Ms Mommy Memer, Zym, Balarak, H.G., touhou_lover, Alerios, paradox, Grimdoll, Mintcat, Belinko, phrog, Lucius, Ariel, Leblanche, Ambir, tenmei, Obviously Evil, Djohaal
 
-Submod Support: Ms Mommy Memer, I Forgot, Cruel Moose and thamuzz
+Submod Support: Ms Mommy Memer, I Forgot, Cruel Moose, thamuzz and Belinko
 
 Contributors: Boris, SonicTHI, Owlchemist, Oskar Potocki, Thamuzz1331, Trollam, K', Sarg, Karim, Saakra, Revolus, MatthewTeply, dkargin, HG, Morphium, Halno, Argón, DianaWinters, UrbanMonkey, M.A.G.Gen., Epicguru, sdanchenko, m00nl1ght-dev, Shinrar, Hanssen, Rimworld Mod Korean, Cruel Moose
 
