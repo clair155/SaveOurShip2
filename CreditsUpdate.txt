@@ -1,6 +1,5 @@
+Testers:
+Grimdoll, Mintcat, Belinko, phrog, Lucius, Ariel, Leblanche, Ambir, tenmei, Obviously Evil, Djohaal
+
+Submod support:
 Belinko
-Grimdoll
-Mintcat
-phrog
-Lucius
-Ariel
