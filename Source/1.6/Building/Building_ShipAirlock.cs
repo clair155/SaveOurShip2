@@ -15,7 +15,9 @@ namespace SaveOurShip2
 {
 	public class Building_ShipAirlock : Building_Door
 	{
-		public override bool ExchangeVacuum => false;
+		// Very similar to base door function, overiding to avoid dealing with
+		// Harmony patches to base door function.
+		public override bool ExchangeVacuum => Open;
 
 		List<Building> extenders = new List<Building>();
 
@@ -93,7 +95,8 @@ namespace SaveOurShip2
 			//enemy pawns can pass through their doors if outside or with EVA when player is present
 			if (p.Map.IsSpace() && p.Faction != Faction.OfPlayer && Outerdoor())
 			{
-				if (!(ShipInteriorMod2.ExposedToOutside(p.GetRoom()) || (p.CanSurviveVacuum() && (mapComp.ShipMapState != ShipMapState.inCombat || p.Map.mapPawns.AnyColonistSpawned)) || p.CurJobDef == ResourceBank.JobDefOf.FleeVacuum))
+				bool colonistPresent = p.Map.mapPawns.AllPawnsSpawned.Any(pawn => pawn.Faction == Faction.OfPlayer);
+				if (!(ShipInteriorMod2.ExposedToOutside(p.GetRoom()) || (p.CanSurviveVacuum() && (mapComp.ShipMapState != ShipMapState.inCombat || colonistPresent)) || p.CurJobDef == ResourceBank.JobDefOf.FleeVacuum))
 					return false;
 			}
 			Lord lord = p.GetLord();
@@ -175,6 +178,7 @@ namespace SaveOurShip2
 		}
 		public override void DeSpawn(DestroyMode mode = DestroyMode.Vanish)
 		{
+
 			if (docked)
 			{
 				DeSpawnDock();
@@ -245,6 +249,10 @@ namespace SaveOurShip2
 			for (int i = 0; i < 2; i++) //find first extender, check opposite for other, same rot, not facing airlock
 			{
 				IntVec3 v = Position + GenAdj.CardinalDirections[i];
+				if (!v.InBounds(Map))
+				{
+					return false;
+				}
 				Thing first = v.GetFirstThingWithComp<CompDockExtender>(Map);
 				if (first == null)
 					continue;
@@ -374,52 +382,68 @@ namespace SaveOurShip2
 				room.Temperature = (Position + rot).GetRoom(Map).Temperature;
 			docked = true;
 		}
-		public void DeSpawnDock(bool force = false)
+		private void DeSpawnDockImpl(bool force)
 		{
-			if (unfoldComp == null)
-				Log.Error("UnfoldComp was null when despawning dock");
-			if (mapComp == null)
-				Log.Error("ShipMapComp was null when despawning dock");
-			if (extenders is null)
-				Log.Error($"Extenders collection is null when despawning dock");
-			else if (extenders.Contains(null))
-				Log.Error("Extenders has a null building in its collection; this may trip up foreach loop during despawning dock");
-			unfoldComp.Target = 0.0f;
-			if (mapComp.Docked.Contains(this)) //was docked to ship
+            if (unfoldComp == null)
+                Log.Error("UnfoldComp was null when despawning dock");
+            if (mapComp == null)
+                Log.Error("ShipMapComp was null when despawning dock");
+            if (extenders is null)
+                Log.Error($"Extenders collection is null when despawning dock");
+            else if (extenders.Contains(null))
+                Log.Error("Extenders has a null building in its collection; this may trip up foreach loop during despawning dock");
+            unfoldComp.Target = 0.0f;
+            if (mapComp.Docked.Contains(this)) //was docked to ship
+            {
+                dockedTo = null;
+                mapComp.Docked.Remove(this);
+                if (!mapComp.AnyShipCanMove()) //if any ship got stuck and stop move
+                {
+                    mapComp.MapFullStop();
+                }
+            }
+            if (extenders.Any())
+            {
+                if (extenders.Count > 3)
+                {
+                    FleckMaker.ThrowDustPuff(extenders[extenders.Count - 1].Position, Map, 1f);
+                    FleckMaker.ThrowDustPuff(extenders[extenders.Count - 3].Position, Map, 1f);
+                }
+                List<Building> toDestroy = new List<Building>();
+                foreach (Building building in extenders.Where(b => b != null && !b.Destroyed))
+                {
+                    if (!force)
+                    {
+                        var comp = building.TryGetComp<CompDockExtender>();
+                        if (comp != null)
+                            comp.removedByDock = true;
+                    }
+                    toDestroy.Add(building);
+                }
+                foreach (Building building in toDestroy)
+                {
+                    if (building != null && !building.Destroyed)
+                        building.Destroy();
+                }
+                extenders.Clear();
+            }
+            docked = false;
+        }
+
+        public void DeSpawnDock(bool force = false)
+		{
+			try
 			{
-				dockedTo = null;
-				mapComp.Docked.Remove(this);
-				if (!mapComp.AnyShipCanMove()) //if any ship got stuck and stop move
-				{
-					mapComp.MapFullStop();
-				}
+				DeSpawnDockImpl(force);
 			}
-			if (extenders.Any())
+			catch(Exception ex)
 			{
-				if (extenders.Count > 3)
-				{
-					FleckMaker.ThrowDustPuff(extenders[extenders.Count - 1].Position, Map, 1f);
-					FleckMaker.ThrowDustPuff(extenders[extenders.Count - 3].Position, Map, 1f);
-				}
-				List<Building> toDestroy = new List<Building>();
-				foreach (Building building in extenders.Where(b => !b.Destroyed))
-				{
-					if (!force)
-					{
-						var comp = building.TryGetComp<CompDockExtender>();
-						if (comp != null)
-							comp.removedByDock = true;
-					}
-					toDestroy.Add(building);
-				}
-				foreach (Building building in toDestroy)
-				{
-					if (!building.Destroyed)
-						building.Destroy();
-				}
-				extenders.Clear();
-			}
-			docked = false;
+				Log.Error("Error despawning ship docking part for the airlock: " + ex.Message);
+				// Ideal fix would be to refactor code for docked parts location so that it can be called se[parately
+				// then ckeck docd area for bugged docked parts and remove them in this failsafe.
+				docked = false;
+                extenders.Clear();
+            }
 		}
 		public void ResetDock()
 		{

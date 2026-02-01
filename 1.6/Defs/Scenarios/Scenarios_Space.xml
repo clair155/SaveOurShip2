@@ -1,22 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Defs>
-	<ScenarioDef Name="SoSDerelict">
+	<ScenarioDef Name="SoSDerelict" ParentName="ScenarioBase">
 		<defName>SoSDerelict</defName>
 		<label>Derelict Ship</label>
 		<description>The three of you awake in your cryptosleep sarcophagi, stirred from slumber by an automated warning. A storm of micrometeorites has torn several breaches in your ship's hull and destroyed its Johnson-Tanaka drive. Trapped in orbit above an unknown rimworld, you must patch up your damaged ship and make long-term survival plans.</description>
 		<scenario>
 			<summary>Three survivors aboard a damaged starship.</summary>
-			<playerFaction>
-				<def>PlayerFaction</def>
-				<factionDef>PlayerColony</factionDef>
-			</playerFaction>
-			<surfaceLayer>
-				<def>SurfaceLayerFixed</def>
-				<tag>Surface</tag>
-				<layer>Surface</layer>
-				<settingsDef>Surface</settingsDef>
-				<hide>true</hide>
-			</surfaceLayer>
 			<parts>
 				<!-- Config pages -->
 				<li Class="ScenPart_ConfigPage_ConfigureStartingPawns">
@@ -107,23 +96,12 @@
 			</parts>
 		</scenario>
 	</ScenarioDef>
-	<ScenarioDef Name="SoSDungeon">
+	<ScenarioDef Name="SoSDungeon" ParentName="ScenarioBase">
 		<defName>SoSDungeon</defName>
 		<label>Space Station</label>
 		<description>You left home to join a crew bound for the stars, signed up for a long-duration operation out on the Rim.\n\nAt least, that's what you thought you were getting into.\n\nUpon awakening in your cryptosleep casket to the sound of warning klaxons, you find yourself on a space station. Likely abandoned, the life support and artificial ecosystem have run amok, filling the habitation spheres with wild plant life. How long have you been buried in here?</description>
 		<scenario>
 			<summary>Three survivors aboard a space station.</summary>
-			<playerFaction>
-				<def>PlayerFaction</def>
-				<factionDef>PlayerColony</factionDef>
-			</playerFaction>
-			<surfaceLayer>
-				<def>SurfaceLayerFixed</def>
-				<tag>Surface</tag>
-				<layer>Surface</layer>
-				<settingsDef>Surface</settingsDef>
-				<hide>true</hide>
-			</surfaceLayer>
 			<parts>
 				<!-- Config pages -->
 				<li Class="ScenPart_ConfigPage_ConfigureStartingPawns">
@@ -214,23 +192,12 @@
 			</parts>
 		</scenario>
 	</ScenarioDef>
-	<ScenarioDef>
+	<ScenarioDef ParentName="ScenarioBase">
 		<defName>SoSLoadShip</defName>
 		<label>Load Ship</label>
 		<description>Experimental feature - expect a ton of red and yellow alerts. These may or may not be harmless. If you encounter issues, give it a few second, then try loading and saving the game. If your ship didn't make it, we need your Player.log file in order to figure out what's going on!\n\nStart with a ship that has left for another planet. You can edit the scenario and select your saved ship bellow. You can also choose to discard logs and tales, lowering your save size. This will disable many other types of scenario part, such as starting pawns.</description>
 		<scenario>
 			<summary>Start with a ship that has left for another planet.</summary>
-			<playerFaction>
-				<def>PlayerFaction</def>
-				<factionDef>PlayerColony</factionDef>
-			</playerFaction>
-			<surfaceLayer>
-				<def>SurfaceLayerFixed</def>
-				<tag>Surface</tag>
-				<layer>Surface</layer>
-				<settingsDef>Surface</settingsDef>
-				<hide>true</hide>
-			</surfaceLayer>
 			<parts>
 				<li Class="ScenPart_ConfigPage_ConfigureStartingPawns">
 					<def>ConfigPage_ConfigureStartingPawns</def>

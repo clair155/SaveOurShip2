@@ -14,6 +14,7 @@
 		<avoidWander>true</avoidWander>
 		<changeable>false</changeable>
 		<holdSnowOrSand>false</holdSnowOrSand>
+		<preventCraters>true</preventCraters>
 		<affordances>
 			<li>Light</li>
 			<li>Medium</li>
@@ -23,6 +24,7 @@
 			<li>Space</li>
 		</tags>
 		<extinguishesFire>true</extinguishesFire>
+		<canEverTerraform>false</canEverTerraform>
 	</TerrainDef>
 	<TerrainDef Name="ShipFloorBase" Abstract="True">
 		<layerable>true</layerable>
@@ -41,6 +43,7 @@
 		<pollutionOverlayTexturePath>Terrain/Surfaces/PollutionFloorSmooth</pollutionOverlayTexturePath>
 		<pollutionColor>(1, 1, 1, 0.8)</pollutionColor>
 		<pollutionOverlayScale>(0.75, 0.75)</pollutionOverlayScale>
+		<canEverTerraform>false</canEverTerraform>
 	</TerrainDef>
 	<TerrainDef ParentName="ShipFloorBase">
 		<defName>FakeFloorInsideShip</defName>

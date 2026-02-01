@@ -37,15 +37,13 @@ namespace SaveOurShip2
 			return false;
 		}
 
-		public static void TryLinkMapToWorldObject(Map map, PlanetTile tile)
+		public static void FixWorldObjectFaction(PlanetTile tile)
 		{
-			// For now, issue was found with Escape Ship map due to that map not being linked to world object
-			// So, fixing onlyy that case for now
+			// The issue is it is possible to scan or to arrive to landed ship whithout it's world object faction set to player.
+			// Which needs to be fixed to make it abandonable.
 			WorldObject worldObject = Find.WorldObjects.ObjectsAt(tile).FirstOrDefault(t => true);
-			if (worldObject != null && worldObject.Faction != Faction.OfPlayer)
+			if (worldObject != null && worldObject.Faction != Faction.OfPlayer && worldObject.def.defName == "EscapeShip")
 			{
-				// Link map to Escap ship object sho that it gets "Home" icon and when selected on world map, there is Abadon option 
-				map.info.parent = (MapParent)worldObject;
 				worldObject.SetFaction(Faction.OfPlayer);
 			}
 		}

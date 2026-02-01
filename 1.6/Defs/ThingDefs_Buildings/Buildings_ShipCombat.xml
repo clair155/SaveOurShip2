@@ -130,10 +130,10 @@
 			<li>ShipShields</li>
 		</researchPrerequisites>
 		<costList>
-			<Plasteel>120</Plasteel>
-			<Silver>800</Silver>
-			<Steel>40</Steel>
-			<ComponentSpacer>12</ComponentSpacer>
+			<Plasteel>60</Plasteel>
+			<Silver>400</Silver>
+			<Steel>20</Steel>
+			<ComponentSpacer>6</ComponentSpacer>
 		</costList>
 		<seeThroughFog>true</seeThroughFog>
         <modExtensions>
@@ -191,10 +191,10 @@
 			<li>ShipShields</li>
 		</researchPrerequisites>
 		<costList>
-			<Plasteel>30</Plasteel>
-			<Silver>200</Silver>
+			<Plasteel>20</Plasteel>
+			<Silver>150</Silver>
 			<Steel>10</Steel>
-			<ComponentSpacer>4</ComponentSpacer>
+			<ComponentSpacer>3</ComponentSpacer>
 		</costList>
 		<seeThroughFog>true</seeThroughFog>
         <modExtensions>
@@ -266,6 +266,35 @@
 			<li>ShipHeatsink</li>
 		</researchPrerequisites>
 	</ThingDef>
+
+	<ThingDef ParentName="ShipHeatConduit" Name="HiddenShipHeatConduit">
+    <defName>HiddenShipHeatConduit</defName>
+    <label>hidden thermal conduit</label>
+    <description>A liquid conduit for moving heat around a starship. Hidden under ship parts</description>
+	<thingClass>Building</thingClass>
+    <graphicData>
+      <color>(0,0,0,0)</color>
+      <shaderType>Transparent</shaderType>
+    </graphicData>
+    <statBases>
+		<MaxHitPoints>160</MaxHitPoints>
+		<WorkToBuild>100</WorkToBuild>
+		<Flammability>0</Flammability>
+		<Beauty>0</Beauty>
+    </statBases>
+    <uiIconPath>Things/Building/Ship/CoolantConduit_MenuIcon</uiIconPath>
+	<costList>
+		<Steel>2</Steel>
+		<Plasteel>2</Plasteel>
+	</costList>
+    <building>
+      <ai_neverTrashThis>true</ai_neverTrashThis>
+      <isTargetable>false</isTargetable>
+	  <canBeDamagedByAttacks>false</canBeDamagedByAttacks>
+      <expandHomeArea>false</expandHomeArea>
+    </building>
+  </ThingDef>
+
 	<!-- heatsinks -->
 	<DesignatorDropdownGroupDef>
 		<defName>Ship_Heatsinks</defName>
@@ -315,10 +344,9 @@
 		<passability>Impassable</passability>
 		<seeThroughFog>true</seeThroughFog>
 		<costList>
-			<Steel>100</Steel>
-			<Plasteel>25</Plasteel>
-			<ComponentSpacer>2</ComponentSpacer>
-			<ComponentIndustrial>2</ComponentIndustrial>
+			<Steel>60</Steel>
+			<Plasteel>15</Plasteel>
+			<ComponentSpacer>1</ComponentSpacer>
 		</costList>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipHeat">
@@ -366,10 +394,9 @@
 		<passability>Impassable</passability>
 		<seeThroughFog>true</seeThroughFog>
 		<costList>
-			<Steel>500</Steel>
-			<Plasteel>125</Plasteel>
-			<ComponentSpacer>10</ComponentSpacer>
-			<ComponentIndustrial>10</ComponentIndustrial>
+			<Steel>300</Steel>
+			<Plasteel>75</Plasteel>
+			<ComponentSpacer>5</ComponentSpacer>
 		</costList>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipHeat">
@@ -413,9 +440,8 @@
 			<Beauty>-2</Beauty>
 		</statBases>
 		<costList>
-			<Steel>100</Steel>
-			<Plasteel>25</Plasteel>
-			<ComponentSpacer>1</ComponentSpacer>
+			<Steel>80</Steel>
+			<Plasteel>20</Plasteel>
 			<ComponentIndustrial>1</ComponentIndustrial>
 		</costList>
 		<comps>
@@ -452,9 +478,8 @@
 			<Beauty>-2</Beauty>
 		</statBases>
 		<costList>
-			<Steel>500</Steel>
-			<Plasteel>125</Plasteel>
-			<ComponentSpacer>5</ComponentSpacer>
+			<Steel>400</Steel>
+			<Plasteel>100</Plasteel>
 			<ComponentIndustrial>5</ComponentIndustrial>
 		</costList>
 		<comps>
@@ -632,6 +657,7 @@
 					</thingDefs>
 				</fuelFilter>
 				<fuelCapacity>25</fuelCapacity>
+				<fuelMultiplier>2</fuelMultiplier>
 				<initialFuelPercent>1</initialFuelPercent>
 				<autoRefuelPercent>0.9</autoRefuelPercent>
 				<targetFuelLevelConfigurable>true</targetFuelLevelConfigurable>
@@ -651,7 +677,7 @@
 		</building>
 		<costList>
 			<Steel>100</Steel>
-			<Uranium>50</Uranium>
+			<Uranium>25</Uranium>
 			<Plasteel>80</Plasteel>
 			<ComponentSpacer>2</ComponentSpacer>
 		</costList>
@@ -806,7 +832,7 @@
 					</thingDefs>
 				</fuelFilter>
 				<fuelCapacity>50</fuelCapacity>
-				<fuelMultiplier>0.5</fuelMultiplier>
+				<fuelMultiplier>1</fuelMultiplier>
 				<initialFuelPercent>1</initialFuelPercent>
 				<autoRefuelPercent>0.9</autoRefuelPercent>
 				<targetFuelLevelConfigurable>true</targetFuelLevelConfigurable>
@@ -831,7 +857,7 @@
 		</building>
 		<costList>
 			<Steel>150</Steel>
-			<Uranium>200</Uranium>
+			<Uranium>100</Uranium>
 			<Plasteel>110</Plasteel>
 			<ComponentSpacer>6</ComponentSpacer>
 		</costList>
@@ -966,7 +992,7 @@
 					</thingDefs>
 				</fuelFilter>
 				<fuelCapacity>100</fuelCapacity>
-				<fuelMultiplier>0.25</fuelMultiplier>
+				<fuelMultiplier>0.5</fuelMultiplier>
 				<initialFuelPercent>1</initialFuelPercent>
 				<autoRefuelPercent>0.9</autoRefuelPercent>
 				<targetFuelLevelConfigurable>true</targetFuelLevelConfigurable>
@@ -991,7 +1017,7 @@
 		</building>
 		<costList>
 			<Steel>500</Steel>
-			<Uranium>800</Uranium>
+			<Uranium>400</Uranium>
 			<Plasteel>200</Plasteel>
 			<ComponentSpacer>12</ComponentSpacer>
 		</costList>

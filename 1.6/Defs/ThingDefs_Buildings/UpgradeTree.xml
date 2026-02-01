@@ -6,7 +6,7 @@
 			<li>
 				<key>ArmorMinimal</key>
 				<label>Minimal Armor</label>
-				<description>Retrofit the shuttle's hull to minimize weight, trading armor for speed and fuel efficiency.\n&lt;color=#bb8f04&gt;-10% blunt armor, -20% sharp armor, +6 flight speed, +100 cargo capacity, -10 fuel consumption rate&lt;/color&gt;</description>
+				<description>Retrofit the shuttle's hull to minimize weight, trading armor for speed and fuel efficiency.\n&lt;color=#bb8f04&gt;-10% blunt armor, -20% sharp armor, +6 flight speed, +0.5 ground speed, +100 cargo capacity, -10 fuel consumption rate&lt;/color&gt;</description>
 				<icon>UI/ShuttleUpgrades/ArmorMinimal</icon>
 				<work>6000</work>
 				<gridCoordinate>(1,1)</gridCoordinate>
@@ -35,6 +35,11 @@
 								<value>100</value>
 								<type>Add</type>
 							</li>
+							<li>
+								<def>MoveSpeed</def>
+								<value>0.5</value>
+								<type>Add</type>
+							</li>
 						</vehicleStats>
 						<statCategories>
 							<li>
@@ -54,13 +59,13 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<Plasteel>10</Plasteel>
+					<Plasteel>5</Plasteel>
 				</ingredients>
 			</li>
 			<li>
 				<key>ArmorHeavy</key>
 				<label>Heavy Armor</label>
-				<description>Retrofit the shuttle's hull with additional armor plating.\n&lt;color=#bb8f04&gt;+40% blunt armor, +40% sharp armor, -6 flight speed, -250 cargo capacity, +10 fuel consumption rate&lt;/color&gt;</description>
+				<description>Retrofit the shuttle's hull with additional armor plating.\n&lt;color=#bb8f04&gt;+40% blunt armor, +40% sharp armor, -6 flight speed, -0.5 ground speed, -250 cargo capacity, +10 fuel consumption rate&lt;/color&gt;</description>
 				<icon>UI/ShuttleUpgrades/ArmorHeavy</icon>
 				<work>6000</work>
 				<gridCoordinate>(4,1)</gridCoordinate>
@@ -89,6 +94,11 @@
 								<value>-250</value>
 								<type>Add</type>
 							</li>
+							<li>
+								<def>MoveSpeed</def>
+								<value>-0.5</value>
+								<type>Add</type>
+							</li>
 						</vehicleStats>
 						<statCategories>
 							<li>
@@ -108,7 +118,7 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<Plasteel>60</Plasteel>
+					<Plasteel>30</Plasteel>
 				</ingredients>
 			</li>
 			<li>
@@ -150,8 +160,8 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>2</ComponentSpacer>
-					<Steel>25</Steel>
+					<ComponentSpacer>1</ComponentSpacer>
+					<Steel>15</Steel>
 				</ingredients>
 			</li>
 			<li>
@@ -186,15 +196,15 @@
 					<li>ArchotechHullConversion</li>
 				</researchPrerequisites>
 				<ingredients>
-					<Plasteel>10</Plasteel>
-					<Gold>10</Gold>
-					<ArchotechExoticParticles>2</ArchotechExoticParticles>
+					<Plasteel>5</Plasteel>
+					<Gold>5</Gold>
+					<ArchotechExoticParticles>1</ArchotechExoticParticles>
 				</ingredients>
 			</li>
 			<li>
 				<key>EngineOverdriven</key>
 				<label>Overdriven Engine</label>
-				<description>Boost reactor output and overdrive the primary engines.\n&lt;color=#bb8f04&gt;+12 flight speed, +20 fuel consumption rate&lt;/color&gt;</description>
+				<description>Boost reactor output and overdrive the primary engines.\n&lt;color=#bb8f04&gt;+12 flight speed, +1 ground move speed, +20 fuel consumption rate&lt;/color&gt;</description>
 				<icon>UI/ShuttleUpgrades/EngineOverdriven</icon>
 				<work>8000</work>
 				<gridCoordinate>(1,4)</gridCoordinate>
@@ -204,6 +214,11 @@
 							<li>
 								<def>FlightSpeed</def>
 								<value>12</value>
+								<type>Add</type>
+							</li>
+							<li>
+								<def>MoveSpeed</def>
+								<value>1</value>
 								<type>Add</type>
 							</li>
 						</vehicleStats>
@@ -226,13 +241,13 @@
 				</researchPrerequisites>
 				<ingredients>
 					<ComponentSpacer>1</ComponentSpacer>
-					<Uranium>20</Uranium>
+					<Uranium>10</Uranium>
 				</ingredients>
 			</li>
 			<li>
 				<key>EngineThrusters</key>
 				<label>Auxiliary Thrusters</label>
-				<description>Installing additional thrusters improves the shuttle's chance of dodging enemy point-defense systems.\n&lt;color=#bb8f04&gt;+15% ship combat dodge chance, +5 fuel consumption rate&lt;/color&gt;</description>
+				<description>Installing additional thrusters improves the shuttle's chance of dodging enemy point-defense systems.\n&lt;color=#bb8f04&gt;+7% ship combat dodge chance, +5 fuel consumption rate&lt;/color&gt;</description>
 				<icon>UI/ShuttleUpgrades/EngineThrusters</icon>
 				<work>8000</work>
 				<gridCoordinate>(4,4)</gridCoordinate>
@@ -241,7 +256,7 @@
 						<vehicleStats>
 							<li>
 								<def>SoS2CombatDodgeChance</def>
-								<value>25</value>
+								<value>13</value>
 								<type>Add</type>
 							</li>
 						</vehicleStats>
@@ -263,14 +278,14 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>2</ComponentSpacer>
-					<Plasteel>10</Plasteel>
+					<ComponentSpacer>1</ComponentSpacer>
+					<Plasteel>5</Plasteel>
 				</ingredients>
 			</li>
 			<li>
 				<key>EngineMule</key>
 				<label>M.U.L.E. Module</label>
-				<description>Utilize momentum-redirection technology to increase the mass of cargo this shuttle can carry, at the cost of greatly reduced flight speed.\n&lt;color=#bb8f04&gt;-8 flight speed, +250 cargo capacity&lt;/color&gt;</description>
+				<description>Utilize momentum-redirection technology to increase the mass of cargo this shuttle can carry, at the cost of greatly reduced flight speed.\n&lt;color=#bb8f04&gt;-8 flight speed, -0.66 ground move speed, +250 cargo capacity&lt;/color&gt;</description>
 				<icon>UI/ShuttleUpgrades/EngineMule</icon>
 				<work>8000</work>
 				<gridCoordinate>(7,4)</gridCoordinate>
@@ -287,6 +302,11 @@
 								<value>250</value>
 								<type>Add</type>
 							</li>
+							<li>
+								<def>MoveSpeed</def>
+								<value>-0.66</value>
+								<type>Add</type>
+							</li>
 						</vehicleStats>
 					</li>
 				</upgrades>
@@ -300,14 +320,14 @@
 				</researchPrerequisites>
 				<ingredients>
 					<ComponentSpacer>1</ComponentSpacer>
-					<Plasteel>10</Plasteel>
-					<Uranium>10</Uranium>
+					<Plasteel>5</Plasteel>
+					<Uranium>5</Uranium>
 				</ingredients>
 			</li>
 			<li>
 				<key>EngineArcho</key>
 				<label>Archotech Engine</label>
-				<description>[WHAT SAIL CARRIES YOU?\nPUSH AGAINST WHICH FIRMAMENT?\nTHE ANSWER IS: YES]\n&lt;color=#bb8f04&gt;+12 flight speed, +15% ship combat dodge chance, +100 cargo capacity&lt;/color&gt;</description>
+				<description>[WHAT SAIL CARRIES YOU?\nPUSH AGAINST WHICH FIRMAMENT?\nTHE ANSWER IS: YES]\n&lt;color=#bb8f04&gt;+12 flight speed, +1 ground move speed, +13% ship combat dodge chance, +100 cargo capacity&lt;/color&gt;</description>
 				<icon>UI/ShuttleUpgrades/EngineArcho</icon>
 				<work>12000</work>
 				<gridCoordinate>(10,4)</gridCoordinate>
@@ -329,6 +349,11 @@
 								<value>100</value>
 								<type>Add</type>
 							</li>
+							<li>
+								<def>MoveSpeed</def>
+								<value>1</value>
+								<type>Add</type>
+							</li>
 						</vehicleStats>
 					</li>
 				</upgrades>
@@ -341,9 +366,9 @@
 					<li>ArchotechEngine</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>4</ComponentSpacer>
-					<ArchotechExoticParticles>2</ArchotechExoticParticles>
-					<Gold>20</Gold>
+					<ComponentSpacer>2</ComponentSpacer>
+					<ArchotechExoticParticles>1</ArchotechExoticParticles>
+					<Gold>10</Gold>
 				</ingredients>
 			</li>
 			<li>
@@ -389,10 +414,10 @@
 					<li>ShipShields</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>6</ComponentSpacer>
-					<Steel>120</Steel>
-					<Plasteel>40</Plasteel>
-					<Silver>40</Silver>
+					<ComponentSpacer>3</ComponentSpacer>
+					<Steel>60</Steel>
+					<Plasteel>20</Plasteel>
+					<Silver>20</Silver>
 				</ingredients>
 			</li>
 			<li>
@@ -437,10 +462,10 @@
 					<li>ShipShields</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>10</ComponentSpacer>
-					<Steel>180</Steel>
-					<Plasteel>80</Plasteel>
-					<Silver>100</Silver>
+					<ComponentSpacer>5</ComponentSpacer>
+					<Steel>90</Steel>
+					<Plasteel>40</Plasteel>
+					<Silver>50</Silver>
 				</ingredients>
 			</li>
 			<li>
@@ -487,11 +512,11 @@
 					<li>ArchotechHeatsink</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>12</ComponentSpacer>
-					<Gold>200</Gold>
-					<Silver>200</Silver>
-					<Plasteel>80</Plasteel>
-					<ArchotechExoticParticles>6</ArchotechExoticParticles>
+					<ComponentSpacer>6</ComponentSpacer>
+					<Gold>100</Gold>
+					<Silver>100</Silver>
+					<Plasteel>40</Plasteel>
+					<ArchotechExoticParticles>3</ArchotechExoticParticles>
 				</ingredients>
 			</li>
 			<li>
@@ -526,15 +551,15 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>2</ComponentSpacer>
-					<MedicineIndustrial>10</MedicineIndustrial>
-					<Plasteel>10</Plasteel>
+					<ComponentSpacer>1</ComponentSpacer>
+					<MedicineIndustrial>5</MedicineIndustrial>
+					<Plasteel>5</Plasteel>
 				</ingredients>
 			</li>
 			<li>
 				<key>CargoCloaking</key>
 				<label>Cloaking Device</label>
-				<description>Install a miniaturized cloaking device to improve dodge chance in combat. Its heatsinks also slightly boost shield capacity. When Odyssey is active, this device will also act as a signal jammer.\n&lt;color=#bb8f04&gt;+25% ship combat dodge chance, +50 heatsink, -500 cargo capacity&lt;/color&gt;</description>
+				<description>Install a miniaturized cloaking device to improve dodge chance in combat. Its heatsinks also slightly boost shield capacity. When Odyssey is active, this device will also act as a signal jammer.\n&lt;color=#bb8f04&gt;+13% ship combat dodge chance, +50 heatsink, -500 cargo capacity&lt;/color&gt;</description>
 				<icon>UI/ShuttleUpgrades/CargoCloaking</icon>
 				<work>12000</work>
 				<gridCoordinate>(4,10)</gridCoordinate>
@@ -548,7 +573,7 @@
 							</li>
 							<li>
 								<def>SoS2CombatDodgeChance</def>
-								<value>50</value>
+								<value>25</value>
 								<type>Add</type>
 							</li>
 						</vehicleStats>
@@ -573,10 +598,10 @@
 					<li>ShipCloaking</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>6</ComponentSpacer>
-					<Gold>20</Gold>
-					<Plasteel>60</Plasteel>
-					<Steel>60</Steel>
+					<ComponentSpacer>3</ComponentSpacer>
+					<Gold>10</Gold>
+					<Plasteel>30</Plasteel>
+					<Steel>30</Steel>
 				</ingredients>
 			</li>
 			<li>
@@ -614,10 +639,10 @@
 					<li>ShipHeatsink</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>2</ComponentSpacer>
-					<ComponentIndustrial>2</ComponentIndustrial>
-					<Steel>100</Steel>
-					<Plasteel>25</Plasteel>
+					<ComponentSpacer>1</ComponentSpacer>
+					<ComponentIndustrial>1</ComponentIndustrial>
+					<Steel>50</Steel>
+					<Plasteel>15</Plasteel>
 				</ingredients>
 			</li>
 			<li>
@@ -647,9 +672,9 @@
 					<li>ArchotechExotics</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>8</ComponentSpacer>
-					<Jade>200</Jade>
-					<ArchotechExoticParticles>6</ArchotechExoticParticles>
+					<ComponentSpacer>4</ComponentSpacer>
+					<Jade>100</Jade>
+					<ArchotechExoticParticles>3</ArchotechExoticParticles>
 				</ingredients>
 			</li>
 			<li>
@@ -686,8 +711,8 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentIndustrial>2</ComponentIndustrial>
-					<Steel>10</Steel>
+					<ComponentIndustrial>1</ComponentIndustrial>
+					<Steel>5</Steel>
 				</ingredients>
 			</li>
 			<li>
@@ -724,8 +749,8 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentIndustrial>4</ComponentIndustrial>
-					<Steel>20</Steel>
+					<ComponentIndustrial>2</ComponentIndustrial>
+					<Steel>10</Steel>
 				</ingredients>
 			</li>
 			<li>
@@ -762,8 +787,8 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentIndustrial>6</ComponentIndustrial>
-					<Steel>30</Steel>
+					<ComponentIndustrial>3</ComponentIndustrial>
+					<Steel>15</Steel>
 				</ingredients>
 			</li>
 			<li>
@@ -800,8 +825,8 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentIndustrial>8</ComponentIndustrial>
-					<Steel>40</Steel>
+					<ComponentIndustrial>4</ComponentIndustrial>
+					<Steel>20</Steel>
 				</ingredients>
 			</li>
 			<li>
@@ -838,8 +863,8 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentIndustrial>10</ComponentIndustrial>
-					<Steel>50</Steel>
+					<ComponentIndustrial>5</ComponentIndustrial>
+					<Steel>25</Steel>
 				</ingredients>
 			</li>
 			<li>
@@ -876,8 +901,8 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentIndustrial>12</ComponentIndustrial>
-					<Steel>60</Steel>
+					<ComponentIndustrial>6</ComponentIndustrial>
+					<Steel>30</Steel>
 				</ingredients>
 			</li>
 			<li>
@@ -914,8 +939,8 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentIndustrial>14</ComponentIndustrial>
-					<Steel>70</Steel>
+					<ComponentIndustrial>7</ComponentIndustrial>
+					<Steel>35</Steel>
 				</ingredients>
 			</li>
 			<li>
@@ -952,8 +977,8 @@
 					<li>ShuttleCargo</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentIndustrial>16</ComponentIndustrial>
-					<Steel>80</Steel>
+					<ComponentIndustrial>8</ComponentIndustrial>
+					<Steel>40</Steel>
 				</ingredients>
 			</li>
 			<li>
@@ -996,10 +1021,10 @@
 					<li>ShipTurretLaser</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>6</ComponentSpacer>
-					<Plasteel>100</Plasteel>
-					<Steel>100</Steel>
-					<Uranium>20</Uranium>
+					<ComponentSpacer>4</ComponentSpacer>
+					<Plasteel>75</Plasteel>
+					<Steel>75</Steel>
+					<Uranium>15</Uranium>
 				</ingredients>
 			</li>
 			<li>
@@ -1042,10 +1067,10 @@
 					<li>ShipTurretPlasma</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>6</ComponentSpacer>
-					<Plasteel>100</Plasteel>
-					<Steel>100</Steel>
-					<Uranium>20</Uranium>
+					<ComponentSpacer>4</ComponentSpacer>
+					<Plasteel>75</Plasteel>
+					<Steel>75</Steel>
+					<Uranium>15</Uranium>
 				</ingredients>
 			</li>
 			<li>
@@ -1132,10 +1157,10 @@
 					<li>ShipTurretLaser</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>6</ComponentSpacer>
-					<Plasteel>100</Plasteel>
-					<Steel>100</Steel>
-					<Uranium>20</Uranium>
+					<ComponentSpacer>4</ComponentSpacer>
+					<Plasteel>75</Plasteel>
+					<Steel>75</Steel>
+					<Uranium>15</Uranium>
 				</ingredients>
 			</li>
 			<li>
@@ -1178,10 +1203,10 @@
 					<li>ShipTurretPlasma</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>6</ComponentSpacer>
-					<Plasteel>100</Plasteel>
-					<Steel>100</Steel>
-					<Uranium>20</Uranium>
+					<ComponentSpacer>4</ComponentSpacer>
+					<Plasteel>75</Plasteel>
+					<Steel>75</Steel>
+					<Uranium>15</Uranium>
 				</ingredients>
 			</li>
 			<li>
@@ -1268,10 +1293,10 @@
 					<li>ShipTurretLaser</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>6</ComponentSpacer>
-					<Plasteel>100</Plasteel>
-					<Steel>100</Steel>
-					<Uranium>20</Uranium>
+					<ComponentSpacer>4</ComponentSpacer>
+					<Plasteel>75</Plasteel>
+					<Steel>75</Steel>
+					<Uranium>15</Uranium>
 				</ingredients>
 			</li>
 			<li>
@@ -1314,10 +1339,10 @@
 					<li>ShipTurretPlasma</li>
 				</researchPrerequisites>
 				<ingredients>
-					<ComponentSpacer>6</ComponentSpacer>
-					<Plasteel>100</Plasteel>
-					<Steel>100</Steel>
-					<Uranium>20</Uranium>
+					<ComponentSpacer>4</ComponentSpacer>
+					<Plasteel>75</Plasteel>
+					<Steel>75</Steel>
+					<Uranium>15</Uranium>
 				</ingredients>
 			</li>
 			<li>
@@ -1393,7 +1418,7 @@
 				<shotsPerBurst>6</shotsPerBurst>
 				<ticksBetweenShots>4</ticksBetweenShots>
 				<ticksBetweenBursts>4</ticksBetweenBursts>
-				<spreadRadius>1</spreadRadius>
+				<forcedMissRadius>1</forcedMissRadius>
 				<label>Pulse</label>
 				<texPath>UI/Gizmos/FireRate_Single</texPath>
 			</li>
@@ -1469,7 +1494,7 @@
 		<fireModes>
 			<li>
 				<shotsPerBurst>1</shotsPerBurst>
-				<spreadRadius>2</spreadRadius>
+				<forcedMissRadius>2</forcedMissRadius>
 				<label>Single Shot</label>
 				<texPath>UI/Gizmos/FireRate_Single</texPath>
 			</li>
@@ -1523,7 +1548,7 @@
 		<fireModes>
 			<li>
 				<shotsPerBurst>1</shotsPerBurst>
-				<spreadRadius>4.9</spreadRadius>
+				<forcedMissRadius>4.9</forcedMissRadius>
 				<ticksBetweenBursts>1500</ticksBetweenBursts>
 				<label>Single</label>
 				<texPath>UI/Gizmos/FireRate_Single</texPath>

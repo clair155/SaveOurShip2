@@ -11,14 +11,27 @@ namespace SaveOurShip2
 		// See DodgeChanceSubmodScaleDef XML comments for details
 		public List<float> multiplierList = new List<float>();
 
+		static bool loggedAdjustment = false;
+
 		public static float GetEffectiveMultiplier()
 		{
 			DodgeChanceSubmodScaleDef multipliers = DefDatabase<DodgeChanceSubmodScaleDef>.GetNamed("DodgeChanceSubmodScale");
-			if (multipliers == null || multipliers.multiplierList.NullOrEmpty())
+			float result = 1f;
+			if (multipliers != null && !multipliers.multiplierList.NullOrEmpty())
 			{
-				return 1f;
+				result = multipliers.multiplierList.Min();
 			}
-			return multipliers.multiplierList.Min();
+			if(ModLister.GetActiveModWithIdentifier(ModIntegration.SpinalEnginesModID, true) != null)
+            {
+				float spinalEnginesMultiplier = 0.4f;
+				result = Mathf.Min(result, spinalEnginesMultiplier);
+				if (!loggedAdjustment)
+				{
+					loggedAdjustment = true;
+					Log.Message("Adjusted TWR Dodge multipler for Spinal Engines on SOS 2 side");
+				}
+			}
+			return result;
 		}
 	}
 }

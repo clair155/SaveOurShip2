@@ -278,6 +278,8 @@
 		<tab>ResearchTabShip</tab>
 		<researchViewX>1</researchViewX>
 		<researchViewY>1.5</researchViewY>
+		<discoveredLetterTitle>About: Decompression and Hypoxia</discoveredLetterTitle>
+		<discoveredLetterText>You now have the technology to create EVA suits. This will protect your colonists from the dangers of vacuum exposure: Decompression and Hypoxia. Decompression is the result of being exposed to the low pressure of space, resulting in bodily injuries and eventually death. Hypoxia is the result of the lack of oxygen in space, causing suffocation followed by death quite quickly. EVA gear, genes, implants and/or a sealed enviroment with life support can provide you with protection from these two dangers of space travel.&#10;&#10;&lt;color=#00FFFF&gt;Save Our Ship 2&lt;/color&gt;</discoveredLetterText>
 		<generalRules>
 		  <rulesStrings>
 			<li>subject->EVA suits</li>

@@ -18,9 +18,14 @@ namespace SaveOurShip2
 		public List<Building_ShipSensor> Sensors = new List<Building_ShipSensor>();
 		public bool MoveShipFlag = false;
 		public bool SlowTimeFlag = false;
+		// If player had already had space map, for tutorial-ish letter.
+		private bool hadSpaceMap = false;
+		private float? previousThreatScale = null;
+		public bool HadSpaceMap => hadSpaceMap;
 		public int nextUniqueMissionID = 0;
 		public const int StarhipBowTimeout = 720000; // 12 days
 		public int LastStarshipBowTick = -StarhipBowTimeout;
+		public int LastFoundAmplifierTick = 0;
 		public Dictionary<Pawn, float> MinorBreakThresholds = new Dictionary<Pawn, float>();
 		public Dictionary<Pawn, float> MajorBreakThresholds = new Dictionary<Pawn, float>();
 		public Dictionary<Pawn, float> ExtremeBreakThresholds = new Dictionary<Pawn, float>();
@@ -82,16 +87,41 @@ namespace SaveOurShip2
 				Log.Warning("SOS2: Insect faction not found! SOS2 gameplay experience will be affected.");
 		}
 
+		// Will show that letter once per save in order not to annoy players
+		private bool difficultyLetterShown = false;
+		public override void WorldComponentTick()
+		{
+			if (Find.TickManager.TicksGame % GenTicks.TickRareInterval == 0)
+            {
+				if (ShipInteriorMod2.FindPlayerShipMap() != null)
+				{
+					hadSpaceMap = true;
+				}
+				if (previousThreatScale != null && previousThreatScale != Find.Storyteller.difficulty.threatScale && hadSpaceMap && !difficultyLetterShown)
+                {
+					difficultyLetterShown = true;
+					Find.LetterStack.ReceiveLetter(TranslatorFormattedStringExtensions.Translate("SoS.Letter.DifficultyChanged"),
+						TranslatorFormattedStringExtensions.Translate("SoS.Letter.DifficultyChangedDesc"), LetterDefOf.PositiveEvent);
+
+				}
+				previousThreatScale = Find.Storyteller.difficulty.threatScale;
+			}
+		}
+
 		public override void ExposeData()
 		{
 			base.ExposeData();
-			//Scribe_Values.Look<int>(ref ShipsHaveInsidesVersion,"SoSVersion",0);
 			Scribe_Collections.Look<string>(ref Unlocks, "Unlocks", LookMode.Value);
 			Scribe_Values.Look<int>(ref PlayerFactionBounty, "PlayerFactionBounty", 0);
 			Scribe_Values.Look<int>(ref LastSporeGiftTick, "LastSporeGiftTick", 0);
 			Scribe_Values.Look<bool>(ref startedEndgame, "StartedEndgame");
 			Scribe_Values.Look<int>(ref nextUniqueMissionID, "UniqueMissionID");
 			Scribe_Values.Look<int>(ref LastStarshipBowTick, "LastStarshipBowTick", -StarhipBowTimeout);
+			// Finding amplifier is forced so for old saves last found apmplifier tick should be set to current tick
+			// In this case it won't be found immediately, only after find interval is passed
+			Scribe_Values.Look<int>(ref LastFoundAmplifierTick, "LastFoundAmplifierTick", Find.TickManager.TicksGame);
+			Scribe_Values.Look<bool>(ref hadSpaceMap, "hadSpaceMap");
+			Scribe_Values.Look<bool>(ref difficultyLetterShown, "difficultyDialogShown");
 
 			if (Scribe.mode != LoadSaveMode.PostLoadInit)
 			{
@@ -107,6 +137,7 @@ namespace SaveOurShip2
 				{
 					SlowTimeFlag = false;
 				}
+				previousThreatScale = Find.Storyteller.difficulty.threatScale;
 			}
 			/*if (Scribe.mode!=LoadSaveMode.Saving)
 			{
@@ -158,13 +189,9 @@ namespace SaveOurShip2
 			}*/
 		}
 
-		/*private void GiveMeEntanglementManifold()
-		{
-			IncidentParms parms = new IncidentParms();
-			parms.target = Find.World;
-			parms.forced = true;
-			QueuedIncident qi = new QueuedIncident(new FiringIncident(IncidentDef.Named("SoSFreeEntanglement"), null, parms),Find.TickManager.TicksGame, Find.TickManager.TicksGame+99999999);
-			Find.Storyteller.incidentQueue.Add(qi);
-		}*/
+		public void NotifyLaunch()
+        {
+			hadSpaceMap = true;
+        }
 	}
 }

@@ -97,7 +97,8 @@
 		</drawProperties>
 		
 		<properties>
-			
+			<pawnCollisionMultiplier>0.2</pawnCollisionMultiplier>
+			<pawnCollisionRecoilMultiplier>0.5</pawnCollisionRecoilMultiplier>	
 			<roles>
 				<li>
 					<key>pilot</key>
@@ -694,6 +695,8 @@
 		</soundOneShotsOnEvent>
 		
 		<properties>
+			<pawnCollisionMultiplier>0.2</pawnCollisionMultiplier>
+			<pawnCollisionRecoilMultiplier>0.5</pawnCollisionRecoilMultiplier>
 			<roles>
 				<li>
 					<key>pilot</key>
@@ -1377,6 +1380,8 @@
 		</soundOneShotsOnEvent>
 		
 		<properties>
+			<pawnCollisionMultiplier>0.2</pawnCollisionMultiplier>
+			<pawnCollisionRecoilMultiplier>0.5</pawnCollisionRecoilMultiplier>
 			<roles>
 				<li>
 					<key>pilot</key>
@@ -2206,6 +2211,8 @@
 		</soundOneShotsOnEvent>
 		
 		<properties>
+			<pawnCollisionMultiplier>0.2</pawnCollisionMultiplier>
+			<pawnCollisionRecoilMultiplier>0.5</pawnCollisionRecoilMultiplier>
 			<roles>
 				<li>
 					<key>pilot</key>

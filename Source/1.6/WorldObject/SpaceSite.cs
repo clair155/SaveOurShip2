@@ -45,7 +45,7 @@ namespace SaveOurShip2
 		public override void ExposeData()
 		{
 			base.ExposeData();
-			Scribe_Values.Look<float>(ref theta, "theta", 0, false);
+			WorldObjectMath.SerializeTheta(ref theta, false);
 			Scribe_Values.Look<float>(ref phi, "phi", 0, false);
 			Scribe_Values.Look<float>(ref radius, "radius", 0f, false);
 			const string newCoordsName = "newCoords";
@@ -71,10 +71,28 @@ namespace SaveOurShip2
 		public override bool ShouldRemoveMapNow(out bool alsoRemoveWorldObject)
 		{
 			alsoRemoveWorldObject = true;
-			if (Find.World.worldObjects.AllWorldObjects.Any(ob => ob is TravellingTransporters && ((int)typeof(TravellingTransporters).GetField("initialTile", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(ob) == this.Tile || ((TravellingTransporters)ob).destinationTile == this.Tile)))
+			Predicate<WorldObject> transportersCheck = delegate (WorldObject ob)
+			{
+				if (ob is TravellingTransporters transporters)
+				{
+					if ((int)typeof(TravellingTransporters).GetField("initialTile", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(ob) == this.Tile)
+                    {
+						return true;
+                    }
+                    {
+						return true;
+					}
+				}
 				return false;
+			};
+			if (Find.World.worldObjects.AllWorldObjects.Any(transportersCheck))
+			{
+				return false;
+			}
 			if (this.Map.listerBuildings.allBuildingsNonColonist.Any(t => t.TryGetComp<CompBlackBoxAI>() != null))
+			{
 				return false;
+			}
 			return base.ShouldRemoveMapNow(out alsoRemoveWorldObject);
 		}
 

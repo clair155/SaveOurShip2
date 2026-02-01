@@ -13,7 +13,32 @@ namespace SaveOurShip2
 			foreach (IntVec3 vec in occupiedRect)
 			{
 				if (vec.Fogged(map) || map.roofGrid.RoofAt(loc) == RoofDefOf.RoofRockThick)
+				{
 					return false;
+				}
+				bool isEmptyOdysseySpace = false;
+				TerrainDef terrain = map.terrainGrid.TerrainAt(loc);
+				if (ModsConfig.OdysseyActive)
+				{
+					isEmptyOdysseySpace = map.terrainGrid.TerrainAt(loc) == TerrainDefOf.Space;
+					TerrainDef foundation = map.terrainGrid.FoundationAt(loc);
+					if (foundation?.IsSubstructure ?? false)
+					{
+						// Not allowed to mix spaceship and gravship hull, that can cause issues
+						isEmptyOdysseySpace = false;
+					}
+				}
+				if (isEmptyOdysseySpace)
+                {
+					return true;
+                }
+				// Hull plating assumes heavy terrain need, but doesn't have that in XML in order to skip affordance check for empty Ody space
+				TerrainAffordanceDef requiredTerrain = TerrainAffordanceDefOf.Heavy;
+				if (!loc.GetAffordances(map).Contains(requiredTerrain) && !isEmptyOdysseySpace)
+				{
+					// Vanilla string key
+					return new AcceptanceReport(TranslatorFormattedStringExtensions.Translate("TerrainCannotSupport_TerrainAffordance", def, requiredTerrain).CapitalizeFirst());
+				}
 				foreach (Thing t in vec.GetThingList(map))
 				{
 					if (t is Building b)

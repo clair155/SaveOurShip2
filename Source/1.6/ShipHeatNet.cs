@@ -89,11 +89,22 @@ namespace SaveOurShip2
 		{
 			get
 			{
+				// For both Drone core and AI core
+				const int normalCoreSkill = 10;
+				const int archotechSporeSkill = 15;
 				int result = 0;
 				if (TacCons.Any(b => b.mannableComp.MannedNow))
+				{
 					result = TacCons.Where(b => b.mannableComp.MannedNow).Max(b => b.mannableComp.ManningPawn.skills.GetSkill(SkillDefOf.Shooting).Level);
-				if (result < 10 && AICores.Any())
-					result = 10;
+				}
+				if (result < normalCoreSkill && AICores.Any())
+				{
+					result = normalCoreSkill;
+				}
+				if (result < archotechSporeSkill && AICores.Any(c => c is Building_ArchotechSpore))
+				{
+					result = archotechSporeSkill;
+				}
 				return result;
 			}
 		}

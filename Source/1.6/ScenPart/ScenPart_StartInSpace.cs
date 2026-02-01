@@ -38,15 +38,14 @@ namespace SaveOurShip2
 			Scribe_Values.Look<ShipStartFlags>(ref startType, "startType");
 		}
 
-		// These ships/stations were manually picked as not interesting (not actual combat ship)/not intended to start with.
-		// To make ship list easier to use, it's huge
-		private static readonly string excludedShipsString = "AfterlifeVaultStart,AbandonedMiningStation,ContainerFurniture,ContainerLoot,ContainerMech,ContainerSecure," +
-			"ContainerSecurity,ContainerTV,DefenseInstallation,DefenseInstallation4,DefenseInstallation6,MechanoidMoonBase,SatelliteLarge2," +
-			"SatelliteLarge2Eng,SatelliteLarge2Eng2,SatelliteLarge3Eng,SatelliteLarge3Eng2,SatelliteLarge4,SatelliteSmall2,SatelliteSmall2Eng," +
-			"SatelliteSmall2Eng2,SatelliteSmall3,SatelliteSmall3Eng,SatelliteSmall3Eng2,SatelliteSmall4,SmallSatellite,StarshipBowDungeon,StartSiteAsteroidA," +
-			"StartSiteAsteroidB,StartSiteAsteroidC,StartSiteAsteroidD,StartSiteAsteroidE,StartSiteAsteroidMech,StartSiteEmpire,StartSiteMoonA,StartSiteMoonB," +
-			"StartSiteShipyard,StartSiteSkylab,StationAgri01,StationAgri01D,StationAgri02,StationAgri03,StationAgri03D,StationArchotechGarden,StationPrison01," +
-			"StationPrison02,TribalVillageIsNotAShip";
+		// This feature is intended for players who explicitly want exotic starts rather than normal starting ship/stations that are well made for that,
+		// but options are limited.
+		// So it is unlocked by adding extra mod, Unlock All Ships, which just ptches XML for AllShipsUnlocked() to be true.
+		// Only main storyline quest sites, enormous quest ship, Archotech garden station (spoilers, performance) and such trivial thig as loot
+		// container are disallowed. Everything else including small satellites is allowed. Like if modded player can have starting pawns survive
+		// on that satellite, okay. By players qeqests.
+		private static readonly string excludedShipsString = "ContainerFurniture,ContainerLoot,ContainerMech,ContainerSecure," +
+			"ContainerSecurity,ContainerTV,StarshipBowDungeon,StationArchotechGarden,TribalVillageIsNotAShip,MechanoidMoonBase";
 		private static List<string> excludedShipDefs = excludedShipsString.Split(',').ToList();
 
 		private bool ShipUnlockedAsStartup(ShipDef def, ShipStartFlags startType)
@@ -97,8 +96,7 @@ namespace SaveOurShip2
 					string CRString = "";
 					if (GlobalUnlockDef.AllShipsUnlocked())
 					{
-						// 00A0 is non-breakable space
-						// This is not main SOS2 content, so no translation fon now
+						// 00A0 is non-breakable space. This is not main SOS2 content, so no translation fon now
 						CRString = " CR:\u00A0" + localTd2.combatPoints;
 					}
 					list.Add(new FloatMenuOption(localTd.label + " (" + localTd.defName + ")" + CRString, delegate ()
@@ -176,6 +174,11 @@ namespace SaveOurShip2
 			Current.ProgramState = ProgramState.MapInitializing;
 
 			List<Building> cores = new List<Building>();
+			if (ModLister.GetActiveModWithIdentifier(ModIntegration.UnlockModID) != null &&
+				(!scen.spaceShipDef.startingShip && !scen.spaceShipDef.startingDungeon))
+			{
+				ShipInteriorMod2.ReqestCustomShip();
+			}
 			ShipInteriorMod2.GenerateShip(scen.spaceShipDef, spaceMap, null, Faction.OfPlayer, null, out cores, false, false, scen.damageStart ? 1 : 0, (spaceMap.Size.x - scen.spaceShipDef.sizeX) / 2, (spaceMap.Size.z - scen.spaceShipDef.sizeZ) / 2);
 
 			Current.ProgramState = ProgramState.Playing;

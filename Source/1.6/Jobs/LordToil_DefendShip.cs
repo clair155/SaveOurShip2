@@ -27,5 +27,12 @@ namespace SaveOurShip2
 				lord.ownedPawns[i].mindState.duty = new PawnDuty(ResourceBank.DutyDefOf.SoSDefendShip, baseCenter);
 			}
 		}
-	}
+        public override void Notify_PawnJobDone(Pawn p, JobCondition condition)
+        {
+			if(p.mindState.duty == null)
+			{
+                p.mindState.duty = new PawnDuty(ResourceBank.DutyDefOf.SoSDefendShip, baseCenter);
+            }
+        }
+    }
 }
