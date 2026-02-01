@@ -14,11 +14,19 @@ namespace SaveOurShip2
 		}
 
 		// Todo: it is to be verified with mod maintainers that mod identification can be switched from name to mod ID
-		public static string CEModName = "Combat Extended";
+		public const string CEModName = "Combat Extended";
+
+		public const string UnlockModID = "Boris.SOS2uas";
+
+		public const string SpinalEnginesModID = "TheCafFiend.SOS2SpinalEngines";
 		public static bool IsCEEnabled()
 		{
 			return ModLister.HasActiveModWithName(CEModName);
 		}
+
+		// Because of Odyssey changes, need to place world objects further from each other,
+		// as zoomin in in orbit normally results in hiding orbit, switching to syrface layer.
+		public const float NewOdyOffsetScale = 2.5f;
 	}
 }
 

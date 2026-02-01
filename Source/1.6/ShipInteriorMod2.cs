@@ -54,6 +54,7 @@ namespace SaveOurShip2
 			ShipInteriorMod2.DefsLoaded();
 			Harmony pat = new Harmony("ShipInteriorMod2");
 			pat.PatchAll();
+			HarmonyCustomPatches.Apply(pat);
 
 			//Needs an init delay
 			if (useSplashScreen) LongEventHandler.QueueLongEvent(() => ShipInteriorMod2.UseCustomSplashScreen(), "ShipInteriorMod2", false, null);
@@ -61,8 +62,19 @@ namespace SaveOurShip2
 			// doesn't result in those resources loading from separate thread, whiuch is an error. 
 			LongEventHandler.QueueLongEvent(delegate
 			{
-				Section dummySection = new Section(new IntVec3(0, 0, 0), null);
-				SectionLayer_Gas dummyGasLayer = new SectionLayer_Gas(dummySection);
+				try
+				{
+					Section dummySection = new Section(new IntVec3(0, 0, 0), null);
+					SectionLayer_Gas dummyGasLayer = new SectionLayer_Gas(dummySection);
+				}
+				catch (Exception e)
+                {
+					Log.Message("An exception was thrown when making SectionLayer_Gas initialize on main thread. This is likely ignoreable.");
+					Log.Message("Message: " + e.Message);
+					Log.Message("Trace: " + e.StackTrace);
+				}
+				DefDatabase<ResearchTabDef>.GetNamed("ResearchTabArchotech").label = TranslatorFormattedStringExtensions.Translate
+					("SoS.Archotech.ResearchTabName");
 			}, "", false, null);
 			// SectionLayer_Gas dummyGasLayer = new SectionLayer_Gas(null);
 		}
@@ -120,13 +132,21 @@ namespace SaveOurShip2
 			enemyMapSize = 250,
 			shuttlesToDisplay = 5;
 	}
+	
+	public class ExtraShipGenOptions
+    {
+		// Saving thisa setting is managed by submod
+		public int CustomCrewLimit = 200;
+		// Non-standard staritingship is requested. runtime-only flag, not saved
+		public bool RequestCustomShip = false;
+    }
 	public class ShipInteriorMod2 : Mod
 	{
 		public ShipInteriorMod2(ModContentPack content) : base(content)
 		{
 			base.GetSettings<ModSettings_SoS>();
 		}
-		public const string SOS2version = "SteamV2.8.14";
+		public const string SOS2version = "GithubV2.8.63";
 		public const int SOS2ReqCurrentMinor = 5;
 		// 1.5.4063 public build (4062 constant) was not enough as there is no AnomalyUtility.TryDuplicatePawn_NewTemp method to harmony patch it.
 		// Historical builds are not available, so for sure can be increased just to next build, 4066
@@ -136,9 +156,14 @@ namespace SaveOurShip2
 		public const float altitudeNominal = 1000f; //nominal altitude for ship map background render
 		public const float altitudeLand = 110f; //min altitude for ship map background render
 		public const float crittersleepBodySize = 0.7f;
+		// Critterslep casket with less slots allowed to hold large anoimals (5 is Alpha Thrumbo body size)
+		// because it is not viable to add separate building with ggraphical asset just for large animals.
+		public const float crittersleepLargeBodySize = 5f;
 		public const float pctFuelLocal = 0.0f;
 		public const float pctFuelMap = 0.05f;
-		public const float pctFuelSpace = 0.5f; //check is 1 since we dont want ships to crash right after takeoff
+		public const float pctFuelTakeoff = 0.35f; //check is 1 since we dont want ships to crash right after takeoff
+		 // Bonus (= cost reductuion) from 1 fuel optimizer, 2 max.
+		public const float pctFuelTakeoffPerOptimizer = 0.105f;
 		public const float pctFuelLand = 0.1f;
 
 		public static bool loadedGraphics = false;
@@ -175,6 +200,20 @@ namespace SaveOurShip2
 				}
 			}
 		}
+
+		// When umlocking all ships, set crew limit to spawn, as player is more likely to be able to handle destroyer (not intended as starting ship)
+		// with a few pawns. While managing full destroyer (or above!) crew is waay too tedious
+		private static ExtraShipGenOptions extraShipGenOptions = new ExtraShipGenOptions();
+
+		public static void ReqestCustomShip()
+        {
+			extraShipGenOptions.RequestCustomShip = true;
+		}
+
+		public static void SetCustomCrewLimit(int newLimit)
+        {
+			extraShipGenOptions.CustomCrewLimit = newLimit;
+        }
 
 		private static ShipWorldComp worldComp = null;
 		public static ShipWorldComp WorldComp
@@ -282,10 +321,12 @@ namespace SaveOurShip2
 			Log.Message("SOS2 " + SOS2version + " active");
 
 			string[] disallowedPlants = new string[]{
-				// Elder ocualr tree from Vanilla Psycasts Expanded
+				// Elder ocular tree from Vanilla Psycasts Expanded
 				"AA_ElderAlienTree",
 				// RA_MetalBean is from Ratkin Anomaly+, causes real bad effects and was requested to not spawn randomly.
-				"RA_MetalBean"
+				"RA_MetalBean",
+				// Archean tree converts soil, so not suitable for placing on ship.
+				"Plant_TreeArchean"
 			};
 
 			randomPlants = DefDatabase<ThingDef>.AllDefs.Where(t => t.plant != null && !t.defName.Contains("Anima") && !disallowedPlants.Contains(t.defName)).ToList();
@@ -513,7 +554,7 @@ namespace SaveOurShip2
 		{
 			if (roof == null)
 				return false;
-			if (roof == ResourceBank.RoofDefOf.RoofShip || roof == RoofDefOf.RoofRockThick)
+			if (roof == ResourceBank.RoofDefOf.RoofShip || roof == RoofDefOf.RoofRockThick || roof == RoofDefOf.RoofConstructed)
 				return true;
 			if (compatibleAirtightRoofs != null)
 			{
@@ -541,11 +582,136 @@ namespace SaveOurShip2
 
 		// Can override world tile selection in dev Launch sommmand, launching ship over specified tile
 		public static PlanetTile worldTileOverride = PlanetTile.Invalid;
-		public static PlanetTile FindWorldTilePlayer(bool allowSpace = true) //slower, will find tile nearest to ship object pos
+		public static PlanetTile launchOrigin = PlanetTile.Invalid;
+
+		private static PlanetTile FindWorldTileOnSurface()
+		{
+			return PlanetTile.Invalid;
+		}
+
+		private static float LongLatDistance(Vector2 longLatOrigin, Vector2 longLatDest)
+		{
+			// No squares for speed
+			return Mathf.Abs(longLatOrigin.x - longLatDest.x) + Mathf.Abs(longLatOrigin.y - longLatDest.y);
+		}
+		private static PlanetTile FindNearestOrbitTileTo(PlanetTile origin)
+		{
+			Vector2 originLongLat = Find.WorldGrid.LongLatOf(origin);
+			HashSet<int> visitedTileIDs = new HashSet<int>();
+			PlanetTile current = Find.World.grid.Orbit.tiles.First().tile;
+			float currentDistance = LongLatDistance(originLongLat, Find.WorldGrid.LongLatOf(current));
+			const int maxIterations = 200;
+			for (int i =0; i < maxIterations; i++)
+			{
+				List<PlanetTile> neighbors = new List<PlanetTile>();
+				Find.World.grid.Orbit.GetTileNeighbors(current.tileId, neighbors);
+				bool foundBetterTile = false;
+				foreach (PlanetTile neighbor in neighbors)
+				{
+					// For each neighbor of current tile, if that neighbor is closer to desired location,
+					// neighbor will replace current
+					// Visited tiles are marked to forbit repetition
+					// So basically this alghorithm "walks" in a stragth line approximation on hex grid,
+					// starting from first tile of orbit layer and usually iterating 5 new neighbors on each step.
+					if (!visitedTileIDs.Contains(neighbor.tileId))
+					{
+						visitedTileIDs.Add(neighbor.tileId);
+						float newDistance = LongLatDistance(originLongLat, Find.WorldGrid.LongLatOf(neighbor));
+						if (newDistance < currentDistance)
+						{
+							foundBetterTile = true;
+							current = neighbor;
+							currentDistance = newDistance;
+						}
+					}
+				}
+				if (!foundBetterTile)
+				{
+					return current;
+				}
+			}
+			return current;
+		}
+		private static PlanetTile FindFreeTileNear(PlanetTile startTile)
+		{
+			PlanetLayer layer = startTile.Layer;
+			// Starting with initial location as front 
+			HashSet<int> addedTileIDs = new HashSet<int>();
+			List<PlanetTile> front = new List<PlanetTile>();
+			front.Add(startTile);
+			addedTileIDs.Add(startTile.tileId);
+			// This alghorithm shoulld normally run just a few steps like 0-2.
+			// Still there is safety limit in case of "broken" tile set
+			const int maxIterations = 50;
+			int iteration = 0;
+			while (!front.Empty() && iteration < maxIterations)
+			{
+				iteration++;
+				List<PlanetTile> newFront = new List<PlanetTile>();
+				foreach(PlanetTile tile in front)
+				{
+					// Current front check happens here
+					if (!Find.World.worldObjects.AnyWorldObjectAt(tile))
+					{
+						return tile;
+					}
+					addedTileIDs.Add(tile.tileId);
+					List<PlanetTile> newNeightbors = new List<PlanetTile>();
+					layer.GetTileNeighbors(tile.tileId, newNeightbors);
+					foreach(PlanetTile neighbor in newNeightbors)
+					{
+						// For each neighbor of each tile in front, it will be added to new front if not already visited
+						// This is the step of wave algorithm here.
+						if (!addedTileIDs.Contains(neighbor.tileId))
+						{
+							newFront.Add(neighbor);
+							addedTileIDs.Add(tile.tileId);
+						}
+					}
+				}
+				front = newFront;
+			}
+			//Fallback - just some free tile on layer
+			foreach(Tile simpleTile in layer.Tiles)
+			{
+				if (!Find.World.worldObjects.AnyWorldObjectAt(simpleTile.tile))
+				{
+					return simpleTile.tile;
+				}
+			}
+			return PlanetTile.Invalid;
+		}
+
+		private static PlanetTile FindWorldTileInOrbit()
+		{
+			PlanetTile result = PlanetTile.Invalid;
+			if (launchOrigin != PlanetTile.Invalid)
+			{
+				result = FindNearestOrbitTileTo(launchOrigin);
+				result = FindFreeTileNear(result);
+			}
+			else
+			{
+				result = PlanetTile.Invalid;
+			}
+			launchOrigin = PlanetTile.Invalid;
+			return result;
+		}
+
+		public static PlanetTile FindWorldTileOnLayers(bool allowSpace = true) //slower, will find tile nearest to ship object pos
 		{
 			float bestAbsLatitude = float.MaxValue;
 			PlanetTile bestTile = PlanetTile.Invalid;
+			if (allowSpace && Find.World.grid.Orbit != null)
+			{
+				PlanetTile orbitTile = FindWorldTileInOrbit();
+				if (orbitTile != null && orbitTile != PlanetTile.Invalid)
+				{
+					return orbitTile;
+				}
+			}
 			var tiles = (allowSpace ? Find.World.grid.Orbit ?? Find.World.grid.Surface : Find.World.grid.Surface).Tiles;
+
 			for (int i = 0; i < tiles.Count; i+=10)
 			{
 				var tile = tiles[i].tile;
@@ -577,7 +743,7 @@ namespace SaveOurShip2
 			orbiter.SetFaction(Faction.OfPlayer);
 			if (worldTileOverride == PlanetTile.Invalid)
 			{
-				orbiter.Tile = FindWorldTilePlayer();
+				orbiter.Tile = FindWorldTileOnLayers();
 			}
 			else
 			{
@@ -585,7 +751,13 @@ namespace SaveOurShip2
 			}
 			Find.WorldObjects.Add(orbiter);
 			Map map = MapGenerator.GenerateMap(size, orbiter, orbiter.MapGeneratorDef,null,null,false);
-			//map.fogGrid.ClearAllFog();
+
+			// When generating space map for the first time
+			if(WorldComp.LastFoundAmplifierTick == 0)
+            {
+				WorldComp.LastFoundAmplifierTick = Find.TickManager.TicksGame;
+			}
+
 			return map;
 		}
 		/*public static Map GeneratePocketSpaceMap(IntVec3 size, WorldObjectDef worldObjectDef, IEnumerable<GenStepWithParams> extraGenStepDefs = null, Map sourceMap = null) //unusable, shuttles need tiles, etc.
@@ -599,7 +771,16 @@ namespace SaveOurShip2
 		}*/
 		public static Map FindPlayerShipMap()
 		{
-			return ((MapParent)Find.WorldObjects.AllWorldObjects.Where(ob => ob.def == ResourceBank.WorldObjectDefOf.ShipOrbiting).FirstOrDefault())?.Map;
+			IEnumerable<WorldObject> orbitingShips = Find.WorldObjects.AllWorldObjects.Where(ob => ob.def == ResourceBank.WorldObjectDefOf.ShipOrbiting);
+			if (!orbitingShips.Any())
+			{
+				return null;
+			}
+			if (orbitingShips.Count() > 1)
+			{
+				Log.Error("More than 1 orbiting ship found. Object count: " + orbitingShips.Count());
+			}
+			return ((MapParent)(orbitingShips.First()))?.Map;
 		}
 		public static WorldObject GenerateSite(string defName)
 		{
@@ -638,6 +819,11 @@ namespace SaveOurShip2
 				return false;
 			}).RandomElement();
 		}
+		private static ShipDef LoggedShipDef(ShipDef ship)
+		{
+			Log.Message("SOS2: Picked random ship: " + ship.defName);
+			return ship;
+		}
 		public static ShipDef RandomValidShipFrom(List<ShipDef> ships, float CR, bool tradeShip, bool allowNavyExc, bool randomFleet = false, int minZ = 0, int maxZ = 0)
 		{
 			int rarity = Rand.RangeInclusive(1, 2);
@@ -645,15 +831,17 @@ namespace SaveOurShip2
 			List<ShipDef> check = new List<ShipDef>();
 			check = ships.Where(def => ValidShipDef(def, 0.7f * CR, 1.1f * CR, tradeShip, allowNavyExc, randomFleet, rarity, minZ, maxZ)).ToList();
 			if (check.Any())
-				return check.RandomElement();
+			{
+				return LoggedShipDef(check.RandomElement());
+			}
 			Log.Message("fallback 0");
 			check = ships.Where(def => ValidShipDef(def, 0.5f * CR, 1.3f * CR, tradeShip, allowNavyExc, randomFleet, rarity, minZ, maxZ)).ToList();
 			if (check.Any())
-				return check.RandomElement();
+				return LoggedShipDef(check.RandomElement());
 			Log.Message("fallback 1");
 			check = ships.Where(def => ValidShipDef(def, 0.25f * CR, 2f * CR, tradeShip, allowNavyExc, randomFleet, 0, minZ, maxZ)).ToList();
 			if (check.Any())
-				return check.RandomElement();
+				return LoggedShipDef(check.RandomElement());
 			//too high or too low adjCR - ignore difficulty
 			Log.Warning("SOS2: difficulty set too low/high or no suitable ships found for your CR, using fallback");
 			if (CR < 1000)
@@ -661,23 +849,23 @@ namespace SaveOurShip2
 			else
 				check = ships.Where(def => ValidShipDef(def, 0.5f * CR, 100f * CR, tradeShip, allowNavyExc, randomFleet, 0, minZ, maxZ)).ToList();
 			if (check.Any())
-				return check.RandomElement();
+				return LoggedShipDef(check.RandomElement());
 			//last fallback, not for fleets or navy exclusive
 			if (tradeShip)
 			{
 				Log.Message("trade ship fallback");
 				check = ships.Where(def => ValidShipDef(def, 0, 100000f, tradeShip, allowNavyExc, randomFleet, 0, minZ, maxZ)).ToList();
 				if (check.Any())
-					return check.RandomElement();
+					return LoggedShipDef(check.RandomElement());
 				Log.Warning("SOS2: navy has no trade ships, choosing any random.");
-				return DefDatabase<ShipDef>.AllDefs.Where(def => ValidShipDef(def, 0f, 100000f, tradeShip, false, randomFleet, 0, minZ, maxZ)).RandomElement();
+				return LoggedShipDef(DefDatabase<ShipDef>.AllDefs.Where(def => ValidShipDef(def, 0f, 100000f, tradeShip, false, randomFleet, 0, minZ, maxZ)).RandomElement());
 			}
 			else if (!allowNavyExc && !randomFleet)
 			{
 				Log.Warning("SOS2: found no suitable enemy ship, choosing any random.");
 				check = ships.Where(def => ValidShipDef(def, 0, 100000f, tradeShip, allowNavyExc, randomFleet, 0, minZ, maxZ)).ToList();
 				if (check.Any())
-					return check.RandomElement();
+					return LoggedShipDef(check.RandomElement());
 				ships.Where(def => !def.neverAttacks && !def.neverRandom && (allowNavyExc || !def.navyExclusive)).RandomElement();
 			}
 			Log.Warning($"SOS2: found no suitable enemy ship at all, very final fallback, allowNavyExc: {allowNavyExc}, randomFleet: {randomFleet}");
@@ -685,8 +873,9 @@ namespace SaveOurShip2
 			check = ships.Where(def => ValidShipDef(def, 0, 100000f, tradeShip, allowNavyExc, randomFleet, 0, minZ, maxZ)).ToList();
 			if (check.Any())
 			{
-				return check.RandomElement();
+				return LoggedShipDef(check.RandomElement());
 			}
+			Log.Warning("SOS2: random ship pick failure");
 			return null;
 		}
 		public static bool ValidShipDef(ShipDef def, float CRmin, float CRmax, bool tradeShip, bool allowNavyExc, bool randomFleet, int rarity = 0, int minZ = 0, int maxZ = 0)
@@ -875,8 +1064,39 @@ namespace SaveOurShip2
 			}
 			PostGenerateShipDef(map, clearArea, area, planters);
 		}
+
+		private static Dictionary<string, string> odysseyPartsReplacements = null;
+		private static void ReplaceMissingDLCDef(string partName, ref ThingDef def)
+        {
+			if (odysseyPartsReplacements == null)
+            {
+				odysseyPartsReplacements = new Dictionary<string, string>
+					{
+						{ ResourceBank.GravshipBuildingNames.FuelOptimizer, "InfiniteChemreactor" },
+						{ ResourceBank.GravshipBuildingNames.GravcorePowerCell, ThingDefOf.Ship_SensorCluster.defName },
+						{ ResourceBank.GravshipBuildingNames.PilotSubpersonaCore, ThingDefOf.Ship_SensorCluster.defName },
+					};
+			}
+			// When DLC is disabled, even their defs are null, so should compare against strings here
+			if (!ModsConfig.RoyaltyActive && (partName == "Throne" || partName == "GrandThrone"))
+			{
+				def = DefDatabase<ThingDef>.GetNamed("Armchair");
+			}
+			if (!ModsConfig.OdysseyActive)
+            {
+				// For Odyssey the idea is to replace with non-Odyssey buildings with the same size
+				if (odysseyPartsReplacements.ContainsKey(partName))
+                {
+					def = DefDatabase<ThingDef>.GetNamed(odysseyPartsReplacements[partName]);
+				}
+            }
+		}
 		public static void GenerateShipDef(ShipDef shipDef, Map map, PassingShip passingShip, Faction fac, Lord lord, out List<Building> cores, out List<IntVec3> cellsToFog, out List<Thing> planters, bool shipActive = true, bool clearArea = false, int wreckLevel = 0, int offsetX = -1, int offsetZ = -1, NavyDef navyDef = null)
 		{
+			if (ModLister.GetActiveModWithIdentifier(ModIntegration.UnlockModID) != null && extraShipGenOptions.RequestCustomShip)
+			{
+				Log.Message("Custom limit:" + extraShipGenOptions.CustomCrewLimit);
+			}
 			cellsToFog = new List<IntVec3>();
 			//List<IntVec3> cellsNotToFog = new List<IntVec3>();
 			planters = new List<Thing>();
@@ -891,6 +1111,7 @@ namespace SaveOurShip2
 			bool isMechs = false; //for roy mech turret override
 			bool isDungeon = shipDef.defName == "StarshipBowDungeon";
 			HashSet<IntVec3> exclusionZones = new HashSet<IntVec3>();
+			int spawnedPawnCount = 0;
 			if (ModsConfig.RoyaltyActive)
 			{
 				royActive = true;
@@ -976,17 +1197,25 @@ namespace SaveOurShip2
 					IntVec3 adjPos = new IntVec3(offset.x + shape.x, 0, offset.z + shape.z);
 					if (shape.shapeOrDef.Equals("PawnSpawnerGeneric"))
 					{
-						if (shape.faction != null) //faction override
+						// Mod check is extra safeguard to ensure crew pawn generation is ONLY prevented in very speicic case
+						if (ModLister.GetActiveModWithIdentifier(ModIntegration.UnlockModID) == null ||
+							!extraShipGenOptions.RequestCustomShip ||
+							spawnedPawnCount < extraShipGenOptions.CustomCrewLimit)
 						{
-							var facOver = Find.FactionManager.FirstFactionOfDef(FactionDef.Named(shape.faction));
-							if (facOver != null)
-								fac = facOver;
+							if (shape.faction != null) //faction override
+							{
+								var facOver = Find.FactionManager.FirstFactionOfDef(FactionDef.Named(shape.faction));
+								if (facOver != null)
+									fac = facOver;
+							}
+							PawnGenerationRequest req = new PawnGenerationRequest(DefDatabase<PawnKindDef>.GetNamed(shape.stuff), fac);
+							Pawn pawn = PawnGenerator.GeneratePawn(req);
+							lord?.AddPawn(pawn);
+							GenSpawn.Spawn(pawn, adjPos, map);
+							pawnsOnShip.Add(pawn);
+							spawnedPawnCount++;
+							Log.Message("Generic spawned");
 						}
-						PawnGenerationRequest req = new PawnGenerationRequest(DefDatabase<PawnKindDef>.GetNamed(shape.stuff), fac);
-						Pawn pawn = PawnGenerator.GeneratePawn(req);
-						lord?.AddPawn(pawn);
-						GenSpawn.Spawn(pawn, adjPos, map);
-						pawnsOnShip.Add(pawn);
 					}
 					else if (DefDatabase<ShipPartDef>.GetNamedSilentFail(shape.shapeOrDef) != null)
 					{
@@ -994,22 +1223,30 @@ namespace SaveOurShip2
 					}
 					else if (DefDatabase<PawnKindDef>.GetNamedSilentFail(shape.shapeOrDef) != null)
 					{
-						PawnGenerationRequest req;
-						if (navyDef != null)
+						// Mod check is extra safeguard to ensure crew pawn generation is ONLY prevented in very speicic case
+						if (ModLister.GetActiveModWithIdentifier(ModIntegration.UnlockModID) == null ||
+							!extraShipGenOptions.RequestCustomShip ||
+							spawnedPawnCount < extraShipGenOptions.CustomCrewLimit)
 						{
-							if (shape.shapeOrDef.Equals("SpaceCrewMarineHeavy"))
-								req = new PawnGenerationRequest(navyDef.marineHeavyDef, fac);
-							else if (shape.shapeOrDef.Equals("SpaceCrewMarine"))
-								req = new PawnGenerationRequest(navyDef.marineDef, fac);
+							PawnGenerationRequest req;
+							if (navyDef != null)
+							{
+								if (shape.shapeOrDef.Equals("SpaceCrewMarineHeavy"))
+									req = new PawnGenerationRequest(navyDef.marineHeavyDef, fac);
+								else if (shape.shapeOrDef.Equals("SpaceCrewMarine"))
+									req = new PawnGenerationRequest(navyDef.marineDef, fac);
+								else
+									req = new PawnGenerationRequest(navyDef.crewDef, fac);
+							}
 							else
-								req = new PawnGenerationRequest(navyDef.crewDef, fac);
+								req = new PawnGenerationRequest(DefDatabase<PawnKindDef>.GetNamed(shape.shapeOrDef), fac);
+							Pawn pawn = PawnGenerator.GeneratePawn(req);
+							lord?.AddPawn(pawn);
+							GenSpawn.Spawn(pawn, adjPos, map);
+							pawnsOnShip.Add(pawn);
+							spawnedPawnCount++;
+							Log.Message("PawnKindDef spawned");
 						}
-						else
-							req = new PawnGenerationRequest(DefDatabase<PawnKindDef>.GetNamed(shape.shapeOrDef), fac);
-						Pawn pawn = PawnGenerator.GeneratePawn(req);
-						lord?.AddPawn(pawn);
-						GenSpawn.Spawn(pawn, adjPos, map);
-						pawnsOnShip.Add(pawn);
 					}
 					else if (DefDatabase<VehicleDef>.GetNamedSilentFail(shape.shapeOrDef) != null)
 					{
@@ -1023,58 +1260,64 @@ namespace SaveOurShip2
 							vehicle.ignition.Drafted = false;
 						}
 					}
-					else if (DefDatabase<ThingDef>.GetNamedSilentFail(shape.shapeOrDef) != null)
+					// Some Odyssey buildings are subject to replace when Odysse is not available and their defs are null
+					else if (DefDatabase<ThingDef>.GetNamedSilentFail(shape.shapeOrDef) != null ||
+						ResourceBank.GravshipBuildingNames.AllNames.Contains(shape.shapeOrDef))
 					{
 						bool wreckReplace = false;
 						Thing thing = null;
-						ThingDef def = ThingDef.Named(shape.shapeOrDef);
-						if (def == ResourceBank.ThingDefOf.Ship_DamagedReactor || def == ResourceBank.ThingDefOf.BlackBoxAI)
-							exclusionZones.Add(adjPos);
-						//def replacers
-						if (def.IsBuildingArtificial)
-						{
-							if (wreckLevel > 2 && wreckDictionary.ContainsKey(def)) //replace ship walls/floor
-							{
-								def = wreckDictionary[def];
-								wreckReplace = true;
-							}
-							else if (!unlockedJT && def.HasComp(typeof(CompEngineTrail))) //replace JT drives if not unlocked via story
-							{
-								if (def == ResourceBank.ThingDefOf.Ship_Engine_Interplanetary)
-									def = ResourceBank.ThingDefOf.Ship_Engine;
-								else if (def == ResourceBank.ThingDefOf.Ship_Engine_Interplanetary_Large)
-									def = ResourceBank.ThingDefOf.Ship_Engine_Large;
-							}
-							else if (isMechs && def.building.IsTurret) //replace turets with mech version if ROY active
-							{
-								if (def == ThingDefOf.Turret_MiniTurret)
-									def = ThingDefOf.Turret_AutoMiniTurret;
-								else if (def == ResourceBank.ThingDefOf.Turret_Autocannon)
-									def = DefDatabase<ThingDef>.GetNamed("Turret_AutoChargeBlaster");
-								else if (def == ResourceBank.ThingDefOf.Turret_Sniper)
-									def = DefDatabase<ThingDef>.GetNamed("Turret_AutoInferno");
-							}
-							// When Royaly is disabled, even their defs are null, so should compare against explicitly specified strings here
-							else if (!royActive && (def.defName == "Throne" || def.defName == "GrandThrone"))
-							{
-								def = DefDatabase<ThingDef>.GetNamed("Armchair");
-							}
+						ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(shape.shapeOrDef);
+						if (def == null)
+                        {
+							ReplaceMissingDLCDef(shape.shapeOrDef, ref def);
 						}
-						//make thing
-						if (def.MadeFromStuff)
+						if (def != null)
 						{
-							if (shape.stuff != null)
-								thing = ThingMaker.MakeThing(def, ThingDef.Named(shape.stuff));
-							else
-								thing = ThingMaker.MakeThing(def, GenStuff.DefaultStuffFor(def));
-						}
-						else
-							thing = ThingMaker.MakeThing(def);
+							if (def == ResourceBank.ThingDefOf.Ship_DamagedReactor || def == ResourceBank.ThingDefOf.BlackBoxAI)
+							{
+								exclusionZones.Add(adjPos);
+							}
+							//def replacers
+							if (def.IsBuildingArtificial)
+							{
+								if (wreckLevel > 2 && wreckDictionary.ContainsKey(def)) //replace ship walls/floor
+								{
+									def = wreckDictionary[def];
+									wreckReplace = true;
+								}
+								else if (!unlockedJT && def.HasComp(typeof(CompEngineTrail))) //replace JT drives if not unlocked via story
+								{
+									if (def == ResourceBank.ThingDefOf.Ship_Engine_Interplanetary)
+										def = ResourceBank.ThingDefOf.Ship_Engine;
+									else if (def == ResourceBank.ThingDefOf.Ship_Engine_Interplanetary_Large)
+										def = ResourceBank.ThingDefOf.Ship_Engine_Large;
+								}
+								else if (isMechs && def.building.IsTurret) //replace turets with mech version if ROY active
+								{
+									if (def == ThingDefOf.Turret_MiniTurret)
+										def = ThingDefOf.Turret_AutoMiniTurret;
+									else if (def == ResourceBank.ThingDefOf.Turret_Autocannon)
+										def = DefDatabase<ThingDef>.GetNamed("Turret_AutoChargeBlaster");
+									else if (def == ResourceBank.ThingDefOf.Turret_Sniper)
+										def = DefDatabase<ThingDef>.GetNamed("Turret_AutoInferno");
+								}
+							}
 
-						//spawn thing
-						GenSpawn.Spawn(thing, adjPos, map, shape.rot);
-						//post spawn
-						thing.TryGetComp<CompQuality>()?.SetQuality(QualityUtility.GenerateQualityBaseGen(), ArtGenerationContext.Outsider);
+							//make thing
+							if (def.MadeFromStuff)
+							{
+								if (shape.stuff != null)
+									thing = ThingMaker.MakeThing(def, ThingDef.Named(shape.stuff));
+								else
+									thing = ThingMaker.MakeThing(def, GenStuff.DefaultStuffFor(def));
+							}
+							else
+								thing = ThingMaker.MakeThing(def);
+							//spawn thing
+							GenSpawn.Spawn(thing, adjPos, map, shape.rot);
+							//post spawn
+							thing.TryGetComp<CompQuality>()?.SetQuality(QualityUtility.GenerateQualityBaseGen(), ArtGenerationContext.Outsider);
+						}
 						if (thing is Building b)
 						{
 							var glowerComp = thing.TryGetComp<CompGlower>();
@@ -1177,7 +1420,10 @@ namespace SaveOurShip2
 									}
 								}
 								else if (b is Building_ShipBridge shipBridge)
+								{
 									shipBridge.ShipName = shipDef.label;
+									shipBridge.LoadedDefName = shipDef.defName;
+								}
 								else
 								{
 									var shieldComp = b.TryGetComp<CompShipHeatShield>();
@@ -1248,7 +1494,7 @@ namespace SaveOurShip2
 								}
 							}
 						}
-						else
+						else if (thing != null)
 						{
 							if (thing.def.stackLimit > 1)
 							{
@@ -1571,6 +1817,7 @@ namespace SaveOurShip2
 					}
 				}
 			}
+			extraShipGenOptions.RequestCustomShip = false;
 		}
 		private static void ShipPawnGen(Pawn p, bool isDungeon, Lord lord) //td make proper pawngen req?
 		{
@@ -1989,10 +2236,28 @@ namespace SaveOurShip2
 			map.weatherManager.TransitionTo(ResourceBank.WeatherDefOf.OuterSpaceWeather);
 
 			//vars1
-			var mapPar = (WorldObjectOrbitingShip)map.Parent;
-			mapPar.drawPos = originMap.Parent.DrawPos;
+			var mapParent = (WorldObjectOrbitingShip)map.Parent;
+			/*mapPar.drawPos = originMap.Parent.DrawPos;
 			mapPar.originDrawPos = originMap.Parent.DrawPos;
-			mapPar.targetDrawPos = mapPar.NominalPos;
+			mapPar.targetDrawPos = mapPar.NominalPos;*/
+			Vector3 originPos = originMap.Tile.Layer.Origin + Find.WorldGrid.GetTileCenter(originMap.Tile);
+			// originMap.Parent.DrawPos;
+			Vector3 targetPos = map.Tile.Layer.Origin + Find.WorldGrid.GetTileCenter(map.Tile);
+			//map.Tile.Layer.GetTileCenter(map.Tile.tileId);
+			Log.Warning("Target pos for launch: " + targetPos);
+			WorldObjectMath.GetSphericalFromCartesian(targetPos, out float phi, out float theta, out float radius);
+			mapParent.Phi = phi;
+			mapParent.Theta = theta;
+			mapParent.Radius = radius;
+			mapParent.OrbitSet();
+			Log.Warning("Launched to orbit with radius: " + mapParent.Radius.ToString("F2"));
+			Log.Warning("Theta: " + theta);
+			Log.Warning("Phi: " + phi);
+
+			mapParent.drawPos = originPos;
+			mapParent.originDrawPos = originPos;
+			mapParent.targetDrawPos = targetPos;
+
 			mapComp.Heading = 1;
 			mapComp.Altitude = altitudeLand; //startup altitude
 			mapComp.Takeoff = true;
@@ -2028,6 +2293,8 @@ namespace SaveOurShip2
 			List<Room> roomsToTemp = new List<Room>();
 			List<IntVec3> fogToCopy = new List<IntVec3>();
 			List<Tuple<IntVec3, float>> posTemp = new List<Tuple<IntVec3, float>>();
+			// Points in sealed rooms to protect from Odyssey vacuum
+			List<IntVec3> sealedLocations = new List<IntVec3>();
 			List<Tuple<IntVec3, TerrainDef, ColorDef>> terrainToCopy = new List<Tuple<IntVec3, TerrainDef, ColorDef>>();
 			List<Tuple<IntVec3, RoofDef>> roofToCopy = new List<Tuple<IntVec3, RoofDef>>();
 			List<IntVec3> fireExplosions = new List<IntVec3>();
@@ -2139,6 +2406,10 @@ namespace SaveOurShip2
 					roomsToTemp.Add(room);
 					float temp = room.Temperature;
 					posTemp.Add(new Tuple<IntVec3, float>(adjustedPos, temp));
+					if (!ExposedToOutside(room))
+					{
+						sealedLocations.Add(adjustedPos);
+					}
 				}
 				//add to target area and ship
 				targetArea.Add(adjustedPos);
@@ -2587,7 +2858,7 @@ namespace SaveOurShip2
 				}
 				else //to space
 				{
-					fuelNeeded *= pctFuelSpace;
+					fuelNeeded = ship.MassTakeoff * (pctFuelTakeoff - pctFuelTakeoffPerOptimizer * ship.EffectiveFuelOptimizerCount);
 				}
 				foreach(CompEngineTrail engine in engines)
 					engine.refuelComp.ConsumeFuel(fuelNeeded * engine.refuelComp.Fuel / fuelStored);
@@ -2681,6 +2952,15 @@ namespace SaveOurShip2
 				Room room = t.Item1.GetRoom(targetMap);
 				room.Temperature = t.Item2;
 			}
+
+			if (targetMap.Biome.inVacuum)
+            {
+				foreach(IntVec3 vec in sealedLocations)
+				{
+					Room room = vec.GetRoom(targetMap);
+					room.Vacuum = 0f;
+                }
+            }
 
 			//landing - remove space map if no pawns or cores
 			if (!targetMapIsSpace && !sourceMap.spawnedThings.Any((Thing t) => (t is Pawn || (t is Building_ShipBridge b && b.mannableComp == null)) && !t.Destroyed))
@@ -3266,6 +3546,7 @@ namespace SaveOurShip2
 		{
 			return pawn.health.hediffSet.GetFirstHediff<HediffPawnIsHologram>() != null;
 		}
+		public static float SpaceTemperature = -100f;
 		public static bool ExposedToOutside(Room room)
 		{
 			return room == null || room.OpenRoofCount > 0 || room.TouchesMapEdge;

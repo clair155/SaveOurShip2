@@ -55,16 +55,23 @@ namespace SaveOurShip2.Vehicles
 					}
 					else //target is player ship
 					{
-						yield return ArrivalOption_ReturnFromEnemy(target.Tile);
-					}
+                        foreach (ArrivalOption option in base.GetArrivalOptions(target))
+                        {
+                            yield return option;
+                        }
+                        yield break;
+                    }
 				}
 			}
             List<ArrivalOption> baseOptions = new List<ArrivalOption>(base.GetArrivalOptions(target));
             if (mp != null && !mp.HasMap)
 			{
-                // TODO: check for list of sites: landed ship, pillars.
-                yield return new ArrivalOption("VF_LandVehicleTargetedLanding".Translate(mp.Label),
-                    new ArrivalAction_LoadMap(vehicle, AerialVehicleArrivalModeDefOf.TargetedLanding));
+                // By default, there will be no option for pillar sites. Landed ship (Charlon Whitestone) is handled by Framework.
+                if (mp is MoonBase || mp.GetComponent<TribalPillarSiteComp>() != null || mp.GetComponent<InsectPillarSiteComp>() != null)
+                {
+                    yield return new ArrivalOption("VF_LandVehicleTargetedLanding".Translate(mp.Label),
+                       new ArrivalAction_LoadMap(vehicle, AerialVehicleArrivalModeDefOf.TargetedLanding));
+                }
             }
             if (baseOptions.Count==0)
             {

@@ -114,6 +114,26 @@ namespace SaveOurShip2
 			return "SoS.ContentPackDescription".Translate(ship.modContentPack.Name);
 			
 		}
+
+		private bool ShouldFindAmplifierNow()
+        {
+			// Amp threat is 2461. Find it more often if theoretically ready to deal with and not spam it when not ready yet, ruining scan effort invested.
+			int daysToFindAmplifier = 30;
+			if (mapComp.MapThreat() > 1600)
+            {
+				daysToFindAmplifier = 20;
+			}
+			else if (mapComp.MapThreat() > 1900)
+            {
+				daysToFindAmplifier = 14;
+			}
+			else if (mapComp.MapThreat() > 2200)
+			{
+				daysToFindAmplifier = 10;
+			}
+			return TogglePsychicAmplifierQuest.DaysFromLastAmplifier() > daysToFindAmplifier;
+		}
+
 		protected void FoundMinerals(Pawn worker)
 		{
 			this.daysWorkingSinceLastMinerals = 0f;
@@ -125,6 +145,14 @@ namespace SaveOurShip2
 				chance = Rand.RangeInclusive(3, 15);
 			else
 				chance = Rand.RangeInclusive(1, 15);
+
+			// Standard way of finding amplifier via Psychic Soothe/Droner event cold just not work for some modded players for various reasons.
+			// Therefore, a reliable alternative way of finding amplifier is implemented here.
+			if (ShouldFindAmplifierNow() && TogglePsychicAmplifierQuest.AmplifierShipAllowed())
+            {
+				TogglePsychicAmplifierQuest.AddAmplifierShip(useEmanationText:false);
+				return;
+			}
 
 			if (chance  < 3) //legacy site
 			{

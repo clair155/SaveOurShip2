@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
+using UnityEngine;
 using RimWorld;
 using Verse;
 using LudeonTK;
@@ -9,6 +11,7 @@ namespace SaveOurShip2
 {
 	public static class DebugToolsSOS2
 	{
+		private const string sos2Category = "SOS 2";
 		private static void DoEnemyPawnsAction(Action<Pawn> action)
 		{
 			List<Pawn> pawnsToProcess = new List<Pawn>();
@@ -38,7 +41,7 @@ namespace SaveOurShip2
 			DoEnemyPawnsAction((Pawn p) => p.Destroy(DestroyMode.Vanish));
 		}
 
-		[DebugAction("S0S 2", null, false, false, false, false, false, 0, false, actionType = DebugActionType.Action, allowedGameStates = AllowedGameStates.PlayingOnMap)]
+		[DebugAction(sos2Category, null, false, false, false, false, false, 0, false, actionType = DebugActionType.Action, allowedGameStates = AllowedGameStates.PlayingOnMap)]
 		private static void WinShipBattle()
 		{
 			Map playerShipMap = ShipInteriorMod2.FindPlayerShipMap();
@@ -65,6 +68,22 @@ namespace SaveOurShip2
 					bridge.Destroy();
 				}
 			}
+		}
+
+		[DebugAction(sos2Category, null, false, false, false, false, false, 0, false, actionType = DebugActionType.Action, allowedGameStates = AllowedGameStates.PlayingOnMap)]
+		private static void PngToShipBlueprint()
+		{
+			ShipImporter.ImportShipDesign(placeActualBuildings:false);
+		}
+		[DebugAction(sos2Category, null, false, false, false, false, false, 0, false, actionType = DebugActionType.Action, allowedGameStates = AllowedGameStates.PlayingOnMap)]
+		private static void PngToShipBuildings()
+		{
+			ShipImporter.ImportShipDesign(placeActualBuildings:true);
+		}
+		[DebugAction(sos2Category, null, false, false, false, false, false, 0, false, actionType = DebugActionType.Action, allowedGameStates = AllowedGameStates.PlayingOnMap)]
+		private static void PngToNanameBlueprint()
+		{
+			ShipImporter.ImportShipDesign(placeActualBuildings: true, useNanameWalls:true);
 		}
 	}
 }

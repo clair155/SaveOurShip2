@@ -63,7 +63,7 @@
     </Reference>
     <Reference Include="SmashTools">
       <HintPath>..\..\..\Vehicle-Framework\1.6\Assemblies\SmashTools.dll</HintPath>
-	  <Private>False</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -93,7 +93,7 @@
     </Reference>
     <Reference Include="Vehicles">
       <HintPath>..\..\..\Vehicle-Framework\1.6\Assemblies\Vehicles.dll</HintPath>
-	  <Private>False</Private>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -105,7 +105,6 @@
     <Compile Include="Alert_ArchotechSporeMoodLow.cs" />
     <Compile Include="Alert_MechanitesInHomeArea.cs" />
     <Compile Include="ApparelHolographic.cs" />
-    <Compile Include="ArrivalAction\AerialVehicleArrivalAction_LoadMapAndDefog.cs" />
     <Compile Include="ArrivalAction\AerialVehicleArrivalAction_ShipAssault.cs" />
     <Compile Include="ArrivalAction\PawnPublicizer.cs" />
     <Compile Include="Comp\CompHyperchargingBattery.cs" />
@@ -123,6 +122,7 @@
     <Compile Include="Def\GlobalUnlockDef.cs" />
     <Compile Include="Designator_RestoreHull.cs" />
     <Compile Include="GenAdjExtension.cs" />
+    <Compile Include="HarmonyCustomPatches.cs" />
     <Compile Include="HediffCompProperties_GearRepair.cs" />
     <Compile Include="HediffComp_GearRepair.cs" />
     <Compile Include="Jobs\JobUtility.cs" />
@@ -149,6 +149,7 @@
     <Compile Include="CompProps\CompProps_Archolife.cs" />
     <Compile Include="CompProps\CompProps_ArcholifeCosmetics.cs" />
     <Compile Include="CloakThresholdGizmo.cs" />
+    <Compile Include="ShipImorter.cs" />
     <Compile Include="SOS2MapUtility.cs" />
     <Compile Include="SoSDebugActions.cs" />
     <Compile Include="SoSSpawnOverride.cs" />
@@ -402,6 +403,7 @@
     <Compile Include="Vehicles\SoS2VehicleTurret.cs" />
     <Compile Include="Vehicles\SoS2VehicleUtility.cs" />
     <Compile Include="Vehicles\VehicleEventMethods.cs" />
+    <Compile Include="Vehicles\VehicleExtensions.cs" />
     <Compile Include="WorldObject\MoonBase.cs" />
     <Compile Include="Obsolete\Building_Radiator.cs" />
     <Compile Include="Obsolete\Bullet_HologramLaser.cs" />

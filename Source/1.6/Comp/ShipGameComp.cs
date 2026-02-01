@@ -32,5 +32,28 @@ namespace SaveOurShip2
 		{
 			spaceMaps = new Dictionary<int, bool>();
 		}
+
+		private void ModCompatibilityWarning()
+        {
+			// Players can try using that mod, but bugreports with it won't be accepted. Mod's design idea is 
+			// easy to implement, but waay too expensive to make it work without issues.
+			// Not recoomended in favor of new integration features.
+			if(ModLister.GetActiveModWithIdentifier("Laurence042.Sos2ShipHullPlatingIsGravshipSubstructure") != null)
+			{
+				Messages.Message(TranslatorFormattedStringExtensions.Translate("SoS.SoftIncompatibilityWithPlatingIsSubstructure"), null, MessageTypeDefOf.SilentInput);
+			}
+        }
+
+		public override void StartedNewGame()
+		{
+			ModCompatibilityWarning();
+		}
+
+		public override void LoadedGame()
+		{
+			ModCompatibilityWarning();
+		}
+
+		// Laurence042.Sos2ShipHullPlatingIsGravshipSubstructure 
 	}
 }

@@ -55,6 +55,7 @@
 		</costList>
 		<recipeMaker>
 			<researchPrerequisite>ShipTorpedoes</researchPrerequisite>
+			<displayPriority>500</displayPriority>
 		</recipeMaker>
 	</ThingDef>
 	<ThingDef ParentName="BaseBullet">
@@ -127,6 +128,7 @@
 		</costList>
 		<recipeMaker>
 			<researchPrerequisite>ShipTorpedoes</researchPrerequisite>
+			<displayPriority>520</displayPriority>
 		</recipeMaker>
 	</ThingDef>
 	<ThingDef ParentName="BaseBullet">
@@ -200,6 +202,7 @@
 		</costList>
 		<recipeMaker>
 			<researchPrerequisite>ShipTorpedoes</researchPrerequisite>
+			<displayPriority>540</displayPriority>
 		</recipeMaker>
 	</ThingDef>
 	<ThingDef ParentName="BaseBullet">
@@ -246,4 +249,203 @@
 		<defaultStoppingPower>9.0</defaultStoppingPower>
 		<defaultArmorPenetration>9.0</defaultArmorPenetration>
 	</DamageDef>
+	<!-- Bulk Torpedo Recipes -->
+	<RecipeDef>
+		<defName>MakeHighExplosiveTorpedo4</defName>
+		<label>make high-explosive torpedo x4</label>
+		<description>Craft 4 high-explosive torpedos.</description>
+		<jobString>Making high-explosive torpedo.</jobString>
+		<workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+		<effectWorking>Cook</effectWorking>
+		<soundWorking>Recipe_Machining</soundWorking>
+		<allowMixingIngredients>true</allowMixingIngredients>
+		<workAmount>6400</workAmount>
+		<targetCountAdjustment>20</targetCountAdjustment>
+		<displayPriority>510</displayPriority>
+		<ingredients>
+			<li>
+				<filter>
+          <thingDefs>
+            <li>Steel</li>
+          </thingDefs>
+        </filter>
+        <count>80</count>
+			</li>
+			<li>
+				<filter>
+          <thingDefs>
+            <li>Chemfuel</li>
+          </thingDefs>
+        </filter>
+        <count>120</count>
+			</li>
+			<li>
+				<filter>
+          <thingDefs>
+            <li>ComponentIndustrial</li>
+          </thingDefs>
+        </filter>
+        <count>12</count>
+			</li>
+			<li>
+				<filter>
+          <thingDefs>
+            <li>Shell_HighExplosive</li>
+          </thingDefs>
+        </filter>
+        <count>4</count>
+			</li>
+		</ingredients>
+		<fixedIngredientFilter>
+			<thingDefs>
+				<li>Steel</li>
+				<li>Chemfuel</li>
+				<li>ComponentIndustrial</li>
+				<li>Shell_HighExplosive</li>
+			</thingDefs>
+		</fixedIngredientFilter>
+		<products>
+			<ShipTorpedo_HighExplosive>4</ShipTorpedo_HighExplosive>
+		</products>
+		<researchPrerequisite>ShipTorpedoes</researchPrerequisite>
+		<workSkill>Crafting</workSkill>
+		<recipeUsers>
+			<li>FabricationBench</li>
+		</recipeUsers>
+		<skillRequirements>
+			<Crafting>8</Crafting>
+		</skillRequirements>
+    </RecipeDef>
+	<RecipeDef>
+		<defName>MakeEMPTorpedo4</defName>
+		<label>make EMP torpedo x4</label>
+		<description>Craft 4 EMP torpedos.</description>
+		<jobString>Making EMP torpedo.</jobString>
+		<workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+		<effectWorking>Cook</effectWorking>
+		<soundWorking>Recipe_Machining</soundWorking>
+		<allowMixingIngredients>true</allowMixingIngredients>
+		<workAmount>6400</workAmount>
+		<targetCountAdjustment>20</targetCountAdjustment>
+		<displayPriority>530</displayPriority>
+		<ingredients>
+			<li>
+				<filter>
+          <thingDefs>
+            <li>Steel</li>
+          </thingDefs>
+        </filter>
+        <count>80</count>
+			</li>
+			<li>
+				<filter>
+          <thingDefs>
+            <li>Chemfuel</li>
+          </thingDefs>
+        </filter>
+        <count>120</count>
+			</li>
+			<li>
+				<filter>
+          <thingDefs>
+            <li>ComponentIndustrial</li>
+          </thingDefs>
+        </filter>
+        <count>12</count>
+			</li>
+			<li>
+				<filter>
+          <thingDefs>
+            <li>Shell_EMP</li>
+          </thingDefs>
+        </filter>
+        <count>4</count>
+			</li>
+		</ingredients>
+		<fixedIngredientFilter>
+			<thingDefs>
+				<li>Steel</li>
+				<li>Chemfuel</li>
+				<li>ComponentIndustrial</li>
+				<li>Shell_EMP</li>
+			</thingDefs>
+		</fixedIngredientFilter>
+		<products>
+			<ShipTorpedo_EMP>4</ShipTorpedo_EMP>
+		</products>
+		<researchPrerequisite>ShipTorpedoes</researchPrerequisite>
+		<workSkill>Crafting</workSkill>
+		<recipeUsers>
+			<li>FabricationBench</li>
+		</recipeUsers>
+		<skillRequirements>
+			<Crafting>8</Crafting>
+		</skillRequirements>
+    </RecipeDef>
+	<RecipeDef>
+		<defName>MakeAntigrainTorpedo4</defName>
+		<label>make antigrain torpedo x4</label>
+		<description>Craft 4 antigrain torpedos.</description>
+		<jobString>Making antigrain torpedo.</jobString>
+		<workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+		<effectWorking>Cook</effectWorking>
+		<soundWorking>Recipe_Machining</soundWorking>
+		<allowMixingIngredients>true</allowMixingIngredients>
+		<workAmount>6400</workAmount>
+		<targetCountAdjustment>20</targetCountAdjustment>
+		<displayPriority>550</displayPriority>
+		<ingredients>
+			<li>
+				<filter>
+          <thingDefs>
+            <li>Steel</li>
+          </thingDefs>
+        </filter>
+        <count>80</count>
+			</li>
+			<li>
+				<filter>
+          <thingDefs>
+            <li>Chemfuel</li>
+          </thingDefs>
+        </filter>
+        <count>120</count>
+			</li>
+			<li>
+				<filter>
+          <thingDefs>
+            <li>ComponentIndustrial</li>
+          </thingDefs>
+        </filter>
+        <count>12</count>
+			</li>
+			<li>
+				<filter>
+          <thingDefs>
+            <li>Shell_AntigrainWarhead</li>
+          </thingDefs>
+        </filter>
+        <count>4</count>
+			</li>
+		</ingredients>
+		<fixedIngredientFilter>
+			<thingDefs>
+				<li>Steel</li>
+				<li>Chemfuel</li>
+				<li>ComponentIndustrial</li>
+				<li>Shell_AntigrainWarhead</li>
+			</thingDefs>
+		</fixedIngredientFilter>
+		<products>
+			<ShipTorpedo_Antimatter>4</ShipTorpedo_Antimatter>
+		</products>
+		<researchPrerequisite>ShipTorpedoes</researchPrerequisite>
+		<workSkill>Crafting</workSkill>
+		<recipeUsers>
+			<li>FabricationBench</li>
+		</recipeUsers>
+		<skillRequirements>
+			<Crafting>8</Crafting>
+		</skillRequirements>
+    </RecipeDef>
 </Defs>

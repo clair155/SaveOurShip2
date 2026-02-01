@@ -13,6 +13,12 @@ namespace SaveOurShip2
 			if (!mapComp.IsPlayerShipMap || mapComp.ShipMapState != ShipMapState.nominal || mapComp.NextTargetMap != null || ModSettings_SoS.frequencySoS == 0 || Find.TickManager.TicksGame < mapComp.LastAttackTick + 300000 / ModSettings_SoS.frequencySoS)
 				return false;
 
+			// Can't be attacked if just got to space, for interoperability with Odyssey
+			if (Find.TickManager.TicksGame - map.generationTick < GenDate.TicksPerHour * 3)
+            {
+				return false;
+            }
+
 			foreach (Building_ShipCloakingDevice cloak in mapComp.Cloaks)
 			{
 				if (cloak.active)

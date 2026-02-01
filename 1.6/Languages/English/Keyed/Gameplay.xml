@@ -29,6 +29,9 @@
 	<SoS.BurnUpPlayerPrevented>Building a ship bridge has allowed you to stabilize the orbit.</SoS.BurnUpPlayerPrevented>
 	<SoS.BurnUpCountdown>Entering atmosphere in {0}!</SoS.BurnUpCountdown>
 	<SoS.BurnUpCountdownTip>This map will enter atmosphere in {0}. Everything on it will be destroyed.</SoS.BurnUpCountdownTip>
+	<!-- world/orbit - Odyssey -->
+	<SoS.CantLaunchGravshipToCombatMap>It's too dangerous to launch gravship into ongoing ship battle</SoS.CantLaunchGravshipToCombatMap>
+	<SoS.CantLaunchToEnemyMap>It's too dangerous to navigate to active enemy ship. It can be reached with shuttles sent to boarding mission from player ship.</SoS.CantLaunchToEnemyMap>
 	<!-- combat -->
 	<SoS.CombatTooltip>Shows the enemy ship's distance from your ship, all projectiles and shuttles currently in flight.\n\nRED: laser/canon range\nGREEN: plasma range\nBLUE: railgun range.\nPURPLE: torpedo range\nSmall colored bars: inaccurate maximum range for large weapons\nShuttles can be used at any distance</SoS.CombatTooltip>
 	<SoS.CombatRetreat>Retreat</SoS.CombatRetreat>
@@ -111,7 +114,7 @@
 	<SoS.RemoveWrecksCommand>Remove wreck</SoS.RemoveWrecksCommand>
 	<SoS.RemoveWrecksCommandDesc>Remove target wreck from this map</SoS.RemoveWrecksCommandDesc>
 	<!-- placeworkers -->
-	<SoS.PlaceOnShipHull>Must place on owned ship hull.</SoS.PlaceOnShipHull>
+	<SoS.PlaceOnShipHull>Must place on owned ship hull plating (floor).</SoS.PlaceOnShipHull>
 	<SoS.EnginePlaceRotation>Engines must face the same way!</SoS.EnginePlaceRotation>
 	<!-- comms/trade -->
 	<SoS.TradeComms>Communicating with {0}</SoS.TradeComms>
@@ -152,6 +155,7 @@
 	<SoS.StatsShipName>Ship name: {0}</SoS.StatsShipName>
 	<SoS.StatsNotoriety>Notoriety: {0}</SoS.StatsNotoriety>
 	<SoS.StatsShipMass>Weight: {0}</SoS.StatsShipMass>
+	<SoS.StatsShipTakeoffMass>Takeoff weight: {0}</SoS.StatsShipTakeoffMass>
 	<SoS.StatsShipMaxTakeoff>Maximum takeoff weight: {0}</SoS.StatsShipMaxTakeoff>
 	<SoS.StatsShipEnergy>Stored power: {0} / {1} Wd</SoS.StatsShipEnergy>
 	<SoS.StatsShipHeat>Stored heat: {0} / {1} HU{2}</SoS.StatsShipHeat>
@@ -323,6 +327,8 @@
 	<SoS.ResurrectBrain>Resurrect</SoS.ResurrectBrain>
 	<SoS.ResurrectBrainDesc>Use a resurrector mech serum to construct a new body for this consciousness</SoS.ResurrectBrainDesc>
 	<SoS.CantScanFormgel>Formgel is not suitable for scanning</SoS.CantScanFormgel>
+	<!-- Archotech -->
+	<SoS.Archotech.ResearchTabName>Archotech</SoS.Archotech.ResearchTabName>
 	<SoS.ArchoGift>Unlocks archotech gifts:</SoS.ArchoGift>
 	<SoS.ArchotechGoodwillPlus>Psychically increase goodwill (+10, costs {0} field strength)</SoS.ArchotechGoodwillPlus>
 	<SoS.ArchotechGoodwillMinus>Psychically decrease goodwill (-10, costs {0} field strength)</SoS.ArchotechGoodwillMinus>
@@ -375,6 +381,7 @@
 	<SoS.ShuttleMissionFloatIntercept>Mission: Intercept Torpedoes/Fighters</SoS.ShuttleMissionFloatIntercept>
 	<SoS.ShuttleMissionFloatStrafe>Mission: Strafe Enemy Ship</SoS.ShuttleMissionFloatStrafe>
 	<SoS.ShuttleMissionFloatTorpedo>Mission: Torpedo Enemy Ship</SoS.ShuttleMissionFloatTorpedo>
+	<!-- Return to ship from some out of combat location. Not used. Standard Vehicle Framework option to zoom in and chose location isa used instead -->
 	<SoS.ShuttleMissionFloatReturn>Return to Ship</SoS.ShuttleMissionFloatReturn>
 	<SoS.ShuttleRetreat>Your shuttle is retreating due to damaged hull!</SoS.ShuttleRetreat>
 	<SoS.EnemyShuttleRetreat>Enemy shuttle is retreating due to damaged hull!</SoS.EnemyShuttleRetreat>
@@ -552,6 +559,10 @@
 	<SoS.EnergyShieldStatusLabel>Shield</SoS.EnergyShieldStatusLabel>
 	<SoS.EnergyShieldStatusDesc>{0} / {1}</SoS.EnergyShieldStatusDesc>
 
+	<SoS.Sensor.ConfimObserve>Warning! Passively observing quest maps and sites for a prolonged time without sending player pawns there via ship or shuttle can cause pawn logic to break, quest logic to break, etc.
+Observing maps before landing ship there should be fine.
+Are you sure you want to proceed?</SoS.Sensor.ConfimObserve>
+
 	<!-- Ship combat stuff -->
 	<SoS.Combat.MapShipInfo>SOS2 {0} | Ships: {1} | Cells: {2}</SoS.Combat.MapShipInfo>
 
@@ -614,13 +625,17 @@
 	<SoS.MechanitesDisassembling>Mechanites disassembling</SoS.MechanitesDisassembling>
 	<SoS.MechaniteSizeLower>Mechanite size: {0}</SoS.MechaniteSizeLower>
 
-	<!-- TranslatorFormattedStringExtensions.Translate -->
 	<!-- Locations/world objects -->
 	<SoS.Location.ObservedArea>Observed area {0}</SoS.Location.ObservedArea>
 	<SoS.Location.ShipFleet>Ship fleet {0}</SoS.Location.ShipFleet>
 	<!-- 0 is ship name, 1 is map ID -->
 	<SoS.Location.ShipNameAndMapID>{0} {1}</SoS.Location.ShipNameAndMapID>
 	<SoS.Location.WreckageNumbered>Wreckage nr. {0}</SoS.Location.WreckageNumbered>
+
+	<!-- Odyssey integration -->
+	<SoS.SoftIncompatibilityWithPlatingIsSubstructure>Using "Ship Hull Plating Is Gravship Substructure" mod is not recommended. Installing gravship buildings on spaceship is recommended instead.</SoS.SoftIncompatibilityWithPlatingIsSubstructure>
+	<SoS.Ody.GravEngineOnSpaceship>Reduces spaceship takeoff weight and makes launching faster.</SoS.Ody.GravEngineOnSpaceship>
+	<SoS.Ody.GravEngineCanBeInstalledOnSpaceship>Can be installed on a spaceship instead of a gravship.</SoS.Ody.GravEngineCanBeInstalledOnSpaceship>
 
 	<!-- Projectiles missing map-->
 	<SoS.ActorPlayer>Player</SoS.ActorPlayer>

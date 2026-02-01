@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
-
 	<!-- override -->
 	<JourneyOffer>A friendly AI from your past named Charlon Whitestone has sent you a message!\n\nHe reveals that he has a spacecraft hidden on this planet, and sends you its world coordinates.\n\nIf you can reach the ship, Charlon will take you into orbit. From there, perhaps you can discover a way to improve the ship's engine and journey to the stars.</JourneyOffer>
 	<EscapeShipFoundLabel>Ship found</EscapeShipFoundLabel>
 	<EscapeShipFound>You've reached the coordinates sent by Charlon Whitestone and discovered the hidden spacecraft.\n\nThe ship is ready for launch, but its chemfuel engines can only get you into orbit. To go further, you will need to somehow acquire a Johnson-Tanaka drive. Perhaps clues can be found amidst orbital debris...</EscapeShipFound>
-	
+	<!-- Tutorial-style letter on how base game difficulty change doesn't affect ship battle-->
+	<SoS.Letter.DifficultyChanged>Base Game Difficulty Change Detected: ship battle difficulty is unchanged</SoS.Letter.DifficultyChanged>
+	<SoS.Letter.DifficultyChangedDesc>Ship battle difficulty for Save our Ship 2 is adjusted separately in Options → Mod options → Save our Ship → Ship combat difficulty factor.</SoS.Letter.DifficultyChangedDesc>
 	<!-- misc -->
 	<SoS.LetterLabelShortCircuitDesc>A fault in an electrical conduit has caused a short circuit. Luckily, your capacitor array's fuse prevented it from discharging.</SoS.LetterLabelShortCircuitDesc>
 	<SoS.EncounterStart>Derelict</SoS.EncounterStart>
@@ -87,7 +88,7 @@
 	<SoS.HibernateComplete>Discharge complete</SoS.HibernateComplete>
 	<SoS.HibernateCompleteDesc>The Johnson-Tanaka drive has completed its discharge process. It is now ready to be deconstructed, so that your colonists can retrieve its Entanglement Manifold.</SoS.HibernateCompleteDesc>
 	<SoS.ImpactSiteFound>Impact site found</SoS.ImpactSiteFound>
-	<SoS.ImpactSiteFoundDesc>You've reached the impact site of the ancient ship's engine.\n\nThe Johnson-Tanaka drive contains a tremendous amount of stored momentum, and cannot be safely opened at this time. You will need to induce a manual discharge process.\n\nYour colonists calculate that this will take about 15 days, and the energy signature will be detectable from a long distance away. This sort of energy signature indicates interstellar flight capability, and will attract gangs of desperate raiders and swarms of deadly mechanoids.\n\nYou will be assaulted with an intensity you've never seen. Make sure your defenses are prepared first.</SoS.ImpactSiteFoundDesc>
+	<SoS.ImpactSiteFoundDesc>You've reached the impact site of the ancient ship's engine.\n\nThe Johnson-Tanaka drive contains a tremendous amount of stored momentum, and cannot be safely opened at this time. You will need to induce a manual discharge process.\n\nYour colonists calculate that this will take about 15 days, and the energy signature will be detectable from a long distance away. This sort of energy signature indicates interstellar flight capability, and will attract gangs of desperate raiders and swarms of deadly mechanoids.\n\nYou will be assaulted with an intensity you've never seen. Make sure your defenses are prepared first.　Raiders will only attack the Johnson-Tanaka drive on the ground. There will be no ship attacks related to the JT drive discharge.</SoS.ImpactSiteFoundDesc>
 	
 	<!-- pillars -->
 	<SoS.ArchotechLostPillar>Archotech pillar lost</SoS.ArchotechLostPillar>
@@ -108,7 +109,10 @@
 		
 	<!-- endgame -->
 	<SoS.PsychicAmplifier>Psychic amplifier detected</SoS.PsychicAmplifier>
+	<!-- Normal amplifier desc mentioning psychic emantaion -->
 	<SoS.PsychicAmplifierDesc>Your ship's AI glows with excitement. It has traced the recent psychic emanation to an orbiting amplifier, which is relaying a psychic signal from a distant archotech.\n\nHypothetically, if your ship were to attack this amplifier and send a boarding party to hack its core, it would allow the AI to intercept the original psychic signal and gain a glimpse into an archotech's thought processes. Such insights could even allow it to begin evolving into an archotech itself...\n\nDo not underestimate the difficulty of this battle.</SoS.PsychicAmplifierDesc>
+	<!-- Alternative amplifier desc explaining how it was found without psychic emanation -->
+	<SoS.PsychicAmplifierDescNoEmanation>Your ship's AI glows with excitement. It has traced not an ordinary ship, but a high-tech orbiting amplifier, which is relaying a signal from a distant archotech.\n\nHypothetically, if your ship were to attack this amplifier and send a boarding party to hack its core, it would allow the AI to intercept the original psychic signal and gain a glimpse into an archotech's thought processes. Such insights could even allow it to begin evolving into an archotech itself...\n\nDo not underestimate the difficulty of this battle.</SoS.PsychicAmplifierDescNoEmanation>
 	<SoS.PsychicAmplifierCaptured>Psychic amplifier hacked</SoS.PsychicAmplifierCaptured>
 	<SoS.PsychicAmplifierCapturedDesc>Your crew seizes control of the orbital amplifier's systems and redirects the incoming psychic signal to your ship's AI.\n\nA few moments later, your intrusion is detected and the signal abruptly terminates. Your hacker curses out loud, but the AI interrupts with a triumphant report - it has gathered all the data it requires.\n\nYou now possess the blueprints for an Archotech Spore - a sort of incubator which will gradually allow a consciousness to evolve into an archotech. With its help, you could even research ultratech projects.</SoS.PsychicAmplifierCapturedDesc>
 	<SoS.SporeBuilt>Spore constructed</SoS.SporeBuilt>
@@ -177,7 +181,7 @@
 	
 	
 	<SoS.EndgameCredits>Save Our Ship 2 was developed by {0}
-2.7 Maintainer: {1}
+2.7 and 2.8 Maintainer: {1}
 
 Testers: {2}
 
@@ -192,8 +196,8 @@ OG Testing Squad: {6}</SoS.EndgameCredits>
 	<!-- Names lists form credits -->
 	<SoS.EndgameCredits.Authors>Kentington, Thain, and SonicTHI</SoS.EndgameCredits.Authors>
 	<SoS.EndgameCredits.Maintainer>Boris</SoS.EndgameCredits.Maintainer>
-	<SoS.EndgameCredits.Testers>Dreamingofstarlight(Lunarium), I Forgot, Sym/Grimmy, Clever Ape, Dragoncri, Epoch_soc, Doubleface1369, Stylish, Splinter, TheGruntBox, Zeah, Svanovsky, Rappers101, Pikita, the pelusho, Destro, Djrvywfbjr, Ms Mommy Memer, Zym, Balarak, H.G., touhou_lover, Alerios, paradox</SoS.EndgameCredits.Testers>
-	<SoS.EndgameCredits.Submodders>Ms Mommy Memer, I Forgot, Cruel Moose and thamuzz</SoS.EndgameCredits.Submodders>
+	<SoS.EndgameCredits.Testers>Dreamingofstarlight(Lunarium), I Forgot, Sym/Grimmy, Clever Ape, Dragoncri, Epoch_soc, Doubleface1369, Stylish, Splinter, TheGruntBox, Zeah, Svanovsky, Rappers101, Pikita, the pelusho, Destro, Djrvywfbjr, Ms Mommy Memer, Zym, Balarak, H.G., touhou_lover, Alerios, paradox, Grimdoll, Mintcat, Belinko, phrog, Lucius, Ariel, Leblanche, Ambir, tenmei, Obviously Evil, Djohaal</SoS.EndgameCredits.Testers>
+	<SoS.EndgameCredits.Submodders>Ms Mommy Memer, I Forgot, Cruel Moose, Belinko and thamuzz</SoS.EndgameCredits.Submodders>
 	<SoS.EndgameCredits.Contributors> Boris, SonicTHI, Owlchemist, Oskar Potocki, Thamuzz1331, Trollam, K', Sarg, Karim, Saakra, Revolus, MatthewTeply, dkargin, HG, Morphium, Halno, Argón, DianaWinters, UrbanMonkey, M.A.G.Gen., Epicguru, sdanchenko, m00nl1ght-dev, Shinrar, Hanssen, Rimworld Mod Korean, Cruel Moose</SoS.EndgameCredits.Contributors>
 	<SoS.EndgameCredits.Shipwrights>Oninnaise, VVither_Skeleton, (Insert Boi here), AlfadorZero, choppytehbear, Dammerung, Foxtrot, Inert, Jameson, Moonshine Dusk</SoS.EndgameCredits.Shipwrights>
 	<SoS.EndgameCredits.OGTestingSquad>Buns Buns Cat, Phsarjk, i am has yes, Fuji, Reviire, Ian, Generic Scout, Waipa, Xanthos, BUTTERSKY, firethestars, Haldicar, jamhax, Jenden, maraworf, Red_Bunny, rostock, sprocket, El Jojo, Zahc, Dutchman, Zero Jackal, Tiberiumkyle, swordspell, Shabm, Kasodus, Red_Bunny, melandor, Madman, Jenden, Insert Witty Joke, Ifailatgaming, Capitão Escarlate, Bunkier, Bumblybear, Bubbadoge, Abraxas, Rage Nova, twsta, transcendant, thecaffiend, Manifold Paradox, WhiteGiverMa, Gago, Nerevarest</SoS.EndgameCredits.OGTestingSquad>

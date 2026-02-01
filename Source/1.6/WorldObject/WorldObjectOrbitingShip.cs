@@ -55,7 +55,6 @@ namespace SaveOurShip2
 		public void SetNominalPos()
 		{
 			radius = 150;
-			Theta = -3;
 		}
 		//used in orbit
 		public static Vector3 vecPolar = new Vector3(0, 1, 0);
@@ -91,7 +90,7 @@ namespace SaveOurShip2
 				OrbitSet();
 			}
 		}
-		void OrbitSet() //recalc on change only
+		public void OrbitSet() //recalc on change only
 		{
 			drawPos = WorldObjectMath.GetPos(phi, theta, radius);
 		}
@@ -135,7 +134,7 @@ namespace SaveOurShip2
 		public override void ExposeData()
 		{
 			base.ExposeData();
-			Scribe_Values.Look<float>(ref theta, "theta", -3, false);
+			WorldObjectMath.SerializeTheta(ref theta, false);
 			Scribe_Values.Look<float>(ref phi, "phi", 0, false);
 			Scribe_Values.Look<float>(ref radius, "radius", 150f, false);
 			// Save game comaptibility for orbital move
@@ -338,9 +337,9 @@ namespace SaveOurShip2
 							action = delegate ()
 							{
 								orbitalMove.Stop();
-								// -1 is closer to being above partially generated planet surface than 0.
-								Theta = -1f;
-								Phi = 0f;
+								Vector3 tileCenterPos = this.Map.Tile.Layer.Origin + Find.WorldGrid.GetTileCenter(this.Map.Tile);
+								WorldObjectMath.GetSphericalFromCartesian(tileCenterPos, out phi, out theta, out radius);
+								radius = WorldObjectMath.defaultRadius;
 							},
 							defaultLabel = TranslatorFormattedStringExtensions.Translate("SoS.Dev.ShipPositionReset"),
 							defaultDesc = TranslatorFormattedStringExtensions.Translate("SoS.Dev.ShipPositionResetDesc"),
@@ -402,7 +401,8 @@ namespace SaveOurShip2
 			}
 			if (Prefs.DevMode)
 			{
-				stringBuilder.AppendLine(TranslatorFormattedStringExtensions.Translate("SoS.Dev.OrbitingShipInfo", mapComp.ShipMapState.ToString(), mapComp.Altitude, radius, theta, phi, DrawPos.ToString(), originDrawPos.ToString(), targetDrawPos.ToString()));
+				stringBuilder.AppendLine(TranslatorFormattedStringExtensions.Translate("SoS.Dev.OrbitingShipInfo", mapComp.ShipMapState.ToString(),
+					mapComp.Altitude, radius, theta.ToString("F2"), phi.ToString("F2"), DrawPos.ToString(), originDrawPos.ToString(), targetDrawPos.ToString()));
 			}
 			return stringBuilder.ToString().TrimEndNewlines();
 		}

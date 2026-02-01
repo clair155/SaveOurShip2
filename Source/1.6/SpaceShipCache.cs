@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Verse;
+using Verse.AI;
 using RimWorld;
 using UnityEngine;
 using Vehicles;
@@ -155,6 +156,23 @@ namespace SaveOurShip2
 		public int EngineMass = 0;
 		public int MassSum => Mass + EngineMass;
 		public float MassActual => Mathf.Pow(MassSum, 1.2f) / 14;
+		public bool HasGravEngine = false;
+		private int fuelOptimizerCount = 0;
+		public int EffectiveFuelOptimizerCount
+        {
+            get
+            {
+				return Mathf.Min(fuelOptimizerCount, 2);
+            }
+        }
+		public float MassTakeoff
+        {
+            get
+            {
+				const float gravEnineMassMultiplier = 0.4f;
+				return HasGravEngine ? MassActual * gravEnineMassMultiplier : MassActual;
+			}
+        }
 		public float MaxTakeoff = 0;
 		public float ThrustRaw = 0;
 		public float ThrustRatio => 14 * ThrustRaw * 500f / Mathf.Pow(MassSum, 1.2f);
@@ -875,6 +893,14 @@ namespace SaveOurShip2
 				{
 					Mass += b.def.Size.x * b.def.Size.z * 3;
 				}
+				if (b.def == ResourceBank.ThingDefOf.GravEngine)
+                {
+					HasGravEngine = true;
+                }
+				if (b.def == ResourceBank.ThingDefOf.FuelOptimizer)
+				{
+					fuelOptimizerCount++;
+				}
 			}
 		}
 		public void RemoveFromCache(Building b, DestroyMode mode)
@@ -982,6 +1008,15 @@ namespace SaveOurShip2
 				if (!b.IsClearableFreeBuilding)
 				{
 					Mass -= b.def.Size.x * b.def.Size.z * 3;
+				}
+				// Only one should exist, so removal nmeans no grav engines left
+				if (b.def == ResourceBank.ThingDefOf.GravEngine)
+				{
+					HasGravEngine = false;
+				}
+				if (b.def == ResourceBank.ThingDefOf.FuelOptimizer)
+				{
+					fuelOptimizerCount--;
 				}
 			}
 		}
@@ -1368,5 +1403,51 @@ namespace SaveOurShip2
         {
 			return Core != null && !IsWreck && (Core.PowerComp.PowerNet.HasActivePowerSource || Core.PowerComp.PowerNet.CurrentStoredEnergy() >= 1000);
         }
+
+		public void StartBoardingShuttles(ref List<VehiclePawn> shuttlesWantingBoarders)
+        {
+			List<VehiclePawn> shuttles = new List<VehiclePawn>();
+			List<CompShipBay> bays = new List<CompShipBay>();
+			foreach (VehiclePawn vehicle in ShuttlesOnShip(Faction))
+			{
+				if (ShipInteriorMod2.IsShuttle(vehicle) && (vehicle.CompUpgradeTree == null || !ShipInteriorMod2.ShuttleIsArmed(vehicle)) && vehicle.GetNextAvailableHandler(HandlingType.Movement) != null)
+				{
+					if (ShipInteriorMod2.IsPod(vehicle) || !ModSettings_SoS.shipMapPhysics)
+						shuttles.Add(vehicle);
+					else //for non pods, check if there is room to land
+					{
+						foreach (CompShipBay bay in mapComp.TargetMapComp.Bays)
+						{
+							if (!bays.Contains(bay) && bay.CanFitShuttleSize(vehicle) != IntVec3.Zero)
+							{
+								shuttles.Add(vehicle);
+								bays.Add(bay);
+							}
+						}
+					}
+				}
+			}
+			List<VehiclePawn> shuttlesToBeFilled = new List<VehiclePawn>(shuttles);
+			IEnumerable<Pawn> pawnsToBoard = PawnsOnShip(Faction).Where(pawn => !(pawn is VehiclePawn) && (pawn.CurJob == null || pawn.CurJob.def != ResourceBank.JobDefOf.ManShipBridge) && pawn.kindDef.combatPower > 40);
+			Log.Message("[SoS2] Planning boarding missions. Found " + shuttlesToBeFilled.Count + " boarding-ready shuttles and " + pawnsToBoard.Count() + " potential boarders.");
+			foreach (Pawn p in pawnsToBoard)
+			{
+				if (shuttlesToBeFilled.Count > 0 && p.mindState.duty != null)
+				{
+					p.mindState.duty.transportersGroup = 1;
+					VehiclePawn myShuttle = shuttlesToBeFilled.Where(shuttle => p.CanReserveAndReach(shuttle, PathEndMode.Touch, Danger.Deadly)).RandomElement();
+					if (myShuttle != null && myShuttle.GetNextAvailableHandler(p, HandlingType.Movement) != null)
+					{
+						myShuttle.PromptToBoardVehicle(p, myShuttle.GetNextAvailableHandler(p, HandlingType.Movement));
+						if (myShuttle.GetNextAvailableHandler(p, HandlingType.Movement) == null)
+							shuttlesToBeFilled.Remove(myShuttle);
+						if (!shuttlesWantingBoarders.Contains(myShuttle))
+							shuttlesWantingBoarders.Add(myShuttle);
+						Log.Message("[SoS2] Assigning " + p + " to boarding shuttle");
+					}
+				}
+				Log.Message("[SoS2] " + shuttlesWantingBoarders.Count + " shuttles assigned boarders, " + shuttlesToBeFilled.Count + " shuttles unfilled.");
+			}
+		}
 	}
 }
