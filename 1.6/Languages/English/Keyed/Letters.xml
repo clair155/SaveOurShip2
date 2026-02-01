@@ -181,7 +181,7 @@
 	
 	
 	<SoS.EndgameCredits>Save Our Ship 2 was developed by {0}
-2.7 Maintainer: {1}
+2.7 and 2.8 Maintainer: {1}
 
 Testers: {2}
 
@@ -196,8 +196,8 @@ OG Testing Squad: {6}</SoS.EndgameCredits>
 	<!-- Names lists form credits -->
 	<SoS.EndgameCredits.Authors>Kentington, Thain, and SonicTHI</SoS.EndgameCredits.Authors>
 	<SoS.EndgameCredits.Maintainer>Boris</SoS.EndgameCredits.Maintainer>
-	<SoS.EndgameCredits.Testers>Dreamingofstarlight(Lunarium), I Forgot, Sym/Grimmy, Clever Ape, Dragoncri, Epoch_soc, Doubleface1369, Stylish, Splinter, TheGruntBox, Zeah, Svanovsky, Rappers101, Pikita, the pelusho, Destro, Djrvywfbjr, Ms Mommy Memer, Zym, Balarak, H.G., touhou_lover, Alerios, paradox</SoS.EndgameCredits.Testers>
-	<SoS.EndgameCredits.Submodders>Ms Mommy Memer, I Forgot, Cruel Moose and thamuzz</SoS.EndgameCredits.Submodders>
+	<SoS.EndgameCredits.Testers>Dreamingofstarlight(Lunarium), I Forgot, Sym/Grimmy, Clever Ape, Dragoncri, Epoch_soc, Doubleface1369, Stylish, Splinter, TheGruntBox, Zeah, Svanovsky, Rappers101, Pikita, the pelusho, Destro, Djrvywfbjr, Ms Mommy Memer, Zym, Balarak, H.G., touhou_lover, Alerios, paradox, Grimdoll, Mintcat, Belinko, phrog, Lucius, Ariel, Leblanche, Ambir, tenmei, Obviously Evil, Djohaal</SoS.EndgameCredits.Testers>
+	<SoS.EndgameCredits.Submodders>Ms Mommy Memer, I Forgot, Cruel Moose, Belinko and thamuzz</SoS.EndgameCredits.Submodders>
 	<SoS.EndgameCredits.Contributors> Boris, SonicTHI, Owlchemist, Oskar Potocki, Thamuzz1331, Trollam, K', Sarg, Karim, Saakra, Revolus, MatthewTeply, dkargin, HG, Morphium, Halno, Argón, DianaWinters, UrbanMonkey, M.A.G.Gen., Epicguru, sdanchenko, m00nl1ght-dev, Shinrar, Hanssen, Rimworld Mod Korean, Cruel Moose</SoS.EndgameCredits.Contributors>
 	<SoS.EndgameCredits.Shipwrights>Oninnaise, VVither_Skeleton, (Insert Boi here), AlfadorZero, choppytehbear, Dammerung, Foxtrot, Inert, Jameson, Moonshine Dusk</SoS.EndgameCredits.Shipwrights>
 	<SoS.EndgameCredits.OGTestingSquad>Buns Buns Cat, Phsarjk, i am has yes, Fuji, Reviire, Ian, Generic Scout, Waipa, Xanthos, BUTTERSKY, firethestars, Haldicar, jamhax, Jenden, maraworf, Red_Bunny, rostock, sprocket, El Jojo, Zahc, Dutchman, Zero Jackal, Tiberiumkyle, swordspell, Shabm, Kasodus, Red_Bunny, melandor, Madman, Jenden, Insert Witty Joke, Ifailatgaming, Capitão Escarlate, Bunkier, Bumblybear, Bubbadoge, Abraxas, Rage Nova, twsta, transcendant, thecaffiend, Manifold Paradox, WhiteGiverMa, Gago, Nerevarest</SoS.EndgameCredits.OGTestingSquad>
