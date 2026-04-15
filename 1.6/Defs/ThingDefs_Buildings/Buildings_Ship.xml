@@ -64,7 +64,6 @@
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
 				<isHull>true</isHull>
-				<hermetic>true</hermetic>
 				<roof>true</roof>
 			</li>
 			<li>
@@ -125,7 +124,6 @@
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
 				<isHull>true</isHull>
-				<hermetic>true</hermetic>
 				<roof>true</roof>
 			</li>
 			<li Class="CompProperties_Power">
@@ -184,7 +182,6 @@
 		<description>Angled armor for a ship's outer hull.</description>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
-				<hermetic>true</hermetic>
 				<isCorner>true</isCorner>
 			</li>
 			<li>
@@ -341,7 +338,6 @@
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
 				<isHull>true</isHull>
-				<hermetic>true</hermetic>
 				<roof>true</roof>
 			</li>
 			<li Class="SaveOurShip2.CompProps_PowerPlantSolarShip">
@@ -432,7 +428,6 @@
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
 				<isHull>true</isHull>
-				<hermetic>true</hermetic>
 				<roof>true</roof>
 			</li>
 			<li Class="CompProperties_Power">
@@ -508,7 +503,6 @@
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
 				<isHull>true</isHull>
 				<isPlating>true</isPlating>
-				<hermetic>true</hermetic>
 				<roof>true</roof>
 			</li>
 			<li Class="CompProperties_Power">
@@ -624,7 +618,6 @@
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
 				<isHull>true</isHull>
-				<hermetic>true</hermetic>
 				<roof>true</roof>
 			</li>
 			<li Class="SaveOurShip2.CompProps_DockExtender">
@@ -682,7 +675,6 @@
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
 				<isHull>true</isHull>
-				<hermetic>true</hermetic>
 			</li>
 			<li Class="CompProperties_Power">
 				<compClass>CompPowerTrader</compClass>
@@ -760,7 +752,6 @@
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
 				<isPlating>true</isPlating>
-				<hermetic>true</hermetic>
 				<roof>true</roof>
 			</li>
 		</comps>
@@ -929,7 +920,6 @@
 		<designationCategory>Ship</designationCategory>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
-				<hermetic>true</hermetic>
 			</li>
 			<li Class="CompProperties_Power">
 				<compClass>CompPowerTrader</compClass>
@@ -1007,7 +997,6 @@
 		<designationCategory>Ship</designationCategory>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
-				<hermetic>true</hermetic>
 			</li>
 			<li Class="CompProperties_Power">
 				<compClass>CompPowerTrader</compClass>
@@ -1087,7 +1076,6 @@
 		<designationCategory>Ship</designationCategory>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
-				<hermetic>true</hermetic>
 			</li>
 			<li Class="CompProperties_Power">
 				<compClass>CompPowerTrader</compClass>
@@ -1215,7 +1203,6 @@
 		<designationCategory>Ship</designationCategory>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
-				<hermetic>true</hermetic>
 			</li>
 			<li Class="CompProperties_Power">
 				<compClass>CompPowerTrader</compClass>
@@ -1276,7 +1263,6 @@
 		<designationCategory>Ship</designationCategory>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
-				<hermetic>true</hermetic>
 			</li>
 			<li Class="CompProperties_Power">
 				<compClass>CompPowerTrader</compClass>
@@ -2625,8 +2611,6 @@
 			<WorkToBuild>1600</WorkToBuild>
 			<Mass>50</Mass>
 			<BedRestEffectiveness>1.5</BedRestEffectiveness>
-			<DecompressionResistanceOffset>1</DecompressionResistanceOffset>
-			<HypoxiaResistanceOffset>1</HypoxiaResistanceOffset>
 		</statBases>
 		<size>(1,1)</size>
 		<uiOrder>2022</uiOrder>
@@ -2994,7 +2978,6 @@
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
 				<isHull>true</isHull>
-				<hermetic>true</hermetic>
 				<foam>true</foam>
 				<roof>true</roof>
 			</li>
@@ -3039,7 +3022,6 @@
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
 				<isPlating>true</isPlating>
-				<hermetic>true</hermetic>
 				<foam>true</foam>
 				<roof>true</roof>
 			</li>
@@ -3101,7 +3083,6 @@
 		</building>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
-				<hermetic>true</hermetic>
 			</li>
 			<li Class="SaveOurShip2.CompProps_DockExtender">
 			</li>
@@ -3158,7 +3139,6 @@
 		</building>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
-				<hermetic>true</hermetic>
 			</li>
 			<li Class="SaveOurShip2.CompProps_DockExtender">
 			</li>
@@ -3194,7 +3174,6 @@
 		<leaveResourcesWhenKilled>false</leaveResourcesWhenKilled>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
-				<hermetic>true</hermetic>
 			</li>
 			<li Class="SaveOurShip2.CompProps_DockExtender">
 				<isPlating>true</isPlating>

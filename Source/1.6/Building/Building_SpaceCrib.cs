@@ -26,7 +26,7 @@ namespace SaveOurShip2
 		{
 			base.TickRare();
 			bool closed = false;
-			if (!Map.IsSpace())
+			if (!Map.IsSOS2Space())
 				return;
 
 			if (ShipInteriorMod2.ExposedToOutside(Position.GetRoom(Map)))

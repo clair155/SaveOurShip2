@@ -1,14 +1,17 @@
-﻿using System;
+﻿using RimWorld;
+using RimWorld.Planet;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.NetworkInformation;
+using System.Text;
 using UnityEngine;
 using Verse;
-using RimWorld.Planet;
-using RimWorld;
-using System.Text;
 using Verse.AI;
+using Verse.Noise;
 using Verse.Sound;
+using static HarmonyLib.Code;
 
 namespace SaveOurShip2
 {
@@ -114,7 +117,7 @@ namespace SaveOurShip2
 		public void DevChooseLaunchTarget(PlanetTile tile)
 		{
 			ShipInteriorMod2.worldTileOverride = tile;
-			ShipCountdown.InitiateCountdown(this);
+			ShipInteriorMod2.LaunchShip(this, false);
 			QuestUtility.SendQuestTargetSignals(base.Map.Parent.questTags, "LaunchedShip");
 		}
 
@@ -149,7 +152,7 @@ namespace SaveOurShip2
 		{
 			var heatNet = heatComp.myNet;
 			bool ckActive = Prefs.DevMode && ShipInteriorMod2.HasSoS2CK;
-			if (!TacCon && Faction != Faction.OfPlayer)
+            if (!TacCon && Faction != Faction.OfPlayer)
 			{
 				if (Prefs.DevMode)
 				{
@@ -169,34 +172,44 @@ namespace SaveOurShip2
 			}
 			foreach (Gizmo c in base.GetGizmos())
 			{
+				if (c is Command_Action action && action.defaultLabel == "ViewRange".Translate())
+				{
+					continue;
+				}
+				else if (c is Command_Ritual ritual && ritual.ritual is Precept_GravshipLaunch)
+				{
+					continue;
+				}
 				yield return c;
 			}
-			if (TacCon || heatNet == null || !powerComp.PowerOn || Ship == null)
+            if (TacCon || heatNet == null || !powerComp.PowerOn || Ship == null)
 				yield break;
 			if (!selected)
 			{
 				fail = InterstellarFailReasons();
 				selected = true;
 			}
-			if (Faction == Faction.OfPlayer || Prefs.DevMode) //allow info on player ships or in dev mode on all
+            bool cantMove = ShipCountdown.CountingDown || !Ship.HasPilotRCSAndFuel(ShipInteriorMod2.pctFuelLocal, false);
+            string failReaosn = Ship.MoveFailReason(ShipInteriorMod2.pctFuelLocal, false);
+            if (Faction == Faction.OfPlayer || Prefs.DevMode) //allow info on player ships or in dev mode on all
 			{
-				Command_Action renameShip = new Command_Action
-				{
-					groupable = false,
-					action = delegate
-					{
-						Find.WindowStack.Add(new Dialog_NameShip(Ship));
-					},
-					hotKey = KeyBindingDefOf.Misc1,
-					icon = ContentFinder<Texture2D>.Get("UI/Commands/RenameZone"),
-					defaultLabel = TranslatorFormattedStringExtensions.Translate("SoS.Rename"),
-					defaultDesc = TranslatorFormattedStringExtensions.Translate("SoS.RenameDesc")
-				};
-				if (ShipCountdown.CountingDown)
-				{
-					renameShip.Disable();
-				}
-				yield return renameShip;
+    //            Command_Action renameShip = new Command_Action
+				//{
+				//	groupable = false,
+				//	action = delegate
+				//	{
+				//		Find.WindowStack.Add(new Dialog_NameShip(Ship));
+				//	},
+				//	hotKey = KeyBindingDefOf.Misc1,
+				//	icon = ContentFinder<Texture2D>.Get("UI/Commands/RenameZone"),
+				//	defaultLabel = TranslatorFormattedStringExtensions.Translate("SoS.Rename"),
+				//	defaultDesc = TranslatorFormattedStringExtensions.Translate("SoS.RenameDesc")
+				//};
+				//if (ShipCountdown.CountingDown)
+				//{
+				//	renameShip.Disable();
+				//}
+				//yield return renameShip;
 				Command_Action showReport = new Command_Action
 				{
 					groupable = false,
@@ -217,10 +230,10 @@ namespace SaveOurShip2
 						stringBuilder.AppendLine(TranslatorFormattedStringExtensions.Translate("SoS.StatsShipHeat", heatComp.myNet.StorageUsed, heatComp.myNet.StorageCapacity, (heatComp.myNet.Depletion > 0) ? (" ("+ heatComp.myNet.StorageCapacityRaw + " " + TranslatorFormattedStringExtensions.Translate("SoS.StatsShipHeatMaximumShort").Resolve() + ")") : ""));
 						stringBuilder.AppendLine();
 						stringBuilder.AppendLine(TranslatorFormattedStringExtensions.Translate("SoS.StatsShipCombatRating", Ship.Threat));
-						stringBuilder.AppendLine(TranslatorFormattedStringExtensions.Translate("SoS.StatsShipCombatThrust", Ship.ThrustRatio.ToString("F3")));
+						stringBuilder.AppendLine(TranslatorFormattedStringExtensions.Translate("SoS.StatsShipCombatThrust", Ship.CurrentThrustRatio.ToString("F3")));
 						stringBuilder.AppendLine();
 						stringBuilder.AppendLine();
-						if (Map.IsSpace())
+						if (Map.IsSOS2Space())
 						{
 							if (!fail.Any<string>())
 							{
@@ -249,9 +262,27 @@ namespace SaveOurShip2
 			if (Faction != Faction.OfPlayer)
 				yield break;
 
-			if (Map.IsSpace())
+			if (Map.IsSOS2Space())
 			{
-				if (Ship.Pods.Any())
+				if (Map.Parent is WorldObjectOrbitingShip wo)
+				{
+                    Command_Action changeLevel = new Command_Action
+                    {
+                        action = delegate ()
+                        {
+                            wo.OutputLevel = 1;
+                        },
+                        defaultLabel = TranslatorFormattedStringExtensions.Translate("SoS.ChangePower"),
+                        defaultDesc = TranslatorFormattedStringExtensions.Translate("SoS.ChangePowerDesc", wo.OutputLevel),
+                        icon = ContentFinder<Texture2D>.Get("UI/Commands/DesirePower", true)
+                    };
+                    if (!mapComp.EnginesOn || wo.InSlowDown)
+                    {
+                        changeLevel.disabled = true;
+                    }
+                    yield return changeLevel;
+                }
+                if (Ship.Pods.Any())
 				{
 					Command_Action abandon = new Command_Action
 					{
@@ -746,84 +777,138 @@ namespace SaveOurShip2
 								returnToPrevWorld.Disable(fail.First());
 							yield return returnToPrevWorld;
 						}*/
-						Command_Action moveShip = new Command_Action
+						if (Map.Parent is WorldObjectOrbitingShip wo2)
+						{
+                            Command_Action burnNorth = new Command_Action
+                            {
+                                action = delegate ()
+                                {
+                                    wo2.StartMoving(WorldObjectOrbitingShip.North);
+                                },
+                                defaultLabel = TranslatorFormattedStringExtensions.Translate("SoS.MoveNorth"),
+                                defaultDesc = TranslatorFormattedStringExtensions.Translate("SoS.MoveNorthDesc"),
+                                icon = ContentFinder<Texture2D>.Get("UI/Ship_Icon_North", true)
+                            };
+                            Command_Action burnWest = new Command_Action
+                            {
+                                action = delegate ()
+                                {
+                                    wo2.StartMoving(WorldObjectOrbitingShip.West);
+                                },
+                                defaultLabel = TranslatorFormattedStringExtensions.Translate("SoS.MoveWest"),
+                                defaultDesc = TranslatorFormattedStringExtensions.Translate("SoS.MoveWestDesc"),
+                                hotKey = KeyBindingDefOf.Misc2,
+                                icon = ContentFinder<Texture2D>.Get("UI/Ship_Icon_On_slow", true)
+                            };
+                            Command_Action burnStop = new Command_Action
+                            {
+                                action = delegate ()
+                                {
+                                    wo2.StopMoving();
+                                },
+                                defaultLabel = TranslatorFormattedStringExtensions.Translate("SoS.MoveStop"),
+                                defaultDesc = TranslatorFormattedStringExtensions.Translate("SoS.MoveStopDesc"),
+                                hotKey = KeyBindingDefOf.Misc1,
+                                icon = ContentFinder<Texture2D>.Get("UI/Ship_Icon_Stop", true)
+                            };
+                            Command_Action burnEast = new Command_Action
+                            {
+                                action = delegate ()
+                                {
+                                    wo2.StartMoving(WorldObjectOrbitingShip.East);
+                                },
+                                defaultLabel = TranslatorFormattedStringExtensions.Translate("SoS.MoveEast"),
+                                defaultDesc = TranslatorFormattedStringExtensions.Translate("SoS.MoveEastDesc"),
+                                hotKey = KeyBindingDefOf.Misc3,
+                                icon = ContentFinder<Texture2D>.Get("UI/Ship_Icon_On_slow_rev", true)
+                            };
+                            Command_Action burnSouth = new Command_Action
+                            {
+                                action = delegate ()
+                                {
+                                    wo2.StartMoving(WorldObjectOrbitingShip.South);
+                                },
+                                defaultLabel = TranslatorFormattedStringExtensions.Translate("SoS.MoveSouth"),
+                                defaultDesc = TranslatorFormattedStringExtensions.Translate("SoS.MoveSouthDesc"),
+                                icon = ContentFinder<Texture2D>.Get("UI/Ship_Icon_South", true)
+                            };
+
+                            if (!mapComp.AnyShipCanMove())
+                            {
+                                burnWest.disabled = true;
+                                burnStop.disabled = true;
+                                burnEast.disabled = true;
+                                burnNorth.disabled = true;
+                                burnSouth.disabled = true;
+                            }
+                            else if (cantMove)
+                            {
+                                burnNorth.Disable();
+                                burnWest.Disable();
+                                burnStop.Disable();
+                                burnEast.Disable();
+                                burnSouth.Disable();
+
+                                burnNorth.disabledReason = failReaosn;
+                                burnWest.disabledReason = failReaosn;
+                                burnStop.disabledReason = failReaosn;
+                                burnEast.disabledReason = failReaosn;
+                                burnSouth.disabledReason = failReaosn;
+                            }
+                            else if (!wo2.movingDrawPos)
+                            {
+                                burnStop.disabled = true;
+                            }
+                            else
+                            {
+                                // Disable currently active movemnt command
+                                if (wo2.direction == WorldObjectOrbitingShip.West)
+                                {
+                                    burnWest.disabled = true;
+                                }
+                                if (wo2.direction == WorldObjectOrbitingShip.East)
+                                {
+                                    burnEast.disabled = true;
+                                }
+                                if (wo2.direction == WorldObjectOrbitingShip.North)
+                                {
+                                    burnNorth.disabled = true;
+                                }
+                                if (wo2.direction == WorldObjectOrbitingShip.South)
+                                {
+                                    burnSouth.disabled = true;
+                                }
+                            }
+
+                            yield return burnNorth;
+                            yield return burnWest;
+                            yield return burnStop;
+                            yield return burnEast;
+                            yield return burnSouth;
+                        }
+                        Command_Action moveShip = new Command_Action
 						{
 							groupable = false,
 							action = delegate
 							{
-								ShipInteriorMod2.UnDockWarning(delegate { Ship.CreateShipSketchIfFuelPct(ShipInteriorMod2.pctFuelLocal, Map); }, mapComp, shipIndex);
+								ShipInteriorMod2.UnDockWarning(delegate { ShipInteriorMod2.PlaceShip(this.Ship, Map, IntVec3.Invalid, false, true); }, mapComp, shipIndex);
 							},
 							defaultLabel = TranslatorFormattedStringExtensions.Translate("SoS.Move"),
 							defaultDesc = TranslatorFormattedStringExtensions.Translate("SoS.MoveDesc"),
 							icon = ContentFinder<Texture2D>.Get("UI/Land_Ship")
 						};
-						//flip
-						Command_Action moveShipFlip = new Command_Action
-						{
-							groupable = false,
-							action = delegate
-							{
-								ShipInteriorMod2.UnDockWarning(delegate { Ship.CreateShipSketchIfFuelPct(ShipInteriorMod2.pctFuelLocal, Map, 2); }, mapComp, shipIndex);
-							},
-							defaultLabel = TranslatorFormattedStringExtensions.Translate("SoS.MoveFlip"),
-							defaultDesc = TranslatorFormattedStringExtensions.Translate("SoS.MoveFlipDesc"),
-							icon = ContentFinder<Texture2D>.Get("UI/Flip_Ship")
-						};
-						//CCW rot
-						Command_Action moveShipRot = new Command_Action
-						{
-							groupable = false,
-							action = delegate
-							{
-								ShipInteriorMod2.UnDockWarning(delegate { Ship.CreateShipSketchIfFuelPct(ShipInteriorMod2.pctFuelLocal, Map, 1); }, mapComp, shipIndex);
-							},
-							defaultLabel = TranslatorFormattedStringExtensions.Translate("SoS.MoveRot"),
-							defaultDesc = TranslatorFormattedStringExtensions.Translate("SoS.MoveRotDesc"),
-							icon = ContentFinder<Texture2D>.Get("UI/Rotate_Ship")
-						};
-						if (ShipCountdown.CountingDown || !Ship.HasPilotRCSAndFuel(ShipInteriorMod2.pctFuelLocal, false))
+						if (cantMove)
 						{
 							moveShip.Disable();
-							moveShipFlip.Disable();
-							moveShipRot.Disable();
-							string failReaosn = Ship.MoveFailReason(ShipInteriorMod2.pctFuelLocal, false);
 							moveShip.disabledReason = failReaosn;
-							moveShipFlip.disabledReason = failReaosn;
-							moveShipRot.disabledReason = failReaosn;
-						}
-						else if (Ship.BuildingsNonRot.Any())
-						{
-							moveShipRot.Disable();
-							StringBuilder sb = new StringBuilder();
-							sb.AppendLine(TranslatorFormattedStringExtensions.Translate("SoS.MoveRotNo"));
-							// Limiting the list of non-rotatable objects.
-							int maxCount = 5;
-							int addedLines = 0;
-							bool devMode = Prefs.DevMode;
-							foreach (Building bd in Ship.BuildingsNonRot)
-							{
-								// Printing more detailed info for modders.
-								if (devMode)
-									sb.AppendFormat("{0} ({1})\n", bd.def.label, bd.def.defName);
-								else
-									sb.AppendLine(bd.def.label);
-								addedLines++;
-								if (addedLines > maxCount)
-									break;
-							}
-							if (addedLines < Ship.BuildingsNonRot.Count)
-								sb.AppendLine("...");
-							moveShipRot.disabledReason = sb.ToString();
 						}
 						yield return moveShip;
-						yield return moveShipFlip;
-						yield return moveShipRot;
 
 						//land - dev mode can "land" in space with CK enabled
 						List<Map> landableMaps = new List<Map>();
 						foreach (Map m in Find.Maps)
 						{
-							if ((!m.IsSpace() && !m.IsTempIncidentMap) || (ckActive && m != Map))
+							if ((!m.IsSOS2Space() && !m.IsTempIncidentMap) || (ckActive && m != Map))
 								landableMaps.Add(m);
 						}
 						foreach (Map m in landableMaps)
@@ -833,13 +918,13 @@ namespace SaveOurShip2
 								groupable = false,
 								action = delegate
 								{
-									ShipInteriorMod2.UnDockWarning(delegate { mapComp.MoveToMap = m; Ship.CreateShipSketchIfFuelPct(ShipInteriorMod2.pctFuelLand, m, 0, true); }, mapComp, shipIndex);
+									ShipInteriorMod2.UnDockWarning(delegate { mapComp.MoveToMap = m; Ship.TryApproachingToMap(ShipInteriorMod2.pctFuelLand, m, true); }, mapComp, shipIndex);
 								},
 								defaultLabel = TranslatorFormattedStringExtensions.Translate("SoS.Land") + " (" + m.Parent.Label + ")",
 								defaultDesc = TranslatorFormattedStringExtensions.Translate("SoS.LandDesc") + m.Parent.Label,
 								icon = ContentFinder<Texture2D>.Get("UI/Planet_Landing_Icon")
 							};
-							if (ShipCountdown.CountingDown || !Ship.HasPilotRCSAndFuel(ShipInteriorMod2.pctFuelLand, false))
+							if (cantMove)
 							{
 								landShip.Disable();
 								landShip.disabledReason = Ship.MoveFailReason(ShipInteriorMod2.pctFuelLand, false);
@@ -1089,7 +1174,7 @@ namespace SaveOurShip2
 							returnShip.defaultDesc = TranslatorFormattedStringExtensions.Translate("SoS.CaptureShipDesc");
 							returnShip.icon = ContentFinder<Texture2D>.Get("UI/Capture_Ship_Icon");
 						}
-						if (ShipCountdown.CountingDown || !Ship.HasPilotRCSAndFuel(ShipInteriorMod2.pctFuelMap, false))
+						if (cantMove)
 						{
 							returnShip.Disable();
 							returnShip.disabledReason = Ship.MoveFailReason(ShipInteriorMod2.pctFuelMap, false);
@@ -1117,9 +1202,14 @@ namespace SaveOurShip2
 								Ship.CreateShipSketchIfFuelPct(1f, playerShipMap, 0, true);
 							else
 							{
-								ShipInteriorMod2.worldTileOverride = PlanetTile.Invalid;
-								ShipInteriorMod2.launchOrigin = this.Map.Tile;
-								ShipCountdown.InitiateCountdown(this);
+                                if (ShipInteriorMod2.SaveShipFlag)
+                                {
+                                    ShipInteriorMod2.SaveShipToFile(Ship.Core);
+                                }
+                                else
+                                {
+                                    ((Precept_Ritual)Faction.OfPlayer.ideos.GetPrecept(PreceptDefOf.GravshipLaunch)).ShowRitualBeginWindow(this);
+                                }
 							}
 							QuestUtility.SendQuestTargetSignals(base.Map.Parent.questTags, "LaunchedShip");
 						}
@@ -1127,18 +1217,54 @@ namespace SaveOurShip2
 					hotKey = KeyBindingDefOf.Misc1,
 					defaultLabel = TranslatorFormattedStringExtensions.Translate("CommandShipLaunch"),
 					defaultDesc = TranslatorFormattedStringExtensions.Translate("CommandShipLaunchDesc"),
-					icon = ContentFinder<Texture2D>.Get("UI/Commands/LaunchShip", true)
+					icon = ContentFinder<Texture2D>.Get("UI/Commands/LaunchGravship", true)
 				};
-				if (!CanLaunchNow)
+				//else if (ShipCountdown.CountingDown)
+				//{
+				//	launch.Disable(null);
+				//}
+                Command_Action hoverShip = new Command_Action
+                {
+                    groupable = false,
+                    action = delegate
+                    {
+                        if (CanLaunchNow)
+                        {
+                            Map playerShipMap = ShipInteriorMod2.FindPlayerShipMap();
+                            if (playerShipMap != null) //player ship in orbit already, move to temp map
+                                Ship.CreateShipSketchIfFuelPct(1f, playerShipMap, 0, true);
+                            else
+                            {
+                                if (ShipInteriorMod2.SaveShipFlag)
+                                {
+                                    ShipInteriorMod2.SaveShipToFile(Ship.Core);
+                                }
+                                else
+                                {
+									ShipInteriorMod2.HoverShipFlag = true;
+                                    ((Precept_Ritual)Faction.OfPlayer.ideos.GetPrecept(PreceptDefOf.GravshipLaunch)).ShowRitualBeginWindow(this);
+                                }
+                            }
+                            QuestUtility.SendQuestTargetSignals(base.Map.Parent.questTags, "LaunchedShip");
+                        }
+                    },
+                    icon = ContentFinder<Texture2D>.Get("UI/Commands/LaunchGravship"),
+                    defaultLabel = TranslatorFormattedStringExtensions.Translate("SoS.HoveringShip"),
+                    defaultDesc = TranslatorFormattedStringExtensions.Translate("SoS.HoveringShipDesc")
+                };
+                if (!CanLaunchNow)
+                {
+                    launch.Disable(ShipUtility.LaunchFailReasons(this).First<string>());
+                    hoverShip.Disable(ShipUtility.LaunchFailReasons(this).First());
+                }
+				else if (!this.Map.Tile.Tile.OnSurface)
 				{
-					launch.Disable(ShipUtility.LaunchFailReasons(this).First<string>());
+					hoverShip.Disable();
 				}
-				else if (ShipCountdown.CountingDown)
-				{
-					launch.Disable(null);
-				}
-				yield return launch;
-				if (Prefs.DevMode && ShipInteriorMod2.FindPlayerShipMap() == null)
+                yield return launch;
+                yield return hoverShip;
+
+                if (Prefs.DevMode && ShipInteriorMod2.FindPlayerShipMap() == null)
 				{
 					Command_Action launchToSpecificTile = new Command_Action()
 					{
@@ -1226,9 +1352,9 @@ namespace SaveOurShip2
 			{
 				TacCon = true;
 			}
-			if (!ShipInteriorMod2.MoveShipFlag)
+			if (!BeingTransportedOnGravship)
 				ShipIndex = shipIndex;
-			if (!Map.IsSpace())
+			if (!Map.IsSOS2Space())
 				return;
 
 			var countdownComp = Map.Parent.GetComponent<TimedForcedExitShip>();
@@ -1246,7 +1372,7 @@ namespace SaveOurShip2
 		{
 			if (mapComp.MapRootListAll.Contains(this))
 				mapComp.MapRootListAll.Remove(this);
-			if (Map.IsSpace() && mapComp.MapRootListAll.NullOrEmpty() && mapComp.IsPlayerShipMap && mapComp.ShipMapState != ShipMapState.inTransit && !ShipInteriorMod2.MoveShipFlag) //last bridge on player map - deorbit warn
+			if (!BeingTransportedOnGravship && Map.IsSOS2Space() && mapComp.MapRootListAll.NullOrEmpty() && mapComp.IsPlayerShipMap && mapComp.ShipMapState != ShipMapState.inTransit) //last bridge on player map - deorbit warn
 			{
 				var countdownComp = Map.Parent.GetComponent<TimedForcedExitShip>();
 				if (countdownComp != null && !countdownComp.ForceExitAndRemoveMapCountdownActive)

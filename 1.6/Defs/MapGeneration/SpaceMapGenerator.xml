@@ -16,12 +16,12 @@
 	<GenStepDef>
 		<defName>EmptySpaceTerrain</defName>
 		<order>10</order>
-		<genStep Class="SaveOurShip2.GenStep_EmptySpace"/>
+		<genStep Class="SaveOurShip2.GenStep_Space"/>
 	</GenStepDef>
 	<GenStepDef>
 		<defName>FindPlayerStartSpotSpace</defName>
 		<order>600</order>
-		<genStep Class="GenStep_FindPlayerStartSpot"/>
+		<genStep Class="SaveOurShip2.GenStep_FindPlayerStartSpotSpace"/>
 	</GenStepDef>
 	<GenStepDef>
 		<defName>SoS_FogSpace</defName>

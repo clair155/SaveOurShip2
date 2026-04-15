@@ -75,7 +75,6 @@ namespace SaveOurShip2
 		public static class ThingDefOf
 		{
 			public static ThingDef Apparel_SpaceSurvivalBelt;
-			public static ThingDef MechaniteFire;
 			public static ThingDef ShipArchotechSpore;
 			public static ThingDef ShipArchotechPillarB;
 			public static ThingDef ShipArchotechPillarC;
@@ -137,8 +136,6 @@ namespace SaveOurShip2
 			public static ThingDef BlackBoxAI;
 			public static ThingDef Ship_DamagedReactor;
 			public static ThingDef Weapon_GrenadeMechanite;
-			public static ThingDef Apparel_SpaceSuitHelmet;
-			public static ThingDef Apparel_SpaceSuitBody;
 			//vanilla defs
 			public static ThingDef Turret_Autocannon;
 			public static ThingDef Turret_Sniper;
@@ -160,7 +157,9 @@ namespace SaveOurShip2
 			public static ThingDef ChemfuelTank;
 			[MayRequireOdyssey]
 			public static ThingDef LargeChemfuelTank;
-		}
+            [MayRequireOdyssey]
+            public static ThingDef TempGravEngine;
+        }
 
 		// Base game makes Defs from missing DLCs null so can't even use names, have to declare them separately:
 		public static class GravshipBuildingNames
@@ -180,7 +179,6 @@ namespace SaveOurShip2
 		[DefOf]
 		public static class TerrainDefOf
 		{
-			public static TerrainDef EmptySpace;
 			public static TerrainDef FakeFloorInsideShip;
 			public static TerrainDef FakeFloorInsideShipMech;
 			public static TerrainDef FakeFloorInsideShipArchotech;
@@ -232,12 +230,6 @@ namespace SaveOurShip2
 		}
 
 		[DefOf]
-		public static class BiomeDefOf
-		{
-			public static BiomeDef OuterSpaceBiome;
-		}
-
-		[DefOf]
 		public static class StorytellerDefOf
 		{
 			public static StorytellerDef Sara;
@@ -266,12 +258,6 @@ namespace SaveOurShip2
 		}
 
 		[DefOf]
-		public static class WeatherDefOf
-		{
-			public static WeatherDef OuterSpaceWeather;
-		}
-
-		[DefOf]
 		public static class GameConditionDefOf
 		{
 			public static GameConditionDef SpaceDebris;
@@ -297,10 +283,6 @@ namespace SaveOurShip2
 		[DefOf]
 		public static class StatDefOf
 		{
-			public static StatDef DecompressionResistance;
-			public static StatDef DecompressionResistanceOffset;
-			public static StatDef HypoxiaResistance;
-			public static StatDef HypoxiaResistanceOffset;
 			public static StatDef VacuumSpeedMultiplier;
 		}
 

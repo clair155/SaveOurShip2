@@ -25,9 +25,9 @@ namespace SaveOurShip2
 		private static Graphic turbineGraphicOverdrive = GraphicDatabase.Get(typeof(Graphic_Single), "Things/Building/Ship/Reactor_Turbine_Overdrive", ShaderDatabase.Cutout, new Vector2(3, 3), Color.white, Color.white);
 		private static Graphic turbineGraphicSuperOverdrive = GraphicDatabase.Get(typeof(Graphic_Single), "Things/Building/Ship/Reactor_Turbine_Super_Overdrive", ShaderDatabase.Cutout, new Vector2(3, 3), Color.white, Color.white);
 
-		private static Graphic turbineGraphicMini = GraphicDatabase.Get(typeof(Graphic_Single), "Things/Building/Ship/Reactor_Turbine_Mini", ShaderDatabase.Cutout, new Vector2(1.5f, 1.5f), Color.white, Color.white);
-		private static Graphic turbineGraphicMiniOverdrive = GraphicDatabase.Get(typeof(Graphic_Single), "Things/Building/Ship/Reactor_Turbine_Overdrive_Mini", ShaderDatabase.Cutout, new Vector2(1.5f, 1.5f), Color.white, Color.white);
-		private static Graphic turbineGraphicMiniSuperOverdrive = GraphicDatabase.Get(typeof(Graphic_Single), "Things/Building/Ship/Reactor_Turbine_Super_Overdrive_Mini", ShaderDatabase.Cutout, new Vector2(1.5f, 1.5f), Color.white, Color.white);
+		private static Graphic turbineGraphicMini = GraphicDatabase.Get(typeof(Graphic_Single), "Things/Building/Ship/Reactor_Turbine_Mini", ShaderDatabase.Cutout, new Vector2(2f, 2f), Color.white, Color.white);
+		private static Graphic turbineGraphicMiniOverdrive = GraphicDatabase.Get(typeof(Graphic_Single), "Things/Building/Ship/Reactor_Turbine_Overdrive_Mini", ShaderDatabase.Cutout, new Vector2(2f, 2f), Color.white, Color.white);
+		private static Graphic turbineGraphicMiniSuperOverdrive = GraphicDatabase.Get(typeof(Graphic_Single), "Things/Building/Ship/Reactor_Turbine_Super_Overdrive_Mini", ShaderDatabase.Cutout, new Vector2(2f, 2f), Color.white, Color.white);
 
 		private static Graphic turbineGraphicMicro;
 		private static Graphic turbineGraphicMicroOverdrive;
@@ -95,13 +95,13 @@ namespace SaveOurShip2
 			else if (useMiniatureGraphics)
 			{
 				if ((refuelableComp != null && !refuelableComp.HasFuel) || (flickableComp != null && !flickableComp.SwitchIsOn))
-					turbineGraphicMini.Draw(parent.DrawPos, parent.Rotation, parent);
+					turbineGraphicMini.Draw(parent.DrawPos + new Vector3(0, 0, 0.16f), parent.Rotation, parent);
 				else if (overdriveSetting < 2)
-					turbineGraphicMini.Draw(parent.DrawPos, parent.Rotation, parent, Find.TickManager.TicksGame * 0.25f * (1 + overdriveSetting));
+					turbineGraphicMini.Draw(parent.DrawPos + new Vector3(0, 0, 0.16f), parent.Rotation, parent, Find.TickManager.TicksGame * 0.25f * (1 + overdriveSetting));
 				else if (overdriveSetting == 2)
-					turbineGraphicMiniOverdrive.Draw(parent.DrawPos, parent.Rotation, parent, Find.TickManager.TicksGame * 0.75f);
+					turbineGraphicMiniOverdrive.Draw(parent.DrawPos + new Vector3(0, 0, 0.16f), parent.Rotation, parent, Find.TickManager.TicksGame * 0.75f);
 				else
-					turbineGraphicMiniSuperOverdrive.Draw(parent.DrawPos, parent.Rotation, parent, Find.TickManager.TicksGame);
+					turbineGraphicMiniSuperOverdrive.Draw(parent.DrawPos + new Vector3(0, 0, 0.16f), parent.Rotation, parent, Find.TickManager.TicksGame);
 			}
 			else
 			{

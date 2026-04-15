@@ -37,48 +37,68 @@ namespace SaveOurShip2
 				foreach (SketchEntity current in entities)
 				{
 					IntVec3 vec = loc + current.pos;
-					if (!vec.InBounds(map))
+					if (!Designator_MoveGravship.IsValidCell(vec, map))
 					{
-						result = false;
-						break;
-					}
-					bool isSpawnBlocked = current.IsSpawningBlocked(vec, map) && map.terrainGrid.TerrainAt(vec) != TerrainDefOf.Space;
-					if (GenGrid.InNoBuildEdgeArea(vec, map) || isSpawnBlocked || map.roofGrid.Roofed(vec) || (targetMapLarger && (vec.x > originMap.Size.x || vec.z > originMap.Size.z)))
-					{
-						current.DrawGhost(vec, new Color(0.8f, 0.2f, 0.2f, 0.3f));
-						result = false;
+                        current.DrawGhost(vec, new Color(0.8f, 0.2f, 0.2f, 0.3f));
+                        result = false;
 						continue;
-					}
-					foreach (Thing t in vec.GetThingList(map))
-					{
-						if (t is Building b)
-						{
-							if (b.def.passability == Traversability.Impassable || b is Building_SteamGeyser)
-							{
-								current.DrawGhost(vec, new Color(0.8f, 0.2f, 0.2f, 0.3f));
-								result = false;
-								break;
-							}
-						}
-					}
-				}
-				foreach (SketchEntity current in ship.conflictSketch?.Entities) //no buildings allowed in this
-				{
-					IntVec3 vec = loc + current.pos;
-					if (!vec.InBounds(map))
-					{
-						result = false;
-						break;
-					}
-					if (vec.GetFirstBuilding(map) != null)
-					{
-						result = false;
-						break;
 					}
 				}
 				return result;
 			}
 			return true;
 		}
-	}
+
+        //private static AcceptanceReport IsValidCell(IntVec3 cell, Map map)
+        //{
+        //    if (!cell.InBounds(map))
+        //    {
+        //        return "GravshipOutOfBounds".Translate();
+        //    }
+        //    if (!cell.InBounds(map, 1) || cell.InNoBuildEdgeArea(map))
+        //    {
+        //        return "GravshipInNoBuildArea".Translate();
+        //    }
+        //    if (map.landingBlockers != null)
+        //    {
+        //        foreach (CellRect landingBlocker in map.landingBlockers)
+        //        {
+        //            if (landingBlocker.Contains(cell))
+        //            {
+        //                return "GravshipInBlockedArea".Translate();
+        //            }
+        //        }
+        //    }
+        //    if (cell.Roofed(map))
+        //    {
+        //        return "GravshipBlockedByRoof".Translate();
+        //    }
+        //    if (cell.Fogged(map))
+        //    {
+        //        return "GravshipBlockedByFog".Translate();
+        //    }
+        //    foreach (Thing thing in cell.GetThingList(map))
+        //    {
+        //        if (!thing.def.preventGravshipLandingOn)
+        //        {
+        //            BuildingProperties building = thing.def.building;
+        //            if (building == null || building.canLandGravshipOn)
+        //            {
+        //                if (thing is Pawn pawn && (pawn.RaceProps.Humanlike || pawn.HostileTo(Faction.OfPlayer)))
+        //                {
+        //                    return "GravshipBlockedBy".Translate(pawn);
+        //                }
+        //                continue;
+        //            }
+        //        }
+        //        return "GravshipBlockedBy".Translate(thing);
+        //    }
+        //    if (!GenConstruct.CanBuildOnTerrain(TerrainDefOf.Substructure, cell, map, Rot4.North))
+        //    {
+        //        return "GravshipBlockedByTerrain".Translate(cell.GetTerrain(map));
+        //    }
+        //    return true;
+        //}
+
+    }
 }

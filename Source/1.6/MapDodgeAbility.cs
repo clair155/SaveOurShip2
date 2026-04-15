@@ -100,7 +100,7 @@ namespace SaveOurShip2
 			evasionPilotInt = 0;
 			foreach (SpaceShipCache ship in MapComp.ShipsOnMap.Values)
 			{
-				float TWR = ship.ThrustRatio;
+				float TWR = ship.CurrentThrustRatio;
 				if (TWR < maxTWR)
 				{
 					maxTWR = TWR;

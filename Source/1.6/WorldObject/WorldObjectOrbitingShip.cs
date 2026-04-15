@@ -39,7 +39,6 @@ namespace SaveOurShip2
 			}
 		}
 
-		ShipMapComp mapComp => Map?.GetComponent<ShipMapComp>() ?? null;
 		//used for orbit transition only
 		public override Vector3 DrawPos
 		{
@@ -49,21 +48,43 @@ namespace SaveOurShip2
 			}
 		}
 		public Vector3 drawPos;
+		public Vector3 prevDrawPos;
 		public Vector3 originDrawPos = Vector3.zero;
 		public Vector3 targetDrawPos = Vector3.zero;
-		public Vector3 NominalPos => Vector3.SlerpUnclamped(WorldObjectMath.vecEquator * 150, WorldObjectMath.vecEquator * -150, 3);
-		public void SetNominalPos()
-		{
-			radius = 150;
-		}
-		//used in orbit
-		public static Vector3 vecPolar = new Vector3(0, 1, 0);
-		public OrbitalMovementDirection orbitalMove = new OrbitalMovementDirection();
-		public bool preventMove = false;
-		private float radius = 150; //altitude ~95-150
-		private float phi = 0; //up/down on radius //td change to N/S orbital
-		private float theta = -3; //E/W orbital on radius
-		public float Radius
+        public Vector3 groundPos = Vector3.zero;
+        public Vector3 hoverPos = Vector3.zero;
+        public Vector3 spacePos = Vector3.zero;
+		public Vector2 direction = Vector2.zero;
+
+        //used in orbit
+        public static Vector3 vecPolar = new Vector3(0, 1, 0);
+        public static readonly Vector2 North = new Vector2(0, 1);
+        public static readonly Vector2 South = new Vector2(0, -1);
+        public static readonly Vector2 West = new Vector2(1, 0);
+        public static readonly Vector2 East = new Vector2(-1, 0);
+        public int outputLevel = 1;
+        public bool movingDrawPos = false;
+        private float radius = ShipInteriorMod2.spaceRadius; //altitude ~95-150
+        private float phi = 0; //up/down on radius //td change to N/S orbital
+        private float theta = -3; //E/W orbital on radius
+
+        public Vector3 NominalPos => Vector3.SlerpUnclamped(WorldObjectMath.vecEquator * ShipInteriorMod2.spaceRadius, WorldObjectMath.vecEquator * -ShipInteriorMod2.spaceRadius, 3);
+        ShipMapComp mapComp => Map?.GetComponent<ShipMapComp>() ?? null;
+
+        public int OutputLevel
+        {
+            get { return outputLevel; }
+            set
+            {
+				outputLevel += value;
+                if (outputLevel > 2)
+				{
+					outputLevel = 0;
+				}
+            }
+        }
+
+        public float Radius
 		{
 			get { return radius; }
 			set
@@ -72,6 +93,7 @@ namespace SaveOurShip2
 				OrbitSet();
 			}
 		}
+
 		public float Phi
 		{
 			get { return phi; }
@@ -81,6 +103,7 @@ namespace SaveOurShip2
 				OrbitSet();
 			}
 		}
+
 		public float Theta
 		{
 			get { return theta; }
@@ -90,65 +113,125 @@ namespace SaveOurShip2
 				OrbitSet();
 			}
 		}
-		public void OrbitSet() //recalc on change only
+
+        public bool InSlowDown
+        {
+            get { return mapComp?.MoveToMap != null && Vector3.Distance(targetDrawPos, DrawPos) <= 3f; }
+        }
+
+        public void SetNominalPos(bool hover)
+        {
+            if (hover)
+            {
+                Radius = ShipInteriorMod2.hoverRadius;
+            }
+            else
+            {
+                Radius = ShipInteriorMod2.spaceRadius;
+            }
+        }
+
+        public void StartMoving(Vector2 dir)
+        {
+            prevDrawPos = Vector3.zero;
+            direction = dir;
+            mapComp.EnginesOn = true;
+            movingDrawPos = true;
+        }
+
+        public void StopMoving()
+        {
+			direction = Vector2.zero;
+            mapComp.MapFullStop();
+            movingDrawPos = false;
+        }
+
+        public void OrbitSet() //recalc on change only
 		{
 			drawPos = WorldObjectMath.GetPos(phi, theta, radius);
 		}
-		public override void SpawnSetup()
+
+        public void GetGroundSpacePos(Vector3 setVec) //get ground/space pos
+        {
+			Radius = ShipInteriorMod2.groundRadius;
+            groundPos = drawPos;
+            Radius = ShipInteriorMod2.hoverRadius;
+            hoverPos = drawPos;
+            Radius = ShipInteriorMod2.spaceRadius;
+            spacePos = drawPos;
+            drawPos = setVec;
+        }
+
+        public override void SpawnSetup()
 		{
-			if (drawPos == Vector3.zero)
-				OrbitSet();
+			drawPos = Vector3.zero;
+            OrbitSet();
 
-			base.SpawnSetup();
-		}
+            base.SpawnSetup();
+        }
 
-		protected override void Tick()
+        protected override void Tick()
 		{
 			base.Tick();
-			//move ship to next pos if player owned, on raretick, if nominal, not durring shuttle use
-			if (orbitalMove.IsStopped())
-				return;
 
-			Theta = Theta + 0.0001f * orbitalMove.Theta;
-			Phi = Phi + 0.0001f * orbitalMove.Phi;
+   //         if (mapComp.EnginesOn && prevDrawPos != drawPos && mapComp.AnyShipCanMove())
+   //         {
+   //             movingDrawPos = true;
+   //             prevDrawPos = drawPos;
+   //         }
+   //         else
+			//{
+   //             movingDrawPos = false;
+			//	return;
+   //         }
 
-			if (Find.TickManager.TicksGame % 60 == 0)
+			if (!movingDrawPos || mapComp.ShipMapState == ShipMapState.inTransit)
 			{
-				if (mapComp.ShipMapState != ShipMapState.nominal)
-				{
-					orbitalMove.Stop();
-					return;
-				}
-				foreach (TravellingTransporters obj in Find.WorldObjects.TravellingTransporters)
-				{
-					int initialTile = obj.initialTile;
-					if (initialTile == Tile || obj.destinationTile == Tile)
-					{
-						orbitalMove.Stop();
-						return;
-					}
-				}
+                return;
 			}
-		}
 
-		public override void ExposeData()
+			Theta = Theta + ShipInteriorMod2.ShipMoveSpeed(mapComp, OutputLevel) * direction.x;
+			Phi = Phi + ShipInteriorMod2.ShipMoveSpeed(mapComp, OutputLevel) * direction.y;
+
+			if (this.IsHashIntervalTick(60))
+			{
+                if (mapComp.ShipMapState != ShipMapState.nominal || !mapComp.EnginesOn || !mapComp.AnyShipCanMove())
+                {
+                    StopMoving();
+                    return;
+                }
+                foreach (TravellingTransporters obj in Find.WorldObjects.TravellingTransporters)
+                {
+                    int initialTile = obj.initialTile;
+                    if (initialTile == Tile || obj.destinationTile == Tile)
+                    {
+                        StopMoving();
+                        return;
+                    }
+                }
+            }
+        }
+
+        public override void ExposeData()
 		{
 			base.ExposeData();
 			WorldObjectMath.SerializeTheta(ref theta, false);
-			Scribe_Values.Look<float>(ref phi, "phi", 0, false);
-			Scribe_Values.Look<float>(ref radius, "radius", 150f, false);
-			// Save game comaptibility for orbital move
-			// Old saves: only orbitalMove field mening theta angle movement
-			// New saves: orbitalMove field mening theta angle, also orbitalMovePhi
-			Scribe_Values.Look<int>(ref orbitalMove.Theta, "orbitalMove", 0, true);
-			Scribe_Values.Look<int>(ref orbitalMove.Phi, "orbitalMovePhi", 0, true);
-			Scribe_Values.Look<string>(ref nameInt, "nameInt", null, false);
+			Scribe_Values.Look<float>(ref phi, "phi", 0f, false);
+			Scribe_Values.Look<float>(ref radius, "radius", ShipInteriorMod2.spaceRadius, false);
+            Scribe_Values.Look<int>(ref outputLevel, "outputLevel", 1, false);
+            Scribe_Values.Look<bool>(ref movingDrawPos, "movingDrawPos", false, false);
+            Scribe_Values.Look<string>(ref nameInt, "nameInt", null, false);
 			Scribe_Values.Look<Vector3>(ref drawPos, "drawPos", Vector3.zero, false);
-			Scribe_Values.Look<Vector3>(ref originDrawPos, "originDrawPos", Vector3.zero, false);
+            Scribe_Values.Look<Vector3>(ref prevDrawPos, "prevDrawPos", Vector3.zero, false);
+            Scribe_Values.Look<Vector3>(ref originDrawPos, "originDrawPos", Vector3.zero, false);
 			Scribe_Values.Look<Vector3>(ref targetDrawPos, "targetDrawPos", Vector3.zero, false);
-		}
+            Scribe_Values.Look<Vector3>(ref groundPos, "groundPos", Vector3.zero, false);
+            Scribe_Values.Look<Vector3>(ref hoverPos, "hoverPos", Vector3.zero, false);
+            Scribe_Values.Look<Vector3>(ref spacePos, "spacePos", Vector3.zero, false);
+            Scribe_Values.Look<Vector2>(ref direction, "direction", Vector2.zero, false);
+        }
 
-		public override void Print(LayerSubMesh subMesh)
+        public override void Print(LayerSubMesh subMesh)
 		{
 			float averageTileSize = Find.WorldGrid.AverageTileSize;
 			WorldRendererUtility.PrintQuadTangentialToPlanet(DrawPos, 1.7f * averageTileSize, 0.015f, subMesh, false, 0f, true);
@@ -236,108 +319,14 @@ namespace SaveOurShip2
 							}
 						}
 					};
-					if (!preventMove && mapComp.ShipMapState == ShipMapState.nominal && mapComp.ShipMapState != ShipMapState.burnUpSet)
-					{
-						Command_Action burnNorth = new Command_Action
-						{
-							action = delegate ()
-							{
-								orbitalMove = OrbitalMovementDirection.North;
-							},
-							defaultLabel = TranslatorFormattedStringExtensions.Translate("SoS.MoveNorth"),
-							defaultDesc = TranslatorFormattedStringExtensions.Translate("SoS.MoveNorthDesc"),
-							icon = ContentFinder<Texture2D>.Get("UI/Ship_Icon_North", true)
-						};
-						Command_Action burnWest = new Command_Action
-						{
-							action = delegate ()
-							{
-								orbitalMove = OrbitalMovementDirection.West;
-							},
-							defaultLabel = TranslatorFormattedStringExtensions.Translate("SoS.MoveWest"),
-							defaultDesc = TranslatorFormattedStringExtensions.Translate("SoS.MoveWestDesc"),
-							hotKey = KeyBindingDefOf.Misc2,
-							icon = ContentFinder<Texture2D>.Get("UI/Ship_Icon_On_slow", true)
-						};
-						Command_Action burnStop = new Command_Action
-						{
-							action = delegate ()
-							{
-								orbitalMove = new OrbitalMovementDirection();
-							},
-							defaultLabel = TranslatorFormattedStringExtensions.Translate("SoS.MoveStop"),
-							defaultDesc = TranslatorFormattedStringExtensions.Translate("SoS.MoveStopDesc"),
-							hotKey = KeyBindingDefOf.Misc1,
-							icon = ContentFinder<Texture2D>.Get("UI/Ship_Icon_Stop", true)
-						};
-						Command_Action burnEast = new Command_Action
-						{
-							action = delegate ()
-							{
-								orbitalMove = OrbitalMovementDirection.East;
-							},
-							defaultLabel = TranslatorFormattedStringExtensions.Translate("SoS.MoveEast"),
-							defaultDesc = TranslatorFormattedStringExtensions.Translate("SoS.MoveEastDesc"),
-							hotKey = KeyBindingDefOf.Misc3,
-							icon = ContentFinder<Texture2D>.Get("UI/Ship_Icon_On_slow_rev", true)
-						};
-						Command_Action burnSouth = new Command_Action
-						{
-							action = delegate ()
-							{
-								orbitalMove = OrbitalMovementDirection.South;
-							},
-							defaultLabel = TranslatorFormattedStringExtensions.Translate("SoS.MoveSouth"),
-							defaultDesc = TranslatorFormattedStringExtensions.Translate("SoS.MoveSouthDesc"),
-							icon = ContentFinder<Texture2D>.Get("UI/Ship_Icon_South", true)
-						};
-						if (preventMove)
-						{
-							burnWest.disabled = true;
-							burnStop.disabled = true;
-							burnEast.disabled = true;
-							burnNorth.disabled = true;
-							burnSouth.disabled = true;
-						}
-						else if (orbitalMove.IsStopped())
-						{
-							burnStop.disabled = true;
-						}
-						else
-						{
-							// Disable currently active movemnt command
-							if (orbitalMove == OrbitalMovementDirection.West)
-							{
-								burnWest.disabled = true;
-							}
-							if (orbitalMove == OrbitalMovementDirection.East)
-							{
-								burnEast.disabled = true;
-							}
-							if (orbitalMove == OrbitalMovementDirection.North)
-							{
-								burnNorth.disabled = true;
-							}
-							if (orbitalMove == OrbitalMovementDirection.South)
-							{
-								burnSouth.disabled = true;
-							}
-						}
-						yield return burnNorth;
-						yield return burnWest;
-						yield return burnStop;
-						yield return burnEast;
-						yield return burnSouth;
-
-					}
-					if (Prefs.DevMode)
+                    if (Prefs.DevMode)
 					{
 						yield return new Command_Action
 						{
 							action = delegate ()
 							{
-								orbitalMove.Stop();
-								Vector3 tileCenterPos = this.Map.Tile.Layer.Origin + Find.WorldGrid.GetTileCenter(this.Map.Tile);
+                                StopMoving();
+                                Vector3 tileCenterPos = this.Map.Tile.Layer.Origin + Find.WorldGrid.GetTileCenter(this.Map.Tile);
 								WorldObjectMath.GetSphericalFromCartesian(tileCenterPos, out phi, out theta, out radius);
 								radius = WorldObjectMath.defaultRadius;
 							},
@@ -402,7 +391,7 @@ namespace SaveOurShip2
 			if (Prefs.DevMode)
 			{
 				stringBuilder.AppendLine(TranslatorFormattedStringExtensions.Translate("SoS.Dev.OrbitingShipInfo", mapComp.ShipMapState.ToString(),
-					mapComp.Altitude, radius, theta.ToString("F2"), phi.ToString("F2"), DrawPos.ToString(), originDrawPos.ToString(), targetDrawPos.ToString()));
+					"Null", radius, theta.ToString("F2"), phi.ToString("F2"), DrawPos.ToString(), originDrawPos.ToString(), targetDrawPos.ToString()));
 			}
 			return stringBuilder.ToString().TrimEndNewlines();
 		}
@@ -422,8 +411,8 @@ namespace SaveOurShip2
 		{
 			get
 			{
-				return DefDatabase<MapGeneratorDef>.GetNamed("EmptySpaceMap");
-			}
+				return def.mapGenerator ?? DefDatabase<MapGeneratorDef>.GetNamed("EmptySpaceMap");
+            }
 		}
 
 		public override IEnumerable<FloatMenuOption> GetFloatMenuOptions(Caravan caravan)
@@ -497,35 +486,6 @@ namespace SaveOurShip2
 			}
 			alsoRemoveWorldObject = false;
 			return false;
-		}
-	}
-
-	public class OrbitalMovementDirection
-	{
-		// Compared to traditional spherical coordinates, these are exchanged
-		// 0 is stop, -1 is move backwards, 1 is move forward
-		public int Phi;
-		public int Theta;
-		public static readonly OrbitalMovementDirection West = new OrbitalMovementDirection(0, 1);
-		public static readonly OrbitalMovementDirection East = new OrbitalMovementDirection(0, -1);
-		public static readonly OrbitalMovementDirection North = new OrbitalMovementDirection(1, 0);
-		public static readonly OrbitalMovementDirection South = new OrbitalMovementDirection(-1, 0);
-		public OrbitalMovementDirection()
-		{
-		}
-		public OrbitalMovementDirection(int phi, int theta)
-		{
-			Phi = phi;
-			Theta = theta;
-		}
-		public void Stop()
-		{
-			Phi = 0;
-			Theta = 0;
-		}
-		public bool IsStopped()
-		{
-			return Phi == 0 && Theta == 0;
 		}
 	}
 }

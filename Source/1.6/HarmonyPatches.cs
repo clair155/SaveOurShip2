@@ -1,29 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Linq;
-using System.Diagnostics;
+﻿using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
+using RimWorld.QuestGen;
+using SaveOurShip2.Vehicles;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+using System.Text;
+using System.Threading.Tasks;
+using Unity.Collections;
+using UnityEngine;
+using Vehicles;
+using Vehicles.Rendering;
+using Vehicles.World;
 using Verse;
 using Verse.AI;
+using Verse.Noise;
 using Verse.Sound;
-using Unity.Collections;
-using HarmonyLib;
-using System.Text;
-using System.Reflection.Emit;
-using UnityEngine;
-using Verse.AI.Group;
-using RimWorld.QuestGen;
-using System.Collections;
-using System.Threading.Tasks;
-using Vehicles;
-using Vehicles.World;
-using Vehicles.Rendering;
-using SaveOurShip2.Vehicles;
-using static Vehicles.LandingTargeter;
 using static SaveOurShip2.ShipMapComp;
-using RuntimeAudioClipLoader;
+using static Unity.Collections.AllocatorManager;
+using static Vehicles.LandingTargeter;
 
 namespace SaveOurShip2
 {
@@ -74,7 +73,7 @@ namespace SaveOurShip2
 							str2 += "SoS.Combat.ShipName".Translate(ship.Core.ShipName) + "\n";
 						str2 += "SoS.Combat.ShipInfo".Translate(
 							ship.Map, ship.Faction, ship.Parts.Count, ship.Buildings.Count, ship.MassActual,
-							ship.ThrustRatio.ToString("F3"), ship.Area.Count,
+							ship.CurrentThrustRatio.ToString("F3"), ship.Area.Count,
 							ship.Bridges.Count, ship.Core.ThingID, ship.LastSafePath);
 						TooltipHandler.TipRegion(rect2, str2);
 						DrawShips.Highlight = ship.Index;
@@ -102,7 +101,7 @@ namespace SaveOurShip2
 				for (int i = list.Count; i-- > 0;) //try find player ship home map OOC
 				{
 					playerMapComp = list[i];
-					if (playerMapComp.map.IsPlayerHome && playerMapComp.map.IsSpace())
+					if (playerMapComp.map.IsPlayerHome && playerMapComp.map.IsSOS2Space())
 					{
 						mapPlayer = playerMapComp.map;
 						break;
@@ -140,7 +139,7 @@ namespace SaveOurShip2
 					StringBuilder stringBuilder = new StringBuilder();
 					stringBuilder.AppendLine(TranslatorFormattedStringExtensions.Translate("SoS.StatsShipCombatRating", bridge.Ship.Threat));
 					stringBuilder.AppendLine(TranslatorFormattedStringExtensions.Translate("SoS.StatsShipMass", bridge.Ship.MassActual));
-					stringBuilder.AppendLine(TranslatorFormattedStringExtensions.Translate("SoS.StatsShipCombatThrust", bridge.Ship.ThrustRatio.ToString("F3")));
+					stringBuilder.AppendLine(TranslatorFormattedStringExtensions.Translate("SoS.StatsShipCombatThrust", bridge.Ship.CurrentThrustRatio.ToString("F3")));
 					if (bridge.heatComp.myNet.Depletion > 0)
 					{
 						stringBuilder.AppendLine(TranslatorFormattedStringExtensions.Translate("SoS.StatsShipHeatMaximum", bridge.heatComp.myNet.StorageCapacityRaw));
@@ -496,7 +495,7 @@ namespace SaveOurShip2
 			for (int i = 0; i < length; i++)
 			{
 				ColonistBar.Entry entry = entries[i];
-				if (entry.group == group && entry.pawn == null && entry.map.IsSpace())
+				if (entry.group == group && entry.pawn == null && entry.map.IsSOS2Space())
 				{
 					Rect rect = __instance.GroupFrameRect(group);
 					var mapComp = entry.map.GetComponent<ShipMapComp>();
@@ -517,7 +516,7 @@ namespace SaveOurShip2
 		public static bool Prefix(ref float baseY)
 		{
 			Map map = Find.CurrentMap;
-			if (map != null && map.IsSpace())
+			if (map != null && map.IsSOS2Space())
 			{
 				var timecomp = map.Parent.GetComponent<TimedForcedExitShip>();
 				if (timecomp != null && timecomp.ForceExitAndRemoveMapCountdownActive)
@@ -555,7 +554,7 @@ namespace SaveOurShip2
 		public static void Postfix(ref string __result)
 		{
 			Map map = Find.CurrentMap;
-			if (!map.IsSpace())
+			if (!map.IsSOS2Space())
 				return;
 
 			if (ShipInteriorMod2.ExposedToOutside(UI.MouseCell().GetRoom(map)))
@@ -600,205 +599,44 @@ namespace SaveOurShip2
 		}
 	}
 
-	//biome
-	[HarmonyPatch(typeof(MapDrawer), "DrawMapMesh", null)]
-	public static class RenderPlanetBehindMap
-	{
-		public static void Prefix()
-		{
-			var worldComp = ShipInteriorMod2.WorldComp;
-			Map map = Find.CurrentMap;
-			if ((worldComp.renderedThatAlready && !ModSettings_SoS.renderPlanet) || !map.IsSpace())
-			{
-				return; //if we aren't in space, abort!
-			}
-			//TODO replace this when interplanetary travel is ready
-			//Find.PlaySettings.showWorldFeatures = false;
-			var camera = Find.WorldCamera;
-			RenderTexture oldTexture = camera.targetTexture;
-			RenderTexture oldSkyboxTexture = WorldCameraManager.WorldSkyboxCamera.targetTexture;
-			var worldRender = Find.World.renderer;
-			worldRender.wantedMode = WorldRenderMode.Planet;
-			var cameraDriver = Find.WorldCameraDriver;
-			cameraDriver.JumpTo(map.Tile);
-			var mapComp = map.GetComponent<ShipMapComp>();
-			float altitude = mapComp.Altitude;
-			cameraDriver.altitude = altitude;
-			cameraDriver.desiredAltitude = altitude;
-			if (map.Parent is WorldObjectOrbitingShip wos) //td proper this abomination
-			{
-				cameraDriver.sphereRotation.x = wos.drawPos.y / -200;
-				cameraDriver.sphereRotation.y = wos.drawPos.x / 200;
-			}
-			//td add camera/planet rotation
-			cameraDriver.Update();
-			worldRender.CheckActivateWorldCamera();
-			worldRender.DrawWorldLayers();
-			WorldRendererUtility.UpdateGlobalShadersParams();
-			//TODO replace this when interplanetary travel is ready
-			/*
-			foreach(WorldLayer layer in Find.World.renderer.layers)
-			{
-				if (layer is WorldLayer_Stars)
-					layer.Render();
-			}
-			Find.PlaySettings.showWorldFeatures = false;*/
-			WorldCameraManager.WorldSkyboxCamera.targetTexture = ResourceBank.target;
-			float num = (float)UI.screenWidth / (float)UI.screenHeight;
-			WorldCameraManager.WorldSkyboxCamera.aspect = num;
-			WorldCameraManager.WorldSkyboxCamera.Render();
+    //[HarmonyPatch(typeof(MapDrawLayer), "FinalizeMesh")]
+    //public static class GenerateSpaceSubMesh
+    //{
+    //	public static bool Prefix(SectionLayer __instance, MeshParts tags)
+    //	{
+    //		if (__instance.GetType().Name != "SectionLayer_Terrain" || __instance.Map.Parent.def.mapGenerator == MapGeneratorDefOf.Space)
+    //			return true;
 
-			camera.targetTexture = ResourceBank.target;
-			camera.aspect = num;
-			camera.Render();
-
-			camera.targetTexture = oldTexture;
-			WorldCameraManager.WorldSkyboxCamera.targetTexture = oldSkyboxTexture;
-			worldRender.wantedMode = WorldRenderMode.None;
-			worldRender.CheckActivateWorldCamera();
-
-			if (!worldRender.AllDrawLayers.FirstOrFallback().ShouldRegenerate)
-				worldComp.renderedThatAlready = true;
-		}
-	}
-
-	[HarmonyPatch(typeof(MapDrawLayer), "FinalizeMesh")]
-	public static class GenerateSpaceSubMesh
-	{
-		public static bool Prefix(SectionLayer __instance, MeshParts tags)
-		{
-			if (__instance.GetType().Name != "SectionLayer_Terrain")
-				return true;
-
-			bool foundSpace = false;
-			foreach (IntVec3 cell in __instance.GetBoundaryRect().Cells)
-			{
-				TerrainDef terrain1 = __instance.map.terrainGrid.TerrainAt(cell);
-				if (terrain1 == ResourceBank.TerrainDefOf.EmptySpace)
-				{
-					foundSpace = true;
-					Printer_Mesh.PrintMesh(__instance, Matrix4x4.TRS(cell.ToVector3() + new Vector3(0.5f, 0f, 0.5f), Quaternion.identity, Vector3.one), MeshMakerPlanes.NewPlaneMesh(1f), ResourceBank.PlanetMaterial);
-				}
-			}
-			if (!foundSpace)
-			{
-				for (int i = 0; i < __instance.subMeshes.Count; i++)
-				{
-					if (__instance.subMeshes[i].material == ResourceBank.PlanetMaterial)
-					{
-						__instance.subMeshes.RemoveAt(i);
-					}
-				}
-			}
-			return true;
-		}
-	}
-
-	[HarmonyPatch(typeof(Map), "Biome", MethodType.Getter)]
-	public static class SpaceBiomeGetter
-	{
-		public static bool Prefix(Map __instance, out bool __state)
-		{
-			__state = __instance.info?.parent != null &&
-						   (__instance.info.parent is WorldObjectOrbitingShip || __instance.info.parent is SpaceSite || __instance.info.parent is MoonBase || __instance.Parent.AllComps.Any(comp => comp is MoonPillarSiteComp));
-			return !__state;
-		}
-		public static void Postfix(Map __instance, ref BiomeDef __result, bool __state)
-		{
-			if (__state)
-				__result = ResourceBank.BiomeDefOf.OuterSpaceBiome;
-		}
-	}
-
-	[HarmonyPatch(typeof(MapTemperature), "OutdoorTemp", MethodType.Getter)]
-	public static class ForceOutdoorTempInSpace
-	{
-		public static void Postfix(ref float __result, Map ___map)
-		{
-			if (___map.IsSpace()) __result = -100f;
-		}
-	}
-
-	[HarmonyPatch(typeof(MapTemperature), "SeasonalTemp", MethodType.Getter)]
-	public static class ForceSeasonalTempInSpace
-	{
-		public static void Postfix(ref float __result, Map ___map)
-		{
-			if (___map.IsSpace()) __result = -100f;
-		}
-	}
-
-	[HarmonyPatch(typeof(Room), "OpenRoofCount", MethodType.Getter)] //set to 1 if in space and missing roof/ship hull
-	public static class SpaceRoomCheck
-	{
-		public static bool Prefix(ref int ___cachedOpenRoofCount, out bool __state)
-		{
-			__state = false;
-			if (___cachedOpenRoofCount == -1 && !ShipInteriorMod2.MoveShipFlag)
-				__state = true;
-			return true;
-		}
-		public static int Postfix(int __result, Room __instance, ref int ___cachedOpenRoofCount, bool __state)
-		{
-			if (__state && __result == 0 && __instance.Map.IsSpace() && !__instance.TouchesMapEdge && !__instance.IsDoorway)
-			{
-				foreach (IntVec3 tile in __instance.Cells)
-				{
-					var roof = tile.GetRoof(__instance.Map);
-					if (!ShipInteriorMod2.IsRoofDefAirtight(roof))
-					{
-						___cachedOpenRoofCount = 1;
-						return ___cachedOpenRoofCount;
-					}
-				}
-				try
-				{
-					foreach (IntVec3 vec in __instance.BorderCellsCardinal)
-					{
-						bool hasAirtightPart = false;
-						if (ModsConfig.OdysseyActive)
-						{
-							hasAirtightPart = __instance.Map.terrainGrid.TerrainAt(vec)?.IsSubstructure ?? false;
-						}
-						if (!hasAirtightPart)
-						{
-							foreach (Thing t in vec.GetThingList(__instance.Map))
-							{
-								if (t is Building b)
-								{
-									var shipPart = b.TryGetComp<CompShipCachePart>();
-
-									// def.building.isAirtight is Odyssey property
-									if (b.def.mineable || (shipPart != null && shipPart.Props.hermetic) || b.def.building.isAirtight)
-									{
-										hasAirtightPart = true;
-										break;
-									}
-								}
-							}
-						}
-						if (!hasAirtightPart)
-						{
-							___cachedOpenRoofCount = 1;
-							return ___cachedOpenRoofCount;
-						}
-					}
-				}
-				catch (Exception e)
-				{
-					Log.Warning("SOS2: ".Colorize(Color.cyan) + __instance.Map + " OpenRoofCount error in patch: SpaceRoomCheck".Colorize(Color.red) + "\n" + e);
-				}
-			}
-			return ___cachedOpenRoofCount;
-		}
-	}
+    //		bool foundSpace = false;
+    //		foreach (IntVec3 cell in __instance.GetBoundaryRect().Cells)
+    //		{
+    //			TerrainDef terrain1 = __instance.map.terrainGrid.TerrainAt(cell);
+    //			if (terrain1 == TerrainDefOf.Space)
+    //			{
+    //				foundSpace = true;
+    //				Printer_Mesh.PrintMesh(__instance, Matrix4x4.TRS(cell.ToVector3() + new Vector3(0.5f, 0f, 0.5f), Quaternion.identity, Vector3.one), MeshMakerPlanes.NewPlaneMesh(1f), ResourceBank.PlanetMaterial);
+    //			}
+    //		}
+    //		if (!foundSpace)
+    //		{
+    //			for (int i = 0; i < __instance.subMeshes.Count; i++)
+    //			{
+    //				if (__instance.subMeshes[i].material == ResourceBank.PlanetMaterial)
+    //				{
+    //					__instance.subMeshes.RemoveAt(i);
+    //				}
+    //			}
+    //		}
+    //		return true;
+    //	}
+    //}
 
 	[HarmonyPatch(typeof(GenTemperature), "EqualizeTemperaturesThroughBuilding")] //block vents and open airlocks in vac, closed airlocks vent slower
 	public static class NoVentingToSpace
 	{
 		public static bool Prefix(Building b, ref float rate, bool twoWay)
 		{
-			if (!b.Map.IsSpace())
+			if (!b.Map.IsSOS2Space())
 				return true;
 			if (twoWay) //vent
 			{
@@ -827,24 +665,12 @@ namespace SaveOurShip2
 		}
 	}
 
-	[HarmonyPatch(typeof(RoomTempTracker), "EqualizeTemperature")]
-	public static class ExposedToVacuum
-	{
-		public static void Postfix(RoomTempTracker __instance, ref Room ___room)
-		{
-			if (___room.Map.terrainGrid.TerrainAt(IntVec3.Zero) != ResourceBank.TerrainDefOf.EmptySpace)
-				return;
-			if (___room.Role != RoomRoleDefOf.None && ___room.OpenRoofCount > 0)
-				__instance.Temperature = -100f;
-		}
-	}
-
 	[HarmonyPatch(typeof(RoomTempTracker), "WallEqualizationTempChangePerInterval")]
 	public static class TemperatureDoesntDiffuseFastInSpace
 	{
 		public static void Postfix(ref float __result, Room ___room)
 		{
-			if (___room.Map.IsSpace())
+			if (___room.Map.IsSOS2Space())
 			{
 				__result *= 0.01f;
 			}
@@ -856,23 +682,9 @@ namespace SaveOurShip2
 	{
 		public static void Postfix(ref float __result, Room ___room)
 		{
-			if (___room.Map.IsSpace())
+			if (___room.Map.IsSOS2Space())
 			{
 				__result *= 0.01f;
-			}
-		}
-	}
-
-	[HarmonyPatch(typeof(Fire), "DoComplexCalcs")]
-	public static class CannotBurnInSpace
-	{
-		public static void Postfix(Fire __instance)
-		{
-			if (!(__instance is MechaniteFire) && __instance.Spawned && __instance.Map.IsSpace())
-			{
-				Room room = __instance.Position.GetRoom(__instance.Map);
-				if (ShipInteriorMod2.ExposedToOutside(room))
-					__instance.TakeDamage(new DamageInfo(DamageDefOf.Extinguish, 100, category: DamageInfo.SourceCategory.ThingOrUnknown));
 			}
 		}
 	}
@@ -903,344 +715,14 @@ namespace SaveOurShip2
 		}
 	}
 
-	[HarmonyPatch(typeof(PenFoodCalculator), "ProcessTerrain")]
-	public static class SpaceHasNoWildPlants
-	{
-		public static bool Prefix(PenFoodCalculator __instance, IntVec3 c, Map map)
-		{
-			if (map.IsSpace())
-			{
-				__instance.numCells++;
-				MapPastureNutritionCalculator.NutritionPerDayPerQuadrum other = new MapPastureNutritionCalculator.NutritionPerDayPerQuadrum();
-				other[0] = 0;
-				other[1] = 0;
-				other[2] = 0;
-				other[3] = 0;
-				__instance.nutritionPerDayPerQuadrum.AddFrom(other);
-				return false;
-			}
-			return true;
-		}
-	}
-
-	[HarmonyPatch(typeof(Plant), "TickLong")]
-	public static class KillPlantsInSpace
-	{
-		public static void Postfix(Plant __instance)
-		{
-			if (__instance.Spawned && __instance.Map.IsSpace())
-			{
-				if (ShipInteriorMod2.MoveShipFlag)
-					return;
-				Room room = __instance.Position.GetRoom(__instance.Map);
-				if (ShipInteriorMod2.ExposedToOutside(room))
-				{
-					__instance.TakeDamage(new DamageInfo(DamageDefOf.Deterioration, 10, 0, -1f, category: DamageInfo.SourceCategory.ThingOrUnknown));
-				}
-			}
-		}
-	}
-
-	[HarmonyPatch(typeof(Plant), "MakeLeafless")]
-	public static class DoNotKillPlantsOnMove
-	{
-		public static bool Prefix()
-		{
-			if (ShipInteriorMod2.MoveShipFlag)
-			{
-				return false;
-			}
-			return true;
-		}
-	}
-
-	[HarmonyPatch(typeof(PollutionGrid), "SetPolluted")]
-	public static class DoNotPolluteSpace
-	{
-		public static bool Prefix(IntVec3 cell, Map ___map)
-		{
-			if (___map.terrainGrid.TerrainAt(cell) == ResourceBank.TerrainDefOf.EmptySpace)
-			{
-				return false;
-			}
-			return true;
-		}
-	}
-
-	[HarmonyPatch(typeof(WeatherManager), "TransitionTo")]
-	public static class SpaceWeatherStays
-	{
-		public static bool Prefix(WeatherManager __instance)
-		{
-			if (__instance.map.IsSpace() && __instance.curWeather == ResourceBank.WeatherDefOf.OuterSpaceWeather)
-			{
-				return false;
-			}
-			return true;
-		}
-	}
-
-	[HarmonyPatch(typeof(WeatherDecider), "StartNextWeather")]
-	public static class SpaceWeatherStaysTwo
-	{
-		public static bool Prefix(WeatherManager __instance)
-		{
-			if (__instance.map.IsSpace() && __instance.curWeather == ResourceBank.WeatherDefOf.OuterSpaceWeather)
-			{
-				return false;
-			}
-			return true;
-		}
-	}
-
-	[HarmonyPatch(typeof(JoyUtility), "EnjoyableOutsideNow", new Type[] { typeof(Map), typeof(StringBuilder) })]
-	public static class NoNatureRunningInSpace
-	{
-		public static void Postfix(Map map, ref bool __result)
-		{
-			if (map.IsSpace())
-			{
-				__result = false;
-			}
-		}
-	}
-
-	//audio
-	[HarmonyPatch(typeof(AmbientSoundManager), "AltitudeWindSoundCreated", MethodType.Getter)]
-	public static class NoWindInSpace
-	{
-		public static void Postfix(ref bool __result)
-		{
-			if (Find.CurrentMap.IsSpace())
-			{
-				var manager = Find.SoundRoot.sustainerManager;
-				foreach (var sus in manager.allSustainers)
-				{
-					if (sus.def == SoundDefOf.Ambient_AltitudeWind)
-					{
-						sus.End();
-						break;
-					}
-				}
-				__result = true;
-			}
-		}
-	}
-
 	[HarmonyPatch(typeof(DangerWatcher), "CalculateDangerRating")]
 	public static class TransitIsDanger
 	{
 		public static void Postfix(ref StoryDanger __result, DangerWatcher __instance)
 		{
-			if (__result != StoryDanger.High && __instance.map.IsSpace() && __instance.map.GetComponent<ShipMapComp>().ShipMapState == ShipMapState.inTransit)
+			if (__result != StoryDanger.High && __instance.map.IsSOS2Space() && __instance.map.GetComponent<ShipMapComp>().ShipMapState == ShipMapState.inTransit)
 			{
 				__result = StoryDanger.High;
-			}
-		}
-	}
-
-	//biome lighting
-	[HarmonyPatch(typeof(SkyManager), "SkyManagerUpdate")]
-	public static class FixLightingColors
-	{
-		public static void Postfix()
-		{
-			if (!MapChangeHelper.MapIsSpace) return;
-
-			MatBases.LightOverlay.color = new Color(1.0f, 1.0f, 1.0f);
-		}
-	}
-
-	[HarmonyPatch(typeof(Section), MethodType.Constructor, typeof(IntVec3), typeof(Map))]
-	public static class SectionConstructorPatch
-	{
-		private static Type SunShadowsType;
-		private static Type TerrainType;
-
-		static SectionConstructorPatch()
-		{
-			SunShadowsType = AccessTools.TypeByName("SectionLayer_SunShadows");
-			TerrainType = AccessTools.TypeByName("SectionLayer_Terrain");
-		}
-
-		public static bool Prefix(Map map)
-		{
-			// This allows creating dummy section for creatring dummy SectionLayer_Gas that loads resources,
-			// and cannot be properly initialized im modded scenario map start because of not on main thread
-			return map != null;
-		}
-		public static void Postfix(Map map, Section __instance, List<SectionLayer> ___layers)
-		{
-			if (map == null || !map.IsSpace())
-			{
-				return;
-			}
-
-			// Kill shadows
-			___layers.RemoveAll(layer => SunShadowsType.IsInstanceOfType(layer));
-
-			// Get and store terrain layer for recalculation
-			var terrain = ___layers.Find(layer => TerrainType.IsInstanceOfType(layer));
-			SectionThreadManager.AddSection(map, __instance, terrain);
-		}
-	}
-
-	[HarmonyPatch(typeof(SectionLayer_Terrain), nameof(SectionLayer_Terrain.Regenerate))]
-	public static class SectionRegenerateHelper
-	{
-		public static void Postfix(SectionLayer __instance, Section ___section)
-		{
-			if (!___section.map.IsSpace()) return;
-
-			MeshRecalculateHelper.RecalculatePlanetLayer(__instance);
-		}
-	}
-
-	[HarmonyPatch(typeof(MapInterface), "Notify_SwitchedMap")]
-	public static class MapChangeHelper
-	{
-		public static bool MapIsSpace;
-
-		public static void Postfix()
-		{
-			// Make sure we're on a map and not loading (causes issues if we are)
-			if (Find.CurrentMap == null || Scribe.mode != LoadSaveMode.Inactive) return;
-
-			MapIsSpace = Find.CurrentMap.IsSpace();
-		}
-	}
-
-	[HarmonyPatch(typeof(Game), "LoadGame")]
-	public static class GameLoadHelper
-	{
-		public static void Postfix()
-		{
-			// We need to execute the change notification exactly once on load after the game is fully loaded, which is
-			// done here, after all loading is completed
-			MapChangeHelper.Postfix();
-		}
-	}
-
-	[HarmonyPatch(typeof(Game), "FinalizeInit")]
-	public static class FinalizeInitHelper
-	{
-		public static void Postfix()
-		{
-			// Update the camera driver and camera on init - faster than using the game's methods by far, and much
-			// faster than using Unity GetComponents every frame
-			SectionThreadManager.Driver = Find.CameraDriver;
-			SectionThreadManager.GameCamera = Find.CameraDriver.GetComponent<Camera>();
-
-		}
-	}
-
-	[HarmonyPatch(typeof(Game), "UpdatePlay")]
-	public static class SectionThreadManager
-	{
-		public static CameraDriver Driver;
-		public static Camera GameCamera;
-		public static Vector3 Center;
-		public static float CellsHigh;
-		public static float CellsWide;
-
-		public static Dictionary<Map, Dictionary<Section, SectionLayer>> MapSections =
-			new Dictionary<Map, Dictionary<Section, SectionLayer>>();
-		private static Vector3 lastCameraPosition = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
-
-		public static void AddSection(Map map, Section section, SectionLayer layer)
-		{
-			Dictionary<Section, SectionLayer> sections;
-			if (!MapSections.TryGetValue(map, out sections))
-			{
-				sections = new Dictionary<Section, SectionLayer>();
-				MapSections.Add(map, sections);
-			}
-
-			sections.Add(section, layer);
-		}
-
-		// Thread spawner
-		public static void Prefix()
-		{
-			if (!MapChangeHelper.MapIsSpace || Find.CurrentMap == null || !MapSections.ContainsKey(Find.CurrentMap)) return;
-
-			// Calculate all the various fields we're going to be using this call before we start making threads
-			Center = GameCamera.transform.position;
-			var ratio = (float)UI.screenWidth / UI.screenHeight;
-			CellsHigh = UI.screenHeight / Find.CameraDriver.CellSizePixels;
-			CellsWide = CellsHigh * ratio;
-
-			// Camera hasn't moved, no need to update
-			if ((lastCameraPosition - Center).magnitude < 1e-4) return;
-			lastCameraPosition = Center;
-			var sections = MapSections[Find.CurrentMap];
-
-			var visibleRect = Driver.CurrentViewRect;
-			foreach (var entry in sections)
-			{
-				if (!visibleRect.Overlaps(entry.Key.CellRect)) continue;
-
-				MeshRecalculateHelper.RecalculatePlanetLayer(entry.Value);
-			}
-		}
-
-		// The real thread waiter
-		public static void Postfix()
-		{
-			if (!MeshRecalculateHelper.Tasks.Any()) return;
-
-			// Wait on threads to complete
-			Task.WaitAll(MeshRecalculateHelper.Tasks.ToArray());
-			MeshRecalculateHelper.Tasks.Clear();
-
-			// Draw the layers since we stopped it previously - must be done on main thread to prevent crashes
-			foreach (var layer in MeshRecalculateHelper.LayersToDraw)
-			{
-				var mesh = layer.GetSubMesh(ResourceBank.PlanetMaterial);
-				if (!mesh.finalized || mesh.disabled) continue;
-
-				Graphics.DrawMesh(mesh.mesh, Vector3.zero, Quaternion.identity, mesh.material, 0);
-			}
-			MeshRecalculateHelper.LayersToDraw.Clear();
-		}
-	}
-
-	public static class MeshRecalculateHelper //contains everything related to recalculating planet meshes
-	{
-		public static List<Task> Tasks = new List<Task>();
-		public static List<SectionLayer> LayersToDraw = new List<SectionLayer>();
-
-		public static void RecalculatePlanetLayer(SectionLayer instance)
-		{
-			var mesh = instance.GetSubMesh(ResourceBank.PlanetMaterial);
-			Tasks.Add(Task.Factory.StartNew(() => RecalculateMesh(mesh)));
-			LayersToDraw.Add(instance);
-		}
-
-		private static void RecalculateMesh(object info)
-		{
-			if (!(info is LayerSubMesh mesh))
-			{
-				Log.Error("Save Our Ship tried to start a calculate thread with an incorrect info object type");
-				return;
-			}
-
-			lock (mesh)
-			{
-				mesh.finalized = false;
-				mesh.Clear(MeshParts.UVs1);
-				for (var i = 0; i < mesh.verts.Count; i++)
-				{
-					var xdiff = mesh.verts[i].x - SectionThreadManager.Center.x;
-					var xfromEdge = xdiff + SectionThreadManager.CellsWide / 2f;
-					var zdiff = mesh.verts[i].z - SectionThreadManager.Center.z;
-					var zfromEdge = zdiff + SectionThreadManager.CellsHigh / 2f;
-
-					mesh.uvs.Add(new Vector3(xfromEdge / SectionThreadManager.CellsWide,
-						zfromEdge / SectionThreadManager.CellsHigh, 0.0f));
-				}
-
-				mesh.FinalizeMesh(MeshParts.UVs1);
 			}
 		}
 	}
@@ -1252,7 +734,7 @@ namespace SaveOurShip2
 		public static bool Prefix(CompShipPart __instance, out bool __state)
 		{
 			__state = false;
-			if (__instance.parent.Map != null && __instance.parent.Map.IsSpace())
+			if (__instance.parent.Map != null && __instance.parent.Map.IsSOS2Space())
 			{
 				__state = true;
 				return false;
@@ -1271,7 +753,7 @@ namespace SaveOurShip2
 	{
 		public static void Postfix(Command __result, Map map)
 		{
-			if (map.IsSpace())
+			if (map.IsSOS2Space())
 			{
 				__result.disabled = true;
 				__result.disabledReason = "SoSCantSettleSpaceSites".Translate();
@@ -1284,44 +766,8 @@ namespace SaveOurShip2
 	{
 		public static void Postfix(Building __instance, ref AcceptanceReport __result)
 		{
-			if (__instance.Map.IsSpace() && __instance.Map.GetComponent<ShipMapComp>().MapRootListAll.Any())
+			if (__instance.Map.IsSOS2Space() && __instance.Map.GetComponent<ShipMapComp>().MapRootListAll.Any())
 				__result = AcceptanceReport.WasRejected;
-		}
-	}
-
-	[HarmonyPatch(typeof(MapDeiniter), "Deinit")]
-	public static class RemoveSpaceMap
-	{
-		public static void Postfix()
-		{
-			AccessExtensions.Utility.RecacheSpaceMaps();
-		}
-	}
-
-	[HarmonyPatch(typeof(IncidentWorker_TraderCaravanArrival), "CanFireNowSub")]
-	public static class NoTradersInSpace
-	{
-		public static void Postfix(IncidentParms parms, ref bool __result)
-		{
-			if (parms.target != null && parms.target is Map map && map.IsSpace()) __result = false;
-		}
-	}
-
-	[HarmonyPatch(typeof(ExitMapGrid), "MapUsesExitGrid", MethodType.Getter)]
-	public static class InSpaceNoOneCanHearYouRunAway
-	{
-		public static void Postfix(Map ___map, ref bool __result)
-		{
-			if (___map.IsSpace()) __result = false;
-		}
-	}
-
-	[HarmonyPatch(typeof(RCellFinder), "TryFindRandomExitSpot")]
-	public static class NoPrisonBreaksInSpace
-	{
-		public static void Postfix(Pawn pawn, ref bool __result)
-		{
-			if (pawn.Map.IsSpace()) __result = false;
 		}
 	}
 
@@ -1336,7 +782,7 @@ namespace SaveOurShip2
 	{
 		public static void Postfix(ref bool __result, Map map)
 		{
-			if (map.IsSpace()) __result = true;
+			if (map.IsSOS2Space()) __result = true;
 		}
 	}
 
@@ -1345,27 +791,27 @@ namespace SaveOurShip2
 	{
 		public static void Postfix(ref bool __result, Map map)
 		{
-			if (map.IsSpace()) __result = true;
+			if (map.IsSOS2Space()) __result = true;
 		}
 	}
 
 	// When not in space, ship roof now shouldn't collapse too but setting canCollapse = false doesn't work in some cases,
 	// this patch fix is needed
-	[HarmonyPatch(typeof(RoofCollapseBufferResolver), "CollapseRoofsMarkedToCollapse")]
-	public static class NoShipHullCollapse
-	{
-		public static void Prefix(RoofCollapseBufferResolver __instance)
-		{
-			RoofCollapseBuffer buffer = __instance.map.roofCollapseBuffer;
-			for (int i = buffer.CellsMarkedToCollapse.Count - 1; i >= 0; i--)
-			{
-				if (!__instance.map.roofGrid.RoofAt(buffer.CellsMarkedToCollapse[i]).canCollapse)
-				{
-					buffer.CellsMarkedToCollapse.RemoveAt(i);
-				}
-			}
-		}
-	}
+	//[HarmonyPatch(typeof(RoofCollapseBufferResolver), "CollapseRoofsMarkedToCollapse")]
+	//public static class NoShipHullCollapse
+	//{
+	//	public static void Prefix(RoofCollapseBufferResolver __instance)
+	//	{
+	//		RoofCollapseBuffer buffer = __instance.map.roofCollapseBuffer;
+	//		for (int i = buffer.CellsMarkedToCollapse.Count - 1; i >= 0; i--)
+	//		{
+	//			if (!__instance.map.roofGrid.RoofAt(buffer.CellsMarkedToCollapse[i]).canCollapse)
+	//			{
+	//				buffer.CellsMarkedToCollapse.RemoveAt(i);
+	//			}
+	//		}
+	//	}
+	//}
 
 	[HarmonyPatch(typeof(FogGrid), "Notify_PawnEnteringDoor")]
 	public static class UnFogOnDoorEnterSpaceVersion
@@ -1376,7 +822,7 @@ namespace SaveOurShip2
 			{
 				return false;
 			}
-			if (door.Map.IsSpace())
+			if (door.Map.IsSOS2Space())
 			{
 				door.Map.fogGrid.Unfog(door.Position);
 				for (int i = 0; i < 4; i++)
@@ -1589,7 +1035,7 @@ namespace SaveOurShip2
 		public static bool Prefix(TradeShip __instance, Pawn negotiator, out bool __state) //normal trade on ground if no bounty
 		{
 			__state = false;
-			if (!__instance.Map.IsSpace() && ShipInteriorMod2.WorldComp.PlayerFactionBounty > negotiator.skills.GetSkill(SkillDefOf.Social).levelInt * 2)
+			if (!__instance.Map.IsSOS2Space() && ShipInteriorMod2.WorldComp.PlayerFactionBounty > negotiator.skills.GetSkill(SkillDefOf.Social).levelInt * 2)
 				return true;
 
 			__state = true;
@@ -1704,7 +1150,7 @@ namespace SaveOurShip2
 				}
 
 				//if in space add pirate option
-				if (__instance.Map.IsSpace())
+				if (__instance.Map.IsSOS2Space())
 				{
 					Building bridge = mapComp.MapRootListAll.FirstOrDefault();
 					if (bridge != null)
@@ -1833,39 +1279,87 @@ namespace SaveOurShip2
 		}
 		public static void Postfix(Building rootBuilding, ref IEnumerable<string> __result)
 		{
-			List<string> newResult = new List<string>();
-			var ship = ((Building_ShipBridge)rootBuilding).Ship;
-			if (ship == null)
-			{
-				Log.Error("SOS2: ship is null in FindLaunchFailReasons");
-				return;
-			}
+            List<string> newResult = new List<string>();
+            SpaceShipCache ship = ((Building_ShipBridge)rootBuilding).Ship;
+            if (ship == null)
+            {
+                Log.Error("SOS2: ship is null in FindLaunchFailReasons");
+                return;
+            }
+            if (!ship.Core.TryGetComp<CompGravshipFacility>(out var comp) || comp.engine == null)
+            {
+                newResult.Add("SOS.NeedGravEngine".Translate());
+            }
+            if (GenTicks.TicksGame < comp.engine.cooldownCompleteTick)
+            {
+                newResult.Add("CannotLaunchOnCooldown".Translate((comp.engine.cooldownCompleteTick - GenTicks.TicksGame).ToStringTicksToPeriod()).CapitalizeFirst());
+            }
+            if (ship.Engines.NullOrEmpty() || !ship.Engines.Any((CompEngineTrail compEngine) => compEngine.CanFire()))
+            {
+                newResult.Add("ShipReportMissingPart".Translate() + ": " + ThingDefOf.Ship_Engine.label);
+            }
+            if (ship.FuelNeeded(atmospheric: true) < Mathf.Min(ship.MassActual * 1.05f, ship.MassTakeoff * 2f))
+            {
+                newResult.Add("SoS.NeedsMoreFuel".Translate(ship.FuelNeeded(atmospheric: true), ship.MassActual));
+            }
+            if (ship.Sensors.NullOrEmpty())
+            {
+                newResult.Add("ShipReportMissingPart".Translate() + ": " + ThingDefOf.Ship_SensorCluster.label);
+            }
 
-			if (ship.Engines.NullOrEmpty())
-				newResult.Add("ShipReportMissingPart".Translate() + ": " + ThingDefOf.Ship_Engine.label);
-			// TODO: Need to calculate fuel burned during takoff animation and include that into this check.
-			// Now 5% of normall takoff cost or 100% of grav takeoff is extremely rough approximation. Gravlike uses such huge nubmer 
-			// because of different design with < 1 TWR.
-			// This check is not good, but previous check was even worse and requuired waay too much when grav engine is involved
-			if (ship.FuelNeeded(true) < Mathf.Min(ship.MassActual * 1.05f, ship.MassTakeoff * 2.0f))
-				newResult.Add("SoS.NeedsMoreFuel".Translate(ship.FuelNeeded(true), ship.MassActual));
-			if (ship.Sensors.NullOrEmpty())
-				newResult.Add("ShipReportMissingPart".Translate() + ": " + ThingDefOf.Ship_SensorCluster.label);
-			if (!ship.HasMannedBridge())
-				newResult.Add("SoS.ReportNeedPilot".Translate());
-			if (!ship.Powered())
-				newResult.Add("SoSNoPowerSupply".Translate());
-			//do not allow kidnapping other fac pawns/animals
-			foreach (Pawn p in ship.PawnsOnShip())
-			{
-				if (p.Faction != Faction.OfPlayer && !p.IsPrisoner && !p.InContainerEnclosed)
-				{
-					newResult.Add("SoS.LaunchFailPawns".Translate(p.Name?.ToStringShort ?? p.KindLabel ?? ""));
-				}
-			}
-
-			__result = newResult;
-		}
+            List<ThingDef> bridgeDefs = new List<ThingDef>();
+            List<ThingDef> aiDefs = new List<ThingDef>();
+            foreach (Building_ShipBridge bridge in ship.Bridges)
+            {
+                if (bridge.powerComp.PowerOn && bridge.mannableComp != null && bridge.mannableComp.MannedNow)
+                {
+                    bridgeDefs.Add(bridge.def);
+                }
+                if (bridge.powerComp.PowerOn && bridge.mannableComp == null)
+                {
+                    aiDefs.Add(bridge.def);
+                }
+            }
+            if (bridgeDefs.NullOrEmpty())
+            {
+                newResult.Add("SOS.NeedMannedConsoles".Translate());
+            }
+            if (!bridgeDefs.Contains(EP_DefOf.VGE_PilotBridge))
+            {
+                if (ship.MassActual >= 8000f)
+                {
+                    newResult.Add("SOS.NeedMannedPilotBridge".Translate());
+                }
+                else if (!bridgeDefs.Contains(EP_DefOf.PilotConsole) && ship.MassActual >= 5000f)
+                {
+                    newResult.Add("SOS.NeedMannedPilotConsole".Translate());
+                }
+            }
+            if (bridgeDefs.Count<ThingDef>((t) => t == EP_DefOf.VGE_CopilotConsole) < 2 && ship.MassActual >= 10000f)
+            {
+                newResult.Add("SOS.NeedMannedTwoCopilotConsole".Translate());
+            }
+            else if (!bridgeDefs.Contains(EP_DefOf.VGE_CopilotConsole) && ship.MassActual >= 9000f)
+            {
+                newResult.Add("SOS.NeedMannedCopilotConsole".Translate());
+            }
+            if (aiDefs.NullOrEmpty() && ship.MassActual >= 15000f)
+            {
+                newResult.Add("SOS.NeedAI".Translate());
+            }
+            if (!ship.Powered())
+            {
+                newResult.Add("SoSNoPowerSupply".Translate());
+            }
+            foreach (Pawn p in ship.PawnsOnShip())
+            {
+                if (p.Faction != Faction.OfPlayer && !p.IsPrisoner && !p.InContainerEnclosed)
+                {
+                    newResult.Add("SoS.LaunchFailPawns".Translate(p.Name?.ToStringShort ?? p.KindLabel ?? ""));
+                }
+            }
+            __result = newResult;
+        }
 	}
 
 	[HarmonyPatch(typeof(ShipCountdown), "CountdownEnded")]
@@ -1877,11 +1371,6 @@ namespace SaveOurShip2
 			{
 				ShipInteriorMod2.SaveShipToFile((Building_ShipBridge)ShipCountdown.shipRoot);
 			}
-			else
-			{
-				ScreenFader.StartFade(Color.clear, 1f);
-				ShipInteriorMod2.LaunchShip(ShipCountdown.shipRoot);
-			}
 			return false;
 		}
 	}
@@ -1892,7 +1381,7 @@ namespace SaveOurShip2
 		public static void Postfix(ref bool __result, GameConditionManager __instance, GameConditionDef def)
 		{
 			if (def == GameConditionDef.Named("SolarFlare") && __instance.ownerMap != null &&
-				__instance.ownerMap.IsSpace())
+				__instance.ownerMap.IsSOS2Space())
 				__result = false;
 		}
 	}
@@ -1902,7 +1391,7 @@ namespace SaveOurShip2
 	{
 		public static void Postfix(GameConditionManager __instance, ref bool __result)
 		{
-			if (__instance.ownerMap.IsSpace()) __result = false;
+			if (__instance.ownerMap.IsSOS2Space()) __result = false;
 		}
 	}
 
@@ -1951,8 +1440,6 @@ namespace SaveOurShip2
 	{
 		public static void Postfix(TerrainGrid __instance, IntVec3 c, Map ___map)
 		{
-			if (ShipInteriorMod2.MoveShipFlag)
-				return;
 			if (___map.GetComponent<ShipMapComp>()?.MapShipCells?.ContainsKey(c) ?? false)
 			{
 				foreach (Thing t in ___map.thingGrid.ThingsAt(c))
@@ -2012,7 +1499,7 @@ namespace SaveOurShip2
 	{
 		public static void Postfix(IEnumerable<IntVec3> cells, Map map)
 		{
-			if (!map.IsSpace())
+			if (!map.IsSOS2Space())
 				return;
 			var mapComp = map.GetComponent<ShipMapComp>();
 			foreach (IntVec3 cell in cells)
@@ -2051,7 +1538,7 @@ namespace SaveOurShip2
 			if (respawningAfterLoad)
 				return;
 			var mapComp = map.GetComponent<ShipMapComp>();
-			if (mapComp.CacheOff || ShipInteriorMod2.MoveShipFlag || mapComp.ShipsOnMap.NullOrEmpty() || __instance.TryGetComp<CompShipCachePart>() != null)
+			if (mapComp.CacheOff || __instance.BeingTransportedOnGravship || mapComp.ShipsOnMap.NullOrEmpty() || __instance.TryGetComp<CompShipCachePart>() != null)
 				return;
 			foreach (IntVec3 vec in GenAdj.CellsOccupiedBy(__instance)) //if any part spawned on ship
 			{
@@ -2080,7 +1567,7 @@ namespace SaveOurShip2
 			else //rems normal building weight/count to ship
 			{
 				var mapComp = __instance.Map.GetComponent<ShipMapComp>();
-				if (mapComp.CacheOff || ShipInteriorMod2.MoveShipFlag)
+				if (mapComp.CacheOff || __instance.BeingTransportedOnGravship)
 					return true;
 				if (!mapComp.ShipsOnMap.NullOrEmpty())
 				{
@@ -2109,20 +1596,6 @@ namespace SaveOurShip2
 		{
 			if (b.Map == null)
 				return false;
-			return true;
-		}
-	}
-
-	[HarmonyPatch(typeof(Room), "Notify_ContainedThingSpawnedOrDespawned")]
-	public static class AirlockBugFix
-	{
-		public static bool Prefix(Room __instance, ref bool ___statsAndRoleDirty)
-		{
-			if (ShipInteriorMod2.MoveShipFlag)
-			{
-				___statsAndRoleDirty = true;
-				return false;
-			}
 			return true;
 		}
 	}
@@ -2227,137 +1700,6 @@ namespace SaveOurShip2
 		}
 	}
 
-	[HarmonyPatch(typeof(RimWorld.CompScanner), "CanUseNow", MethodType.Getter)]
-	public static class NoUseInSpace
-	{
-		public static void Postfix(AcceptanceReport __result, RimWorld.CompScanner __instance)
-		{
-			if (__instance.parent.Map.IsSpace())
-			{
-				__result = AcceptanceReport.WasRejected;
-			}
-		}
-	}
-
-	[HarmonyPatch(typeof(Building), "MaxItemsInCell", MethodType.Getter)]
-	public static class DisableForMoveShelf
-	{
-		static bool? adaptiveStorageEnabled = null;
-		public static int Postfix(int __result, Building __instance)
-		{
-			if (adaptiveStorageEnabled == null)
-			{
-				adaptiveStorageEnabled = ModLister.HasActiveModWithName("Adaptive Storage Framework");
-			}
-			if (adaptiveStorageEnabled ?? false)
-			{
-				return __result;
-			}
-			if (__result > 1 && ShipInteriorMod2.MoveShipFlag)
-				return 1;
-			return __result;
-		}
-	}
-
-	[HarmonyPatch(typeof(CompGenepackContainer), "EjectContents")]
-	public static class DisableForMoveGene
-	{
-		public static bool Prefix()
-		{
-			if (ShipInteriorMod2.MoveShipFlag)
-				return false;
-			return true;
-		}
-	}
-
-	[HarmonyPatch(typeof(CompThingContainer), "PostDeSpawn")]
-	public static class DisableForMoveContainer
-	{
-		public static bool Prefix()
-		{
-			if (ShipInteriorMod2.MoveShipFlag)
-				return false;
-			return true;
-		}
-	}
-
-	[HarmonyPatch(typeof(Building_MechGestator), "EjectContents")]
-	public static class DisableForMoveGestator
-	{
-		public static bool Prefix()
-		{
-			if (ShipInteriorMod2.MoveShipFlag)
-				return false;
-			return true;
-		}
-	}
-
-	[HarmonyPatch(typeof(CompWasteProducer), "ProduceWaste")]
-	public static class DisableForMoveWaste
-	{
-		public static bool Prefix()
-		{
-			if (ShipInteriorMod2.MoveShipFlag)
-				return false;
-			return true;
-		}
-	}
-
-	[HarmonyPatch(typeof(GenConstruct), "GetAttachedBuildings")] //prevent minification on ship move from despawning (wall lights)
-	public static class DisableForMoveMinify
-	{
-		public static bool Prefix()
-		{
-			if (ShipInteriorMod2.MoveShipFlag)
-				return false;
-			return true;
-		}
-		public static List<Thing> Postfix(List<Thing> __result)
-		{
-			if (ShipInteriorMod2.MoveShipFlag)
-				return new List<Thing>();
-			return __result;
-		}
-	}
-
-	/*[HarmonyPatch(typeof(CompBiosculpterPod), "EjectContents")] disabled due to move respawn issues
-	public static class DisableForMoveSculpt
-	{
-		public static bool Prefix()
-		{
-			if (ShipInteriorMod2.AirlockBugFlag)
-				return false;
-			return true;
-		}
-	} */
-
-	[HarmonyPatch(typeof(ThingOwner), "TryDropAll")] //prevents drops but other things not set
-	public static class DisableForMoveThingOwner
-	{
-		public static bool Prefix()
-		{
-			if (ShipInteriorMod2.MoveShipFlag)
-			{
-				return false;
-			}
-			return true;
-		}
-	}
-
-	// Prevent killing occupant on ripscanner being moved despawn
-	[HarmonyPatch(typeof(Building_SubcoreScanner), "KillOccupant")] // additional 
-	public static class DisableForMoveSubcoreRipscanner
-	{
-		public static bool Prefix(Building_SubcoreScanner __instance)
-		{
-			if (ShipInteriorMod2.MoveShipFlag)
-			{
-				return false;
-			}
-			return true;
-		}
-	}
-
 	//Prevent exploiting formgels for scanning
 	[HarmonyPatch(typeof(Building_SubcoreScanner), "CanAcceptPawn")] // additional 
 	public static class PreventFormgelsScanning
@@ -2368,48 +1710,6 @@ namespace SaveOurShip2
 			{
 				__result = "SoS.CantScanFormgel".Translate();
 			}
-		}
-	}
-
-	[HarmonyPatch(typeof(CompAssignableToPawn), "PostSpawnSetup")] //beds?
-	public static class DisableForMoveAssignableOn
-	{
-		public static bool Prefix()
-		{
-			if (ShipInteriorMod2.MoveShipFlag)
-				return false;
-			return true;
-		}
-	}
-	[HarmonyPatch(typeof(CompAssignableToPawn), "PostDeSpawn")]
-	public static class DisableForMoveAssignableOff
-	{
-		public static bool Prefix()
-		{
-			if (ShipInteriorMod2.MoveShipFlag)
-				return false;
-			return true;
-		}
-	}
-
-	[HarmonyPatch(typeof(CompDeathrestBindable), "PostSpawnSetup")] //deathrest
-	public static class DisableForMoveDeathOn
-	{
-		public static bool Prefix()
-		{
-			if (ShipInteriorMod2.MoveShipFlag)
-				return false;
-			return true;
-		}
-	}
-	[HarmonyPatch(typeof(CompDeathrestBindable), "PostDeSpawn")]
-	public static class DisableForMoveDeathOff
-	{
-		public static bool Prefix()
-		{
-			if (ShipInteriorMod2.MoveShipFlag)
-				return false;
-			return true;
 		}
 	}
 
@@ -2431,87 +1731,13 @@ namespace SaveOurShip2
 		{
 		}
 	}
-	[HarmonyPatch(typeof(Building_Bed), "SpawnSetup")]
-	public static class DisableForMoveBed
-	{
-		public static bool Prefix(Building_Bed __instance, Map map, bool respawningAfterLoad)
-		{
-			if (ShipInteriorMod2.MoveShipFlag)
-			{
-				ReversePatchBuildingSpawn.Snapshot(__instance, map, respawningAfterLoad);
-				return false;
-			}
-			return true;
-		}
-	}
-	[HarmonyPatch(typeof(Building_Bed), "DeSpawn")]
-	public static class DisableForMoveBedTwo
-	{
-		public static bool Prefix(Building_Bed __instance, DestroyMode mode)
-		{
-			if (ShipInteriorMod2.MoveShipFlag)
-			{
-				ReversePatchBuildingDespawn.Snapshot(__instance, mode);
-				return false;
-			}
-			return true;
-		}
-	}
-	[HarmonyPatch(typeof(Building_MechCharger), "DeSpawn")]
-	public static class DisableForMoveCharger
-	{
-		public static bool Prefix(Building_MechCharger __instance, DestroyMode mode)
-		{
-			if (ShipInteriorMod2.MoveShipFlag)
-			{
-				ReversePatchBuildingDespawn.Snapshot(__instance, mode);
-				return false;
-			}
-			return true;
-		}
-	}
-	[HarmonyPatch(typeof(Building_PlantGrower), "DeSpawn")]
-	public static class DisableForMoveGrower
-	{
-		public static bool Prefix(Building_PlantGrower __instance, DestroyMode mode)
-		{
-			if (ShipInteriorMod2.MoveShipFlag)
-			{
-				ReversePatchBuildingDespawn.Snapshot(__instance, mode);
-				return false;
-			}
-			return true;
-		}
-	}
-	[HarmonyPatch(typeof(Building_Bookcase), "DeSpawn")]
-	public static class DisableForMoveBookCase
-	{
-		public static bool Prefix(Building_Bookcase __instance, DestroyMode mode)
-		{
-			if (ShipInteriorMod2.MoveShipFlag)
-			{
-				ReversePatchBuildingDespawn.Snapshot(__instance, mode);
-				return false;
-			}
-			return true;
-		}
-	}
-
-	[HarmonyPatch(typeof(GridsUtility), "GetFirstBlight")]
-	public static class DisableForMoveBlight
-	{
-		public static bool Prefix()
-		{
-			return !ShipInteriorMod2.MoveShipFlag;
-		}
-	}
 
 	[HarmonyPatch(typeof(Designator_Deconstruct), "CanDesignateThing")]
 	public static class ChangeReason
 	{
 		public static void Postfix(ref AcceptanceReport __result, Thing t)
 		{
-			if (!__result.Accepted && t.Map.IsSpace() && __result.Reason.Equals("MessageMustDesignateDeconstructibleMechCluster".Translate())) // Core\Messages.xml
+			if (!__result.Accepted && t.Map.IsSOS2Space() && __result.Reason.Equals("MessageMustDesignateDeconstructibleMechCluster".Translate())) // Core\Messages.xml
 				__result = new AcceptanceReport("SoS.SalvageEnemiesPresent".Translate());
 		}
 	}
@@ -2892,7 +2118,7 @@ namespace SaveOurShip2
 		{
 			//find first salvagebay
 			var bay = map.GetComponent<ShipMapComp>().Bays.FirstOrDefault(b => b is CompShipBaySalvage && b.parent.Faction == Faction.OfPlayer);
-			if (map.IsSpace() && bay != null)
+			if (map.IsSOS2Space() && bay != null)
 				__result = bay.parent.Position;
 		}
 	}
@@ -2902,7 +2128,7 @@ namespace SaveOurShip2
 	{
 		public static void Postfix(QuestPart_DropPods __instance, ref IntVec3 __result)
 		{
-			if (__instance.mapParent.Map.IsSpace())
+			if (__instance.mapParent.Map.IsSOS2Space())
 			{
 				IEnumerable<CompShipBay> bays = __instance.mapParent.Map.GetComponent<ShipMapComp>().Bays.Where(b => b is CompShipBaySalvage && b.parent.Faction == Faction.OfPlayer);
 				if (bays.Any())
@@ -2919,79 +2145,27 @@ namespace SaveOurShip2
 	{
 		public static void Postfix(Pawn_PathFollower __instance, Pawn ___pawn)
 		{
-			if (___pawn.Map.terrainGrid.TerrainAt(__instance.nextCell) != ResourceBank.TerrainDefOf.EmptySpace)
+			if (___pawn.Map.terrainGrid.TerrainAt(__instance.nextCell) != TerrainDefOf.Space)
 			{
 				return;
 			}
 			float vacuumSpeedMultiplier = ___pawn.GetStatValue(ResourceBank.StatDefOf.VacuumSpeedMultiplier);
 			if (vacuumSpeedMultiplier > 0.0f && vacuumSpeedMultiplier != 1.0f)
 			{
-				if (__instance.nextCellCostLeft < ResourceBank.TerrainDefOf.EmptySpace.pathCost)
-				{
-					// if pawn is already circumventing terrin cost, identifed by not having that cost included into
-					// next cell pathing, no vacuum speed multiplier for them, as ignoring terrain cost roughly replaces it.
-					return;
-				}
+				//if (__instance.nextCellCostLeft < TerrainDefOf.Space.pathCost)
+				//{
+    //                // if pawn is already circumventing terrin cost, identifed by not having that cost included into
+    //                // next cell pathing, no vacuum speed multiplier for them, as ignoring terrain cost roughly replaces it.
+    //                Log.Message(TerrainDefOf.Space.pathCost);
+    //                Log.Message(__instance.nextCellCostLeft);
+				//	return;
+				//}
 				int newCellCost = Mathf.RoundToInt(__instance.nextCellCostLeft / vacuumSpeedMultiplier);
 				// Allowing cost to be zero breaks pawn movement making them invisible and unable to shoot
 				newCellCost = Mathf.Max(newCellCost, 1);
 				__instance.nextCellCostLeft = newCellCost;
 				__instance.nextCellCostTotal = newCellCost;
 			}
-		}
-	}
-
-	// Ideology - prevent role activated/deactivated letters spam
-	[HarmonyPatch(typeof(Precept_RoleSingle), "RecacheActivity")]
-	public static class DisableForMoveRoleRecalc
-	{
-		public static bool Prefix()
-		{
-			if (ShipInteriorMod2.MoveShipFlag)
-				return false;
-			return true;
-		}
-	}
-
-	// Ideology - disable friendly visitors, additional result of skylanterns ritual, disable in space
-	[HarmonyPatch(typeof(RitualOutcomeEffectWorker_Skylantern), "ApplyExtraOutcome")]
-	public static class DisableSkylanternsRecruit
-	{
-		public static bool Prefix(LordJob_Ritual jobRitual)
-		{
-			if (jobRitual.Map != null && jobRitual.Map.IsSpace())
-			{
-				return false;
-			}
-			return true;
-		}
-	}
-
-	// Ideology - disable random recruit reward for rituals in space
-	[HarmonyPatch(typeof(RitualAttachableOutcomeEffectWorker_RandomRecruit), "Apply")]
-	public static class DisableRecruitReward
-	{
-		public static bool Prefix(LordJob_Ritual jobRitual)
-		{
-			if (jobRitual.Map != null && jobRitual.Map.IsSpace())
-			{
-				return false;
-			}
-			return true;
-		}
-	}
-
-	// Ideology - disable farm animals reward for rituals in space
-	[HarmonyPatch(typeof(RitualAttachableOutcomeEffectWorker_FarmAnimalsWanderIn), "Apply")]
-	public static class DisableFarmAnimalsReward
-	{
-		public static bool Prefix(LordJob_Ritual jobRitual)
-		{
-			if (jobRitual.Map != null && jobRitual.Map.IsSpace())
-			{
-				return false;
-			}
-			return true;
 		}
 	}
 
@@ -3027,7 +2201,7 @@ namespace SaveOurShip2
 	{
 		public static void Postfix(ref Pawn pawn, bool __result)
 		{
-			if (__result && (pawn?.Map?.IsSpace() ?? false) && pawn.needs?.food?.CurLevel != null)
+			if (__result && (pawn?.Map?.IsSOS2Space() ?? false) && pawn.needs?.food?.CurLevel != null)
 				pawn.needs.food.CurLevel = 0.2f;
 		}
 	}
@@ -3516,7 +2690,7 @@ namespace SaveOurShip2
 				Building_ArchotechSpore spore = null;
 				foreach (Map map in Find.Maps)
 				{
-					if (map.IsSpace())
+					if (map.IsSOS2Space())
 					{
 						foreach (Thing t in map.spawnedThings)
 						{
@@ -3558,215 +2732,6 @@ namespace SaveOurShip2
 					__result.options.Add(decrease);
 				}
 			}
-		}
-	}
-
-	//mechanite "fire"
-	[HarmonyPatch(typeof(Fire), "TrySpread")]
-	public static class SpreadMechanites
-	{
-		public static bool Prefix(Fire __instance)
-		{
-			if (__instance is MechaniteFire)
-				return false;
-			return true;
-		}
-
-		public static void Postfix(Fire __instance)
-		{
-			if (__instance is MechaniteFire)
-			{
-				IntVec3 position = __instance.Position;
-				bool flag;
-				if (Rand.Chance(0.8f))
-				{
-					position = __instance.Position + GenRadial.ManualRadialPattern[Rand.RangeInclusive(1, 8)];
-					flag = true;
-				}
-				else
-				{
-					position = __instance.Position + GenRadial.ManualRadialPattern[Rand.RangeInclusive(10, 20)];
-					flag = false;
-				}
-				if (!position.InBounds(__instance.Map))
-				{
-					return;
-				}
-				if (!flag)
-				{
-					CellRect startRect = CellRect.SingleCell(__instance.Position);
-					CellRect endRect = CellRect.SingleCell(position);
-					if (GenSight.LineOfSight(__instance.Position, position, __instance.Map, startRect, endRect))
-					{
-						((Projectile_MechaniteSpark)GenSpawn.Spawn(ThingDef.Named("MechaniteSpark"), __instance.Position, __instance.Map)).Launch(__instance, position, position, ProjectileHitFlags.All);
-					}
-				}
-				else
-				{
-					MechaniteFire existingFire = position.GetFirstThing<MechaniteFire>(__instance.Map);
-					if (existingFire != null)
-					{
-						existingFire.fireSize += 0.1f;
-					}
-					else
-					{
-						MechaniteFire obj = (MechaniteFire)ThingMaker.MakeThing(ResourceBank.ThingDefOf.MechaniteFire);
-						obj.fireSize = Rand.Range(0.1f, 0.2f);
-						GenSpawn.Spawn(obj, position, __instance.Map, Rot4.North);
-					}
-				}
-			}
-		}
-	}
-
-	[HarmonyPatch(typeof(Fire), "DoComplexCalcs")]
-	public static class ComplexFlammability
-	{
-		public static bool Prefix(Fire __instance)
-		{
-			if (__instance is MechaniteFire)
-				return false;
-			return true;
-		}
-		public static void Postfix(Fire __instance)
-		{
-			if (__instance is MechaniteFire)
-			{
-				bool flag = false;
-				List<Thing> flammableList = new List<Thing>();
-				if (__instance.parent == null)
-				{
-					List<Thing> list = __instance.Map.thingGrid.ThingsListAt(__instance.Position);
-					for (int i = 0; i < list.Count; i++)
-					{
-						Thing thing = list[i];
-						if (thing is Building_Door)
-						{
-							flag = true;
-						}
-						if (!(thing is MechaniteFire) && thing.def.useHitPoints)
-						{
-							flammableList.Add(list[i]);
-							if (__instance.parent == null && __instance.fireSize > 0.4f && list[i].def.category == ThingCategory.Pawn && Rand.Chance(FireUtility.ChanceToAttachFireCumulative(list[i], 150f)))
-							{
-								list[i].TryAttachFire(__instance.fireSize * 0.2f, null);
-							}
-						}
-					}
-				}
-				else
-				{
-					flammableList.Add(__instance.parent);
-				}
-				if (flammableList.Count == 0 && __instance.Position.GetTerrain(__instance.Map).extinguishesFire)
-				{
-					__instance.Destroy();
-					return;
-				}
-				Thing thing2 = (__instance.parent != null) ? __instance.parent : ((flammableList.Count <= 0) ? null : flammableList.RandomElement());
-				if (thing2 != null && (!(__instance.fireSize < 0.4f) || thing2 == __instance.parent || thing2.def.category != ThingCategory.Pawn))
-				{
-					IntVec3 pos = __instance.Position;
-					Map map = __instance.Map;
-					((MechaniteFire)__instance).DoFireDamage(thing2);
-					if (thing2.Destroyed)
-						GenExplosion.DoExplosion(pos, map, 1.9f, DefDatabase<DamageDef>.GetNamed("BombMechanite"), null);
-				}
-				if (__instance.Spawned)
-				{
-					float num = __instance.fireSize * 16f;
-					if (flag)
-					{
-						num *= 0.15f;
-					}
-					GenTemperature.PushHeat(__instance.Position, __instance.Map, num);
-					if (Rand.Value < 0.4f)
-					{
-						float radius = __instance.fireSize * 3f;
-						WeatherBuildupUtility.AddSnowRadial(__instance.Position, __instance.Map, radius, 0f - __instance.fireSize * 0.1f);
-					}
-					__instance.fireSize += 0.1f;
-					if (__instance.fireSize > 1.75f)
-					{
-						__instance.fireSize = 1.75f;
-					}
-					if (__instance.Map.weatherManager.RainRate > 0.01f && Rand.Value < 6f)
-					{
-						__instance.TakeDamage(new DamageInfo(DamageDefOf.Extinguish, 10f));
-					}
-				}
-			}
-		}
-	}
-
-	[HarmonyPatch(typeof(ThingOwner), "NotifyAdded")]
-	public static class FixFireBugA
-	{
-		public static void Postfix(Thing item)
-		{
-			if (item.HasAttachment(ResourceBank.ThingDefOf.MechaniteFire))
-			{
-				item.GetAttachment(ResourceBank.ThingDefOf.MechaniteFire).Destroy();
-			}
-		}
-	}
-
-	[HarmonyPatch(typeof(Pawn_JobTracker), "IsCurrentJobPlayerInterruptible")]
-	public static class FixFireBugB
-	{
-		public static void Postfix(Pawn_JobTracker __instance, ref bool __result, Pawn ___pawn)
-		{
-			if (___pawn.HasAttachment(ResourceBank.ThingDefOf.MechaniteFire))
-			{
-				__result = false;
-			}
-		}
-	}
-
-	[HarmonyPatch(typeof(JobGiver_FightFiresNearPoint), "TryGiveJob")]
-	public static class FixFireBugC
-	{
-		public static void Postfix(ref Job __result, Pawn pawn)
-		{
-			Thing thing = GenClosest.ClosestThingReachable(pawn.GetLord().CurLordToil.FlagLoc, pawn.Map, ThingRequest.ForDef(ResourceBank.ThingDefOf.MechaniteFire), PathEndMode.Touch, TraverseParms.For(pawn), 25);
-			if (thing != null)
-			{
-				__result = JobMaker.MakeJob(JobDefOf.BeatFire, thing);
-			}
-		}
-	}
-
-	[HarmonyPatch(typeof(JobGiver_ExtinguishSelf), "TryGiveJob")]
-	public static class FixFireBugD
-	{
-		public static void Postfix(Pawn pawn, ref Job __result)
-		{
-			if (Rand.Value < 0.1f)
-			{
-				Fire fire = (Fire)pawn.GetAttachment(ResourceBank.ThingDefOf.MechaniteFire);
-				if (fire != null)
-				{
-					__result = JobMaker.MakeJob(JobDefOf.ExtinguishSelf, fire);
-				}
-			}
-		}
-	}
-
-	[HarmonyPatch(typeof(ThinkNode_ConditionalBurning), "Satisfied")]
-	public static class FixFireBugE
-	{
-		public static void Postfix(Pawn pawn, ref bool __result)
-		{
-			__result = __result || pawn.HasAttachment(ResourceBank.ThingDefOf.MechaniteFire);
-		}
-	}
-
-	[HarmonyPatch(typeof(Fire), "SpawnSmokeParticles")]
-	public static class FixFireBugF
-	{
-		public static bool Prefix(Fire __instance)
-		{
-			return !(__instance is MechaniteFire);
 		}
 	}
 
@@ -3981,7 +2946,7 @@ namespace SaveOurShip2
 		public static bool Prefix(out bool __state)
 		{
 			__state = false;
-			if (Find.Maps.Any(m => m.IsPlayerHome && m.IsSpace()) && !Find.Maps.Any(m => m.IsPlayerHome && !m.IsSpace()))
+			if (Find.Maps.Any(m => m.IsPlayerHome && m.IsSOS2Space()) && !Find.Maps.Any(m => m.IsPlayerHome && !m.IsSOS2Space()))
 			{
 				//Log.Warning("SOS2 quest override: only space home map found, switching to SOS2 whitelisted quests.");
 				__state = true;
@@ -4017,10 +2982,10 @@ namespace SaveOurShip2
 	{
 		public static void Postfix(ref Map __result, int? preferMapWithMinFreeColonists)
 		{
-			if (__result != null && Find.Maps.Count > 1 && __result.IsSpace())
+			if (__result != null && Find.Maps.Count > 1 && __result.IsSOS2Space())
 			{
 				//int minCount = preferMapWithMinFreeColonists ?? 1;
-				Map map = Find.Maps.Where(m => m.IsPlayerHome && !m.IsSpace())?.FirstOrDefault() ?? null; // && m.mapPawns.FreeColonists.Count >= minCount
+				Map map = Find.Maps.Where(m => m.IsPlayerHome && !m.IsSOS2Space())?.FirstOrDefault() ?? null; // && m.mapPawns.FreeColonists.Count >= minCount
 				if (map != null)
 				{
 					//Log.Warning("SOS2 quest override: changed target map from: " + __result + " to: " + map);
@@ -4035,10 +3000,10 @@ namespace SaveOurShip2
 	{
 		public static void Postfix(Map map, Slate slate, ref bool __result)
 		{
-			if (map.IsSpace())
+			if (map.IsSOS2Space())
 			{
 				//if player has space home map and no ground home map whitelist was already checked
-				if (Find.Maps.Any(m => m.IsPlayerHome && m.IsSpace()) && !Find.Maps.Any(m => m.IsPlayerHome && !m.IsSpace()))
+				if (Find.Maps.Any(m => m.IsPlayerHome && m.IsSOS2Space()) && !Find.Maps.Any(m => m.IsPlayerHome && !m.IsSOS2Space()))
 				{
 					return;
 				}
@@ -4056,7 +3021,7 @@ namespace SaveOurShip2
 			if (__result)
 			{
 				Map map = slate.Get<Map>("map", null, false);
-				if (map.IsSpace())
+				if (map.IsSOS2Space())
 					__result = false;
 			}
 		}
@@ -4067,7 +3032,7 @@ namespace SaveOurShip2
 	{
 		public static bool Prefix(RoyalTitlePermitWorker_CallAid __instance, Pawn caller, Map map, IntVec3 spawnPos, Faction faction, bool free, float biocodeChance = 1f)
 		{
-			if (map != null && map.IsSpace())
+			if (map != null && map.IsSOS2Space())
 			{
 				IncidentParms incidentParms = new IncidentParms
 				{
@@ -4116,7 +3081,7 @@ namespace SaveOurShip2
 	{
 		public static bool Prefix(RoyalTitlePermitWorker_CallLaborers __instance, IntVec3 landingCell)
 		{
-			if (__instance.map != null && __instance.map.IsSpace())
+			if (__instance.map != null && __instance.map.IsSOS2Space())
 			{
 				QuestScriptDef permit_CallLaborers = QuestScriptDefOf.Permit_CallLaborers;
 				Slate slate = new Slate();
@@ -4145,7 +3110,7 @@ namespace SaveOurShip2
 		public static void Postfix(IncidentParms parms)
 		{
 			Map map = (Map)parms.target;
-			if (map.IsSpace())
+			if (map.IsSOS2Space())
 				parms.raidArrivalMode = PawnsArrivalModeDefOf.CenterDrop;
 			else if (map.GetComponent<ShipMapComp>().ShipsOnMap.Values.Any(s => s.Turrets.Any(t => t.heatComp.Props.groundDefense)))
 				parms.raidStrategy = RaidStrategyDefOf.ImmediateAttack;
@@ -4199,7 +3164,7 @@ namespace SaveOurShip2
 				{
 					map = GetOrGenerateMapUtility.GetOrGenerateMap(ShipInteriorMod2.FindWorldTileOnLayers(), new IntVec3(250, 1, 250), ResourceBank.WorldObjectDefOf.ShipEnemy);
 					map.GetComponent<ShipMapComp>().ShipMapState = ShipMapState.isGraveyard;
-					((WorldObjectOrbitingShip)map.Parent).Radius = 150f;
+					((WorldObjectOrbitingShip)map.Parent).Radius = ShipInteriorMod2.spaceRadius;
 					((WorldObjectOrbitingShip)map.Parent).Theta = -3 - 0.1f + 0.002f * Rand.Range(0, 20);
 					((WorldObjectOrbitingShip)map.Parent).Phi = 0 - 0.01f + 0.001f * Rand.Range(-20, 20);
 				}
@@ -4380,7 +3345,7 @@ namespace SaveOurShip2
 			{
 				foreach (Map map in Find.Maps)
 				{
-					if (map.IsSpace() && map.spawnedThings.Where(t => t.def == ThingDefOf.Ship_ComputerCore && t.Faction == Faction.OfPlayer).Any())
+					if (map.IsSOS2Space() && map.spawnedThings.Where(t => t.def == ThingDefOf.Ship_ComputerCore && t.Faction == Faction.OfPlayer).Any())
 					{
 						return true;
 					}
@@ -5206,7 +4171,7 @@ namespace SaveOurShip2
 		public static bool Prefix(Pawn_LearningTracker __instance)
 		{
 			List<LearningDesireDef> learningOptions = DefDatabase<LearningDesireDef>.AllDefsListForReading.Where((LearningDesireDef ld) => !__instance.active.Contains(ld) && ld.Worker.CanGiveDesire).ToList();
-			if (__instance.Pawn.Map != null && __instance.Pawn.Map.IsSpace())
+			if (__instance.Pawn.Map != null && __instance.Pawn.Map.IsSOS2Space())
 			{
 				learningOptions = learningOptions.Where((LearningDesireDef ld) => ld.defName != "NatureRunning" && ld.defName != "Skydreaming").ToList();
 				if ((__instance.Pawn.Map.listerBuildings.allBuildingsColonist.Any((Building b) => b.def.defName == "Telescope" || b.def.defName == "TelescopeSpace")) &&
@@ -5232,7 +4197,7 @@ namespace SaveOurShip2
 		public static bool Prefix(CompUseEffect_CallBossgroup __instance)
 		{
 			Map map = __instance.parent.Map;
-			if (ModsConfig.BiotechActive && map != null && map.IsSpace() && map != ShipInteriorMod2.FindPlayerShipMap())
+			if (ModsConfig.BiotechActive && map != null && map.IsSOS2Space() && map != ShipInteriorMod2.FindPlayerShipMap())
 				return false;
 			return true;
 		}
@@ -5385,16 +4350,6 @@ namespace SaveOurShip2
 		}
 	}
 
-	// Anomaly section
-	[HarmonyPatch(typeof(Building_HoldingPlatform), "EjectContents")]
-	public static class EntitiesTravelWithShip
-	{
-		public static bool Prefix()
-		{
-			return !ShipInteriorMod2.MoveShipFlag;
-		}
-	}
-
 	[HarmonyPatch(typeof(AnomalyUtility), "TryDuplicatePawn")]
 	public static class NoDuplicatingFormgels
 	{
@@ -5406,19 +4361,6 @@ namespace SaveOurShip2
 				return false;
 			}
 			return true;
-		}
-	}
-
-	[HarmonyPatch(typeof(CreepJoinerUtility), "GenerateAndSpawn", new Type[] { typeof(CreepJoinerFormKindDef), typeof(CreepJoinerBenefitDef), typeof(CreepJoinerDownsideDef), typeof(CreepJoinerAggressiveDef), typeof(CreepJoinerRejectionDef), typeof(Map) })]
-	public static class CreepsInSpace
-	{
-		public static void Postfix(ref Pawn __result, Map map)
-		{
-			if (map.IsSpace())
-			{
-				__result.apparel.Wear((Apparel)ThingMaker.MakeThing(ResourceBank.ThingDefOf.Apparel_SpaceSuitBody, ThingDefOf.Cloth));
-				__result.apparel.Wear((Apparel)ThingMaker.MakeThing(ResourceBank.ThingDefOf.Apparel_SpaceSuitHelmet));
-			}
 		}
 	}
 
@@ -5454,17 +4396,7 @@ namespace SaveOurShip2
 	{
 		public static bool Prefix(Room room)
 		{
-			return !room.Map.IsSpace();
-		}
-	}
-
-	[HarmonyPatch(typeof(DateNotifier), "AnyPlayerHomeSeasonsAreMeaningful")]
-	public static class NoSeasonSpam
-	{
-		public static void Postfix(ref bool __result)
-		{
-			if (Find.Maps.Any(map => map.IsSpace()))
-				__result = false;
+			return !room.Map.IsSOS2Space();
 		}
 	}
 
@@ -5500,7 +4432,7 @@ namespace SaveOurShip2
 				return true;
 			}
 			bool isSleepingAndVisible = !parms.bed.def.building.bed_showSleeperBody;
-			if (!isSleepingAndVisible || !parms.bed.Map.IsSpace())
+			if (!isSleepingAndVisible || !parms.bed.Map.IsSOS2Space())
 			{
 				return true;
 			}
@@ -5565,43 +4497,12 @@ namespace SaveOurShip2
 		}
 	}
 
-	// Space map does not have raw food sources by default, so no need to show "Need meal source" warning
-	[HarmonyPatch(typeof(Alert_NeedMealSource), "NeedMealSource")]
-	public static class SpaceMapDoesNotNeedStoveWarning
-	{
-		public static bool Prefix(Map map, ref bool __result)
-		{
-			if (map.IsSpace())
-			{
-				__result = false;
-				return false;
-			}
-			return true;
-		}
-	}
-
 	[HarmonyPatch(typeof(Alert_NeedBatteries), "NeedBatteries")]
 	public static class ShipCapacitorCountsAsBattery
 	{
 		public static bool Prefix(Map map, ref bool __result)
 		{
 			if (map.listerBuildings.ColonistsHaveBuilding((Thing building) => building is Building_ShipCapacitor))
-			{
-				__result = false;
-				return false;
-			}
-			return true;
-		}
-	}
-
-	// Need warm clothes alert is seasonal, reminds player to get warm clothes when winte is coming soon. Ans also tutorial-ish, tell new players what to do.
-	// Space map is not seasonal, it is always -100C. So this alert isn't really necessary and even reported annoying, so remove. 
-	[HarmonyPatch(typeof(Alert_NeedWarmClothes), "AnyColonistsNeedWarmClothes")]
-	public static class NoSeasonalWarmClothesInSpace
-	{
-		public static bool Prefix(Map map, ref bool __result)
-		{
-			if (map.IsSpace())
 			{
 				__result = false;
 				return false;
@@ -5734,37 +4635,37 @@ namespace SaveOurShip2
 	}
 
 	// Odyssey
-	[HarmonyPatch(typeof(ListerThings), "AnyThingWithDef")]
-	public static class ConsiderGravAnchorPresentOnSpaceMap
-	{
-		public static bool Prefix(ListerThings __instance, ThingDef def, ref bool __result)
-		{
-			if (ModsConfig.OdysseyActive && def == ThingDefOf.GravAnchor)
-			{
-				// Get map as thing lister doesn't have it
-				const int searchLimit = 1000;
-				Map map = null;
-				for (int i = 0; i < searchLimit && i < __instance.AllThings.Count; i++)
-				{
-					if (__instance.AllThings[i].Map != null)
-					{
-						map = __instance.AllThings[i].Map;
-						break;
-					}
-				}
-				if (map != null && map.IsSpace())
-				{
-					// Only need to pretend that grav anchor exists for map with grav engine, which would be gravship taking off
-					if (map.listerThings.AnyThingWithDef(ThingDefOf.GravEngine))
-					{
-						__result = true;
-						return false;
-					}
-				}
-			}
-			return true;
-		}
-	}
+	//[HarmonyPatch(typeof(ListerThings), "AnyThingWithDef")]
+	//public static class ConsiderGravAnchorPresentOnSpaceMap
+	//{
+	//	public static bool Prefix(ListerThings __instance, ThingDef def, ref bool __result)
+	//	{
+	//		if (ModsConfig.OdysseyActive && def == ThingDefOf.GravAnchor)
+	//		{
+	//			// Get map as thing lister doesn't have it
+	//			const int searchLimit = 1000;
+	//			Map map = null;
+	//			for (int i = 0; i < searchLimit && i < __instance.AllThings.Count; i++)
+	//			{
+	//				if (__instance.AllThings[i].Map != null)
+	//				{
+	//					map = __instance.AllThings[i].Map;
+	//					break;
+	//				}
+	//			}
+	//			if (map != null && map.IsSOS2Space())
+	//			{
+	//				// Only need to pretend that grav anchor exists for map with grav engine, which would be gravship taking off
+	//				if (map.listerThings.AnyThingWithDef(ThingDefOf.GravEngine))
+	//				{
+	//					__result = true;
+	//					return false;
+	//				}
+	//			}
+	//		}
+	//		return true;
+	//	}
+	//}
 
 	// Safeguarding patch, in case ConsiderGravAnchorPresentOnSpaceMap fails to find map parent because of it's optimisation
 	[HarmonyPatch(typeof(GravshipUtility), "AbandonMap")]
@@ -5772,89 +4673,65 @@ namespace SaveOurShip2
 	{
 		public static bool Prefix(Map map)
 		{
-			return !map.IsSpace();
+			return !map.IsSOS2Space();
 		}
 	}
 
-	[HarmonyPatch(typeof(Designator_MoveGravship), "IsValidCell")]
-	public class CanLandOnSOS2Space
-	{
-		public static void Postfix(IntVec3 cell, Map map, ref AcceptanceReport __result)
-		{
-			if((__result.Reason == "GravshipBlockedByTerrain".Translate(cell.GetTerrain(map)) &&
-				(map.terrainGrid.TerrainAt(cell) == ResourceBank.TerrainDefOf.EmptySpace)))
-			{
-				__result = AcceptanceReport.WasAccepted;
-			}
+	//[HarmonyPatch(typeof(Designator_MoveGravship), "IsValidCell")]
+	//public class CanLandOnSOS2Space
+	//{
+	//	public static void Postfix(IntVec3 cell, Map map, ref AcceptanceReport __result)
+	//	{
+	//		if((__result.Reason == "GravshipBlockedByTerrain".Translate(cell.GetTerrain(map)) &&
+	//			(map.terrainGrid.TerrainAt(cell) == TerrainDefOf.Space)))
+	//		{
+	//			__result = AcceptanceReport.WasAccepted;
+	//		}
 
-		}
-	}
+	//	}
+	//}
 
-	[HarmonyPatch(typeof(GenConstruct), "CanBuildOnTerrain")]
-	public static class CanBuildGravPanelsInSOS2Space
-	{
-		public static void Postfix(BuildableDef entDef, IntVec3 c, Map map, ref bool __result)
-		{
-			if (!__result && c.GetTerrain(map) == ResourceBank.TerrainDefOf.EmptySpace && entDef == TerrainDefOf.Substructure)
-			{
-				__result = !map.thingGrid.ThingsListAt(c).Any(t => t is Building);
-			}
-		}
-	}
+	//[HarmonyPatch(typeof(GenConstruct), "CanBuildOnTerrain")]
+	//public static class CanBuildGravPanelsInSOS2Space
+	//{
+	//	public static void Postfix(BuildableDef entDef, IntVec3 c, Map map, ref bool __result)
+	//	{
+	//		if (!__result && c.GetTerrain(map) == TerrainDefOf.Space && entDef == TerrainDefOf.Substructure)
+	//		{
+	//			__result = !map.thingGrid.ThingsListAt(c).Any(t => t is Building);
+	//		}
+	//	}
+	//}
 
-	[HarmonyPatch(typeof(Building_GravEngine), "GetInspectString")]
-	public static class GravEngineInspectString
-    {
-		private static bool vanillaDescriptionUsed = true;
-		public static bool Prefix(Building_GravEngine __instance, ref string __result)
-        {
-			vanillaDescriptionUsed = true;
-			if (!__instance.Spawned || !Find.ResearchManager.gravEngineInspected)
-            {
-				return true;
-            }
-			ShipMapComp mapComp = __instance.Map.GetComponent<ShipMapComp>();
-			if (mapComp.ShipIndexOnVec(__instance.Position) == -1)
-            {
-				return true;
-            }
-			vanillaDescriptionUsed = false;
-			// Can't easily grab base inspect string here, but it is empty, so that's ok
-			__result = TranslatorFormattedStringExtensions.Translate("SoS.Ody.GravEngineOnSpaceship");
-			return false;
-		}
+	//[HarmonyPatch(typeof(Building_GravEngine), "GetInspectString")]
+	//public static class GravEngineInspectString
+ //   {
+	//	public static bool Prefix(Building_GravEngine __instance, ref string __result)
+ //       {
+	//		// Can't easily grab base inspect string here, but it is empty, so that's ok
+	//		__result = TranslatorFormattedStringExtensions.Translate("SoS.Ody.GravEngineOnSpaceship");
+	//		return false;
+	//	}
+	//}
 
-		public static void Postfix(Building_GravEngine __instance, ref string __result)
-        {
-			if (vanillaDescriptionUsed)
-            {
-				if (__result.Length > 0)
-                {
-					__result += "\n";
-                }
-				__result += TranslatorFormattedStringExtensions.Translate("SoS.Ody.GravEngineCanBeInstalledOnSpaceship");
-			}
-        }
-	}
-
-	[HarmonyPatch(typeof(CompGravshipFacility), "CompInspectStringExtra")]
-	public static class GravshipFacilityInspectString
-    {
-		public static bool Prefix(CompGravshipFacility __instance, ref string __result)
-        {
-			if (__instance.parent.Spawned)
-            {
-				ShipMapComp mapComp = __instance.parent.Map.GetComponent<ShipMapComp>();
-				if (mapComp.ShipIndexOnVec(__instance.parent.Position) != -1)
-				{
-					// Cancel alerts about not on gravship, not connected to grav engine if installed on spaceship.
-					__result = "";
-					return false;
-				}
-			}
-			return true;
-        }
-    }
+	//[HarmonyPatch(typeof(CompGravshipFacility), "CompInspectStringExtra")]
+	//public static class GravshipFacilityInspectString
+ //   {
+	//	public static bool Prefix(CompGravshipFacility __instance, ref string __result)
+ //       {
+	//		if (__instance.parent.Spawned)
+ //           {
+	//			ShipMapComp mapComp = __instance.parent.Map.GetComponent<ShipMapComp>();
+	//			if (mapComp.ShipIndexOnVec(__instance.parent.Position) != -1)
+	//			{
+	//				// Cancel alerts about not on gravship, not connected to grav engine if installed on spaceship.
+	//				__result = "";
+	//				return false;
+	//			}
+	//		}
+	//		return true;
+ //       }
+ //   }
 
 	// This is called Royalty permit stuff but re-used in Odyssey shuttle too
 	[HarmonyPatch(typeof(RoyalTitlePermitWorker_CallShuttle), "GetReportFromCell")]
@@ -5973,16 +4850,7 @@ namespace SaveOurShip2
         }
     }
 
-	[HarmonyPatch(typeof(CompPowerPlantGravcore), "CheckSubstructure")]
-	public static class PowerPlantGravcoreWorksEverywhere
-	{
-		public static void Postfix(CompPowerPlantGravcore __instance)
-		{
-			__instance.onSubstructure = true;
-		}
-	}
-
-	[HarmonyPatch(typeof(VacuumComponent), "MergeRoomsIntoGroups")]
+    [HarmonyPatch(typeof(VacuumComponent), "MergeRoomsIntoGroups")]
 	public static class UpdateRoomsOnGravshipTakeoff
 	{
 		public static void Prefix(VacuumComponent __instance)

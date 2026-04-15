@@ -48,7 +48,7 @@ namespace SaveOurShip2
 			if (this.parent is VehiclePawn)
 				return;
 			powerComp = parent.TryGetComp<CompPower>();
-			inSpace = this.parent.Map.IsSpace();
+			inSpace = this.parent.Map.IsSOS2Space();
 			pos = this.parent.Position;
 			map = this.parent.Map;
 			mapComp = this.map.GetComponent<ShipMapComp>();

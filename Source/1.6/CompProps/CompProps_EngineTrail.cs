@@ -8,8 +8,8 @@ namespace SaveOurShip2
 	{
 		//public GraphicData graphicData = new GraphicData();
 		public int thrust = 0;
-		public float preciseThrust = 0;
-		public int fuelUse = 0;
+		public float preciseThrust = 0f;
+		public float fuelUse = 0f;
 		public int width = 0;
 		public bool takeOff = false;
 		public bool energy = false;
@@ -30,16 +30,12 @@ namespace SaveOurShip2
 			{
 				case Rot4.NorthInt:
 					return killOffsetNorthL;
-					break;
 				case Rot4.EastInt:
 					return killOffsetEastL;
-					break;
 				case Rot4.SouthInt:
 					return killOffsetSouthL;
-					break;
 				case Rot4.WestInt:
 					return killOffsetWestL;
-					break;
 				default:
 					return new IntVec2();
 			}

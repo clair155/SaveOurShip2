@@ -489,7 +489,7 @@ namespace SaveOurShip2
 		public override void PostDeSpawn(Map map, DestroyMode mode = DestroyMode.Vanish)
 		{
 			map.GetComponent<ShipMapComp>().Consciousness.Remove(this);
-			if(Consciousness != null && !ShipInteriorMod2.MoveShipFlag)
+			if(Consciousness != null && !parent.BeingTransportedOnGravship)
 				Consciousness.health.AddHediff(HediffDef.Named("HologramDisconnected"));
 			base.PostDeSpawn(map, mode);
 		}

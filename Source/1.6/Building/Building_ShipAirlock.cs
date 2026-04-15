@@ -93,10 +93,10 @@ namespace SaveOurShip2
 		{
 			if (p.RaceProps.FenceBlocked && p.RaceProps.Roamer && p.CurJobDef != JobDefOf.FollowRoper) return false;
 			//enemy pawns can pass through their doors if outside or with EVA when player is present
-			if (p.Map.IsSpace() && p.Faction != Faction.OfPlayer && Outerdoor())
+			if (p.Map.IsSOS2Space() && p.Faction != Faction.OfPlayer && Outerdoor())
 			{
 				bool colonistPresent = p.Map.mapPawns.AllPawnsSpawned.Any(pawn => pawn.Faction == Faction.OfPlayer);
-				if (!(ShipInteriorMod2.ExposedToOutside(p.GetRoom()) || (p.CanSurviveVacuum() && (mapComp.ShipMapState != ShipMapState.inCombat || colonistPresent)) || p.CurJobDef == ResourceBank.JobDefOf.FleeVacuum))
+				if (!(ShipInteriorMod2.ExposedToOutside(p.GetRoom()) || (!p.HarmedByVacuum && (mapComp.ShipMapState != ShipMapState.inCombat || colonistPresent)) || p.CurJobDef == ResourceBank.JobDefOf.FleeVacuum))
 					return false;
 			}
 			Lord lord = p.GetLord();
@@ -125,8 +125,8 @@ namespace SaveOurShip2
 		{
 			foreach (IntVec3 pos in GenAdj.CellsAdjacentCardinal(this))
 			{
-				Room room = pos.GetRoom(Map);
-				if (room != null && !(room.OpenRoofCount > 0 || room.TouchesMapEdge))
+				float vacuum = pos.GetVacuum(Map);
+				if (vacuum <= 0.5f)
 				{
 					return pos;
 				}
@@ -201,7 +201,7 @@ namespace SaveOurShip2
 				}
 			}
 			//Glow when opened
-			if (this.Map.IsSpace() && OpenPct > 0 && ticks % 16 == 0 && Outerdoor())
+			if (this.Map.IsSOS2Space() && OpenPct > 0 && ticks % 16 == 0 && Outerdoor())
 				Map.flecks.CreateFleck(FleckMaker.GetDataStatic(DrawPos, Map, FleckDefOf.LightningGlow, 3));
 		}
 		public override IEnumerable<Gizmo> GetGizmos()
@@ -219,7 +219,7 @@ namespace SaveOurShip2
 					{
 						if (!docked && canDock)
 						{
-							float d = (dist - 1) * 0.3334f;
+							float d = dist * 0.3334f;
 							startTick = Find.TickManager.TicksGame + (int)(200 * d);
 							unfoldComp.Target = d;
 						}
@@ -246,14 +246,14 @@ namespace SaveOurShip2
 		}
 		public bool HasDocking() //check if airlock has docking beams
 		{
-			for (int i = 0; i < 2; i++) //find first extender, check opposite for other, same rot, not facing airlock
+			for (int i = 2; i < 4; i++) //find first extender, check opposite for other, same rot, not facing airlock
 			{
-				IntVec3 v = Position + GenAdj.CardinalDirections[i];
+				IntVec3 v = Position + GenAdj.DiagonalDirections[i];
 				if (!v.InBounds(Map))
 				{
 					return false;
 				}
-				Thing first = v.GetFirstThingWithComp<CompDockExtender>(Map);
+                Thing first = v.GetFirstThingWithComp<CompDockExtender>(Map);
 				if (first == null)
 					continue;
 				var firstComp = first.TryGetComp<CompDockExtender>();
@@ -261,8 +261,16 @@ namespace SaveOurShip2
 				{
 					if (i == first.Rotation.AsByte || i == first.Rotation.AsByte + 2) //cant face same or opp cardinal
 						break;
-					Thing second = (Position + GenAdj.CardinalDirections[i + 2]).GetFirstThingWithComp<CompDockExtender>(Map);
-					if (second != null)
+					Thing second;
+                    if (i == 3)
+					{
+                        second = (Position + GenAdj.DiagonalDirections[i - 1]).GetFirstThingWithComp<CompDockExtender>(Map);
+					}
+					else
+					{
+                        second = (Position + GenAdj.DiagonalDirections[i + 1]).GetFirstThingWithComp<CompDockExtender>(Map);
+                    }
+                    if (second != null)
 					{
 						var secondComp = second.TryGetComp<CompDockExtender>();
 						if (secondComp.Props.extender && first.Rotation == second.Rotation)
@@ -294,32 +302,34 @@ namespace SaveOurShip2
 				return false;
 			}
 			dist = 0;
-			for (int i = 1; i < 4; i++)
+			for (int i = 0; i < 3; i++)
 			{
 				IntVec3 offset = GenAdj.CardinalDirections[First.Rotation.AsByte] * -i;
-				IntVec3 center = Position + offset;
+                IntVec3 offset2 = GenAdj.CardinalDirections[First.Rotation.AsByte] * -(i + 1);
+                IntVec3 center = Position + offset2;
 				IntVec3 first = First.Position + offset;
 				IntVec3 second = Second.Position + offset;
 				var grid = Map.thingGrid;
-				if (grid.ThingsAt(first).Any() || grid.ThingsAt(center).Any() || grid.ThingsAt(second).Any())
+				if (grid.ThingsAt(first).Any((Thing t) => t.def.defName != "WallShipAirlockBeam") || grid.ThingsAt(center).Any() || grid.ThingsAt(second).Any((Thing t) => t.def.defName != "WallShipAirlockBeam"))
 				{
-					if (i == 1)
+					if (i == 0)
 						return false;
 					dist = i;
 					return true;
 				}
 			}
-			dist = 4;
+			dist = 3;
 			return true;
 		}
 		public void SpawnDock()
 		{
 			IntVec3 rot = GenAdj.CardinalDirections[First.Rotation.AsByte];
 			//place fake walls, floor, extend
-			for (int i = 1; i < dist + 1; i++)
+			for (int i = 0; i < dist + 1; i++)
 			{
 				IntVec3 offset = rot * -i;
-				if (i == dist) //register dock - ship part or extender at dist LR
+                IntVec3 offset2 = rot * -(i + 1);
+                if (i == dist) //register dock - ship part or extender at dist LR
 				{
 					foreach (Thing t in (First.Position + offset).GetThingList(Map))
 					{
@@ -355,25 +365,19 @@ namespace SaveOurShip2
 				}
 
 				Thing thing;
-				if (dockedTo != null && (dockedTo?.Faction.HostileTo(Faction) ?? false))
-					thing = ThingMaker.MakeThing(ResourceBank.ThingDefOf.ShipAirlockBeamWallInert);
-				else
-					thing = ThingMaker.MakeThing(ResourceBank.ThingDefOf.ShipAirlockBeamWall);
-				GenSpawn.Spawn(thing, First.Position + offset, Map);
+                thing = ThingMaker.MakeThing(ResourceBank.ThingDefOf.ShipAirlockBeamTile);
+                GenSpawn.Spawn(thing, First.Position + offset, Map);
 				thing.TryGetComp<CompDockExtender>().dockParent = this;
 				extenders.Add(thing as Building);
 
-				thing = ThingMaker.MakeThing(ResourceBank.ThingDefOf.ShipAirlockBeamTile);
-				GenSpawn.Spawn(thing, Position + offset, Map);
-				thing.TryGetComp<CompDockExtender>().dockParent = this;
+                thing = ThingMaker.MakeThing(ResourceBank.ThingDefOf.ShipAirlockBeamTile);
+                GenSpawn.Spawn(thing, Position + offset2, Map);
+                thing.TryGetComp<CompDockExtender>().dockParent = this;
 				extenders.Add(thing as Building);
 
-				if (dockedTo != null && (dockedTo?.Faction.HostileTo(Faction) ?? false))
-					thing = ThingMaker.MakeThing(ResourceBank.ThingDefOf.ShipAirlockBeamWallInert);
-				else
-					thing = ThingMaker.MakeThing(ResourceBank.ThingDefOf.ShipAirlockBeamWall);
-				GenSpawn.Spawn(thing, Second.Position + offset, Map);
-				thing.TryGetComp<CompDockExtender>().dockParent = this;
+                thing = ThingMaker.MakeThing(ResourceBank.ThingDefOf.ShipAirlockBeamTile);
+                GenSpawn.Spawn(thing, Second.Position + offset, Map);
+                thing.TryGetComp<CompDockExtender>().dockParent = this;
 				extenders.Add(thing as Building);
 			}
 			//set temp

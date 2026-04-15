@@ -1,16 +1,21 @@
-﻿using System;
+﻿using HarmonyLib;
+using PipeSystem;
+using RimWorld;
+using RimWorld.Planet;
+using SaveOurShip2.Vehicles;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Verse;
-using RimWorld;
-using RimWorld.Planet;
+using System.Text.RegularExpressions;
 using UnityEngine;
-using Verse.AI.Group;
 using Vehicles;
 using Vehicles.World;
-using SaveOurShip2.Vehicles;
+using Verse;
 using Verse.AI;
+using Verse.AI.Group;
+using Verse.Noise;
+using static HarmonyLib.Code;
 
 namespace SaveOurShip2
 {
@@ -71,21 +76,6 @@ namespace SaveOurShip2
 			}
 		}
 
-		public bool HasGravEngine
-        {
-			get
-            {
-				foreach(SpaceShipCache ship in ShipsOnMap.Values)
-                {
-					if (ship.HasGravEngine)
-                    {
-						return true;
-                    }
-                }
-				return false;
-            }
-        }
-
 		public ShipMapComp(Map map) : base(map)
 		{
 			grid = new int[map.cellIndices.NumGridCells];
@@ -108,7 +98,7 @@ namespace SaveOurShip2
 		public override void MapComponentUpdate()
 		{
 			base.MapComponentUpdate();
-			if (map.IsSpace() && Find.TickManager.TicksGame % 300 == 0)
+			if (map.IsSOS2Space() && Find.TickManager.TicksGame % 300 == 0)
 			{
 				roomOdysseyVents.Clear();
 			}
@@ -144,7 +134,7 @@ namespace SaveOurShip2
 			}
 			cachedNets = list;
 
-			if (map.IsSpace())
+			if (map.IsSOS2Space())
 			{
 				breathableZone = map.areaManager.AllAreas.FirstOrDefault(area => area.Label ==
 					TranslatorFormattedStringExtensions.Translate("SoS.Breathable")) as Area_Allowed;
@@ -273,10 +263,14 @@ namespace SaveOurShip2
 			Scribe_References.Look<Map>(ref MoveToMap, "MoveToMap");
 			Scribe_Values.Look<int>(ref MoveToTile, "MoveToTile");
 			Scribe_References.Look<Map>(ref PrevMap, "PrevMap");
-			Scribe_Values.Look<int>(ref PrevTile, "PrevTile");
+            Scribe_Deep.Look<SpaceShipCache>(ref Ship, "Ship");
+            Scribe_Values.Look<int>(ref PrevTile, "PrevTile");
 			Scribe_Values.Look<bool>(ref Takeoff, "Takeoff");
-			Scribe_Deep.Look<MapDodgeAbility>(ref dodgeAbility, "dodgeAbility");
-			if (dodgeAbility == null && Scribe.mode == LoadSaveMode.PostLoadInit)
+			Scribe_Values.Look<bool>(ref Hovering, "Hovering", false);
+            Scribe_Values.Look<bool>(ref Approaching, "Approaching", false);
+			Scribe_Values.Look<bool>(ref Crashing, "Crashing", false);
+            Scribe_Deep.Look<MapDodgeAbility>(ref dodgeAbility, "dodgeAbility");
+            if (dodgeAbility == null && Scribe.mode == LoadSaveMode.PostLoadInit)
 			{
 				dodgeAbility = new MapDodgeAbility();
 				dodgeAbility.map = map;
@@ -284,13 +278,12 @@ namespace SaveOurShip2
 
 			Scribe_Values.Look<ShipMapState>(ref ShipMapState, "ShipMapState", 0);
 			Scribe_Values.Look<bool>(ref EnginesOn, "ToggleEngines", false);
-			Scribe_Values.Look<float>(ref Altitude, "Altitude", 1000);
 			Scribe_Values.Look<int>(ref Heading, "Heading");
 			Scribe_Values.Look<int>(ref BurnTimer, "BurnTimer");
 			Scribe_Values.Look<int>(ref LastAttackTick, "LastShipBattleTick", 0);
 			Scribe_Values.Look<int>(ref LastBountyRaidTick, "LastBountyRaidTicks", 0);
 			Scribe_Collections.Look<Building_ShipAirlock>(ref Docked, "Docked", LookMode.Reference);
-			if (ShipMapState == ShipMapState.inCombat)
+            if (ShipMapState == ShipMapState.inCombat)
 			{
 				//SC only - both maps
 				targetMapComp = null;
@@ -353,8 +346,8 @@ namespace SaveOurShip2
 		public List<ShipCombatProjectile> TorpsInRange;
 		public List<VehiclePawn> ShuttlesInRange;
 		public Map ShipCombatOriginMap; //"player" map - initializes combat vars, runs all non duplicate code, AI
-		private ShipMapComp originMapComp;
-		public ThingOwner<VehiclePawn> ShuttlesOnMissions = new ThingOwner<VehiclePawn>();
+        private ShipMapComp originMapComp;
+        public ThingOwner<VehiclePawn> ShuttlesOnMissions = new ThingOwner<VehiclePawn>();
 		public List<ShuttleMissionData> ShuttleMissions = new List<ShuttleMissionData>();
 		public ShipMapComp OriginMapComp
 		{
@@ -447,9 +440,12 @@ namespace SaveOurShip2
 		public Map PrevMap; //on takeoff, fallback to MoveToMap
 		public int PrevTile; //on takeoff, fallback to MoveToTile
 		public bool Takeoff; //started from planet
-		public float Altitude = ShipInteriorMod2.altitudeNominal;
 		public int Heading; //in combat: +closer, -apart, OOC: +up, 0down, -forcedown
-		public bool IsGraveOriginInCombat
+        public SpaceShipCache Ship;
+		public bool Hovering = false;
+        public bool Approaching = false;
+		public bool Crashing = false;
+        public bool IsGraveOriginInCombat
 		{
 			get
 			{
@@ -518,14 +514,25 @@ namespace SaveOurShip2
 			fuel = 0;
 			foreach (SpaceShipCache ship in ShipsOnMap.Values)
 			{
-				foreach (CompEngineTrail engine in ship.Engines.Where(e => e.FuelUse > 0))
+                List<PipeNet> lastPipeNets = new List<PipeNet>();
+                foreach (CompEngineTrail engine in ship.Engines.Where(e => e.FuelUse > 0))
 				{
 					fuel += engine.refuelComp.Fuel;
 					if (engine.PodFueled)
 						fuel += engine.refuelComp.Fuel;
-					engines.Add(engine);
-				}
-				foreach (CompShipBay bay in ship.Bays.Where(t => t is CompShipBaySalvage))
+                    CompRefillWithPipes pipeComp = engine.parent.TryGetComp<CompRefillWithPipes>();
+                    if (pipeComp != null)
+                    {
+                        if (lastPipeNets.Contains(pipeComp.PipeNet))
+                        {
+                            continue;
+                        }
+                        fuel += pipeComp.PipeNet.CurrentStored();
+                        lastPipeNets.Add(pipeComp.PipeNet);
+                    }
+                    engines.Add(engine);
+                }
+                foreach (CompShipBay bay in ship.Bays.Where(t => t is CompShipBaySalvage))
 				{
 					maxMass += ((CompShipBaySalvage)bay).SalvageWeight;
 				}
@@ -567,6 +574,56 @@ namespace SaveOurShip2
 
         public IThingHolder ParentHolder => map;
 
+        public void StartTransit()
+        {
+			ShipMapState = ShipMapState.inTransit;
+			mapParent.StopMoving();
+            EnginesOn = true;
+            mapParent.movingDrawPos = true;
+        }
+        public void CrashToGround()
+        {
+			if (mapParent.targetDrawPos != mapParent.groundPos)
+			{
+                MapFullStop();
+                ShipMapState = ShipMapState.inTransit;
+                Crashing = true;
+                mapParent.outputLevel = 2;
+                mapParent.GetGroundSpacePos(mapParent.drawPos);
+                mapParent.targetDrawPos = mapParent.groundPos;
+            }
+        }
+        public void UpToOrbit()
+        {
+			if (Hovering)
+			{
+				if (mapParent.targetDrawPos != mapParent.hoverPos)
+				{
+                    mapParent.GetGroundSpacePos(mapParent.drawPos);
+                    mapParent.targetDrawPos = mapParent.hoverPos;
+                }
+            }
+            else
+			{
+				if (mapParent.targetDrawPos != mapParent.spacePos)
+				{
+                    mapParent.GetGroundSpacePos(mapParent.drawPos);
+                    mapParent.targetDrawPos = mapParent.spacePos;
+                }
+            }
+			Crashing = false;
+        }
+        public bool OrbitReatched()
+        {
+            if (Hovering)
+            {
+				return mapParent.targetDrawPos == mapParent.hoverPos;
+            }
+            else
+            {
+                return mapParent.targetDrawPos == mapParent.spacePos;
+            }
+        }
         public void ResetCache()
 		{
 			foreach (IntVec3 vec in MapShipCells.Keys.ToList())
@@ -705,7 +762,7 @@ namespace SaveOurShip2
 				List<IntVec3> current = cellsTodo.ToList();
 				foreach (IntVec3 vec in current) //do all of the current corePath
 				{
-					MapShipCells[vec] = new Tuple<int, int>(mergeToIndex, path); //assign new index, corepath
+                    MapShipCells[vec] = new Tuple<int, int>(mergeToIndex, path); //assign new index, corepath
 					foreach (Thing t in vec.GetThingList(map))
 					{
 						if (t is Building b)
@@ -741,6 +798,7 @@ namespace SaveOurShip2
 		}
 		public int ShipIndexOnVec(IntVec3 vec) //return index if ship on cell, else return -1
 		{
+			//Log.Message("ShipIndexOnVec: " + vec);
 			if (MapShipCells.ContainsKey(vec))
 			{
 				int index = MapShipCells[vec].Item1;
@@ -764,43 +822,8 @@ namespace SaveOurShip2
 		public bool VecHasLS(IntVec3 vec)
 		{
 			int shipIndex = ShipIndexOnVec(vec);
-			if ((shipIndex > 0 && ShipsOnMap[shipIndex].LifeSupports.Any(s => s.active)) || MapExtenderCells.Contains(vec))
+			if ((shipIndex > 0 && vec.GetVacuum(map) < 0.5f) || MapExtenderCells.Contains(vec))
 				return true;
-			Room room = vec.GetRoom(map);
-			if (room != null && ModsConfig.OdysseyActive)
-			{
-				if (!roomOdysseyVents.ContainsKey(room))
-				{
-					bool conatinsPump = room.ContainedAndAdjacentThings.Any(t => t.def.defName == "OxygenPump");
-					roomOdysseyVents.Add(room, conatinsPump);
-				}
-				if (roomOdysseyVents[room])
-				{
-					return true;
-				}
-			}
-			else
-			{
-				return false;
-			}
-			//LS if roofed room with thick rock roof and facing in vent that is attached to LS
-			if (vec.Roofed(map) && vec.GetRoof(map) == RoofDefOf.RoofRockThick)
-			{
-				if (!ShipInteriorMod2.ExposedToOutside(room))
-					return false;
-				foreach (IntVec3 v in room.BorderCells)
-				{
-					foreach (Thing t in v.GetThingList(map))
-					{
-						if (t is Building_ShipVent b)
-						{
-							shipIndex = ShipIndexOnVec(b.Position);
-							if (shipIndex > 0 && ShipsOnMap[shipIndex].LifeSupports.Any(s => s.active) && room.ContainsCell(b.ventTo))
-								return true;
-						}
-					}
-				}
-			}
 			return false;
 		}
 		public bool CanClaimNow(Faction faction, bool countDormantPawnsAsHostile = false, bool canBeFogged = false)
@@ -953,7 +976,7 @@ namespace SaveOurShip2
 			bool shieldsActive = true;
 			bool isDerelict = false;
 			float CR = 0;
-			float radius = 150f;
+			float radius = ShipInteriorMod2.spaceRadius;
 			float theta = ((WorldObjectOrbitingShip)ShipCombatOriginMap.Parent).Theta;
 			float phi = ((WorldObjectOrbitingShip)ShipCombatOriginMap.Parent).Phi;
 			float thetaOffsetScale = 1;
@@ -1283,7 +1306,7 @@ namespace SaveOurShip2
 				}
 				Log.Message("SOS2: ".Colorize(Color.cyan) + map + " Removed " + shipToRemove.Count + " ships. Remaining: " + ShipsOnMap.Count);
 			}
-			if (!map.IsSpace())
+			if (!map.IsSOS2Space())
 				return;
 
 			int tick = Find.TickManager.TicksGame;
@@ -1663,49 +1686,11 @@ namespace SaveOurShip2
 			}
 			else if (ShipMapState == ShipMapState.inTransit) //altitude - 0 at max or min only
 			{
-				if (MapEnginePower > 0)
-				{
-					float transitionSpeed = 0.1f;
-					if (ModsConfig.OdysseyActive)
-                    {
-						// Faster transition for map hopping playstyle when takeof and landing happens rather often
-						// vs "classic" playsyle of launching to orbit once in a playthrough an then doing everything on space map
-						const float transitionScale = 1.6f;
-						transitionSpeed *= transitionScale;
-						if (HasGravEngine)
-                        {
-							// Even faster takeoff with Grav engine
-							transitionSpeed *= transitionScale;
-						}
-                    }
-					if (Heading > 0) //ascend
-					{
-						Altitude += transitionSpeed * MapEnginePower;
-					}
-					else if (Heading < 0) //descend
-					{
-						Altitude -= transitionSpeed * MapEnginePower;
-					}
-				}
-				else if (Altitude > ShipInteriorMod2.altitudeLand) //descend unless in stable or startup altitude
-				{
-					Altitude -= 0.2f;
-				}
-				if (tick % 2 == 0 && ShipInteriorMod2.WorldComp.renderedThatAlready == true)
-					ShipInteriorMod2.WorldComp.renderedThatAlready = false;
-				//move WO
-				//max 1000 = 150, min 130 = 100
-				float ratio = (Altitude - ShipInteriorMod2.altitudeLand) / (ShipInteriorMod2.altitudeNominal - ShipInteriorMod2.altitudeLand);
-				if (!Takeoff) //reverse scaling - altitude always points up
-				{
-					ratio = 1 - ratio;
-				}
-				//vec to target - vec to origin, scale by altitude
-				//td get a math wizard to make this a curve and point it at equator orbit or around planet to ground
-				Vector3 d = mapParent.targetDrawPos - mapParent.originDrawPos;
-				mapParent.drawPos = mapParent.originDrawPos + new Vector3(d.x * ratio, d.y * ratio, d.z * ratio);
-			}
-			if (callSlowTick) //origin only: call both slow ticks
+                float moveSpeed = ShipInteriorMod2.ShipMoveSpeed(this, mapParent.OutputLevel) * 100f;
+                Vector3 d = mapParent.targetDrawPos - mapParent.drawPos;
+                mapParent.drawPos = mapParent.drawPos + (d.normalized * moveSpeed);
+            }
+            if (callSlowTick) //origin only: call both slow ticks
 			{
 				SlowTick(tick);
 				TargetMapComp.SlowTick(tick);
@@ -2172,111 +2157,116 @@ namespace SaveOurShip2
 			 * in orbit on spacehome with other ships: move to transit map via (MinifiedThingShipMove) and transit to ground, at destination attempt auto move to placeworker, if fail make new map and land on it
 			 all vars are stored in this except WO drawPos (current, target, origin)
 			*/
-			if (Altitude >= ShipInteriorMod2.altitudeNominal) //orbit reached
+			if (ShipInteriorMod2.LaunchShipFlag && Ship != null)
 			{
-				Altitude = ShipInteriorMod2.altitudeNominal;
-				MapFullStop();
-				BurnTimer = 0;
-				Map spacehome = ShipInteriorMod2.FindPlayerShipMap();
-				if (spacehome == null) //spacehome is gone, make new
+				ShipInteriorMod2.PlaceShip(Ship, map, map.Center, false);
+                //map.weatherManager.TransitionTo(ResourceBank.WeatherDefOf.OuterSpaceWeather);
+				//CameraJumper.TryJump(map.Center, map);
+				return;
+            }
+
+            if (EnginesOn && mapParent.OutputLevel != 1 && mapParent.InSlowDown)
+            {
+                mapParent.outputLevel = 1;
+				if (MoveToMap != null && Approaching)
 				{
-					spacehome = ShipInteriorMod2.GeneratePlayerShipMap(map.Size);
-				}
-				if (map != spacehome) //arriving from temp map
-				{
-					if (ShipInteriorMod2.CanShipLandOnMap(map, MoveToMap)) //landing area clear
-					{
-						ShipInteriorMod2.MoveShip(ShipsOnMap.Values.First().Core, MoveToMap, MoveToVec);
-						if (MapShipCells.NullOrEmpty() && !map.PlayerPawnsForStoryteller.Any())
+                    ShipInteriorMod2.ArriveShipFlag = true;
+                    ((Precept_Ritual)Faction.OfPlayer.ideos.GetPrecept(PreceptDefOf.GravshipLaunch)).ShowRitualBeginWindow(ShipsOnMap.Values.First().Core);
+                }
+                Messages.Message("SoS.SpeedDownForLanding".Translate(), MessageTypeDefOf.NeutralEvent);
+            }
+
+            if (Vector3.Distance(mapParent.targetDrawPos, mapParent.DrawPos) <= 0.5f)
+			{
+                if (!Approaching && !Crashing && OrbitReatched()) //orbit reached
+                {
+                    MapFullStop();
+                    BurnTimer = 0;
+                    Map spacehome = ShipInteriorMod2.FindPlayerShipMap();
+                    if (spacehome == null) //spacehome is gone, make new
+                    {
+                        spacehome = ShipInteriorMod2.GeneratePlayerShipMap(map.Size);
+                    }
+                    if (map != spacehome) //arriving from temp map
+                    {
+                        if (ShipInteriorMod2.CanShipLandOnMap(map, MoveToMap)) //landing area clear
+                        {
+                            ShipInteriorMod2.PlaceShip(ShipsOnMap.Values.First(), MoveToMap, MoveToVec, false);
+                            if (MapShipCells.NullOrEmpty() && !map.PlayerPawnsForStoryteller.Any())
+                            {
+                                ShipMapState = ShipMapState.burnUpSet; //remove transit map if clear
+                                return;
+                            }
+                        }
+                        else //blocked
+                        {
+                            //td message ready to move
+                            Find.LetterStack.ReceiveLetter(TranslatorFormattedStringExtensions.Translate("SoS.OrbitAchieved"), TranslatorFormattedStringExtensions.Translate("SoS.OrbitAchievedDesc"), LetterDefOf.PositiveEvent);
+                        }
+                        ShipMapState = ShipMapState.isGraveyard;
+                        map.Parent.GetComponent<TimedForcedExitShip>().StartForceExitAndRemoveMapCountdown(10000);
+                    }
+                    else //arriving on spacehome
+                    {
+                        mapParent.Radius = Hovering ? ShipInteriorMod2.hoverRadius : ShipInteriorMod2.spaceRadius;
+                        ShipMapState = ShipMapState.nominal;
+                        Find.LetterStack.ReceiveLetter(TranslatorFormattedStringExtensions.Translate("SoS.OrbitAchieved"), TranslatorFormattedStringExtensions.Translate("SoS.OrbitAchievedDesc"), LetterDefOf.PositiveEvent);
+                    }
+                    mapParent.movingDrawPos = false;
+                }
+                else if (Approaching || Crashing) //ground reached or fail to start engines in time - land/crash
+                {
+                    SpaceShipCache ship = ShipsOnMap.Values.First();
+                    if (Takeoff) //fell from space
+                    {
+                        MoveToTile = ShipInteriorMod2.FindBestTileNearestShip(mapParent, out var map);
+                        if (map != null)
 						{
-							ShipMapState = ShipMapState.burnUpSet; //remove transit map if clear
-							return;
+							MoveToMap = map;
 						}
-					}
-					else //blocked
-					{
-						//td message ready to move
-						Find.LetterStack.ReceiveLetter(TranslatorFormattedStringExtensions.Translate("SoS.OrbitAchieved"), TranslatorFormattedStringExtensions.Translate("SoS.OrbitAchievedDesc"), LetterDefOf.PositiveEvent);
-					}
-					ShipMapState = ShipMapState.isGraveyard;
-					map.Parent.GetComponent<TimedForcedExitShip>().StartForceExitAndRemoveMapCountdown(10000);
-				}
-				else //arriving on spacehome
-				{
-					((WorldObjectOrbitingShip)map.Parent).SetNominalPos();
-					ShipMapState = ShipMapState.nominal;
-					Find.LetterStack.ReceiveLetter(TranslatorFormattedStringExtensions.Translate("SoS.OrbitAchieved"), TranslatorFormattedStringExtensions.Translate("SoS.OrbitAchievedDesc"), LetterDefOf.PositiveEvent);
-				}
-			}
-			else if (Altitude <= ShipInteriorMod2.altitudeLand && (Heading < 1 || !EnginesOn && BurnTimer > tick + 300)) //ground reached or fail to start engines in time - land/crash
-			{
-				Altitude = ShipInteriorMod2.altitudeLand;
-				MapFullStop();
-				BurnTimer = 0;
-				int targetTile = -1;
+                    }
 
-				if (Takeoff) //fell from space
-				{
-					if (PrevMap == null) //takeoff map was closed
-						MoveToTile = PrevTile;
-					else
-						MoveToMap = PrevMap;
-				}
+                    if (MoveToMap != null/* && Approaching*/) //ground map exists
+                    {
+                        MapFullStop();
+                        BurnTimer = 0;
+                        ShipInteriorMod2.PlaceShip(ship, MoveToMap, IntVec3.Zero, true);
+                    }
+                    else/* if (crashing)*/
+                    {
+                        MapFullStop();
+                        BurnTimer = 0;
+                        if (MoveToTile != -1)
+                        {
+                            SettleUtility.AddNewHome(MoveToTile, Faction.OfPlayer); //td change this to landed ship
+                            var newMapPar = GetOrGenerateMapUtility.GetOrGenerateMap(MoveToTile, map.Size, null).Parent;
+                            ((Settlement)newMapPar).Name = "Landed ship";
+                            ShipInteriorMod2.PlaceShip(ship, newMapPar.Map, IntVec3.Zero, true);
+                        }
+                        else //td ship gone, pawns spawn like vanilla on random nearby map via pods
+                        {
+                            ShipMapState = ShipMapState.burnUpSet;
+                        }
+                    }
+                    mapParent.movingDrawPos = false;
+                    Crashing = false;
+                    Approaching = false;
+                    ShipInteriorMod2.ArriveShipFlag = true;
+                }
+                else
+                {
+					Log.Warning("Exception: Arriving failed");
+                }
+            }
+            //else if (EnginesOn && Heading < 0 && mapParent.drawPos.y < ShipInteriorMod2.altitudeNominal - 50) //end first burn down
+            //{
+            //	Log.Message("first burn done");
+            //	MapFullStop();
+            //}
+        }
 
-				if (MoveToMap != null) //ground map exists
-				{
-					ShipInteriorMod2.MoveShip(ShipsOnMap.Values.First().Core, MoveToMap, MoveToVec);
-				}
-				else //moveto map was closed or no room
-				{
-					targetTile = MoveToTile;
-					PlanetTile tile = -1;
-					List<PlanetTile> tiles = ShipInteriorMod2.PossibleShipLandingTiles(targetTile, 2, 5);
-					if (!tiles.NullOrEmpty())
-						tile = tiles.RandomElement();
-					else
-					{
-						tiles = ShipInteriorMod2.PossibleShipLandingTiles(targetTile, 5, 20);
-						if (!tiles.NullOrEmpty())
-							tile = tiles.RandomElement();
-					}
-					if (tile != -1)
-					{
-						SettleUtility.AddNewHome(tile, Faction.OfPlayer); //td change this to landed ship
-						var newMapPar = GetOrGenerateMapUtility.GetOrGenerateMap(tile, map.Size, null).Parent;
-						((Settlement)newMapPar).Name = "Landed ship";
-						ShipInteriorMod2.MoveShip(ShipsOnMap.Values.First().Core, newMapPar.Map, IntVec3.Zero, clearArea: true);
-					}
-					else //td ship gone, pawns spawn like vanilla on random nearby map via pods
-					{
-						ShipMapState = ShipMapState.burnUpSet;
-					}
-				}
-			}
-			else if (EnginesOn && Heading < 0 && Altitude < ShipInteriorMod2.altitudeNominal - 50) //end first burn down
-			{
-				Log.Message("first burn done");
-				MapFullStop();
-			}
-
-			if (Heading > 0) //consume fuel, if not enough engine power, lose altitude
-			{
-				//reduce durration per engine vs mass
-				if (AnyShipCanMove() && EnginesOn) //can we move and should we move
-				{
-					MapEnginesOn();
-					MapEnginePower *= 400f;
-				}
-				else
-				{
-					MapFullStop();
-				}
-			}
-			KillAllOffShip();
-		}
-
-		// Done during slow tick
-		private void FleckRCS()
+        // Done during slow tick
+        private void FleckRCS()
 		{
 			if (dodgeAbility.IsActive() && dodgeAbility.NeedThrowFlecks())
 			{
@@ -2295,7 +2285,7 @@ namespace SaveOurShip2
 		private void InvalidateHeadgearCache(int tick)
         {
 			// Invalidate caches related to DrawHelmetsInUnbreathable Harmony patch
-			if (Find.CurrentMap == map && map.IsSpace())
+			if (Find.CurrentMap == map && map.IsSOS2Space())
 			{
 				// Wait intervals are really big in order to have minimal performance impact
 				// Intended casee to cover is player starter ship or some ship in player fleet not having life support for days
@@ -2432,16 +2422,30 @@ namespace SaveOurShip2
 		{
 			List<Pawn> pawns = new List<Pawn>();
 			HashSet<Thing> things = new HashSet<Thing>();
-			foreach (IntVec3 v in map.AllCells.Except(MapShipCells.Keys)) //kill anything off ship
+            HashSet<Building> attatchments = new HashSet<Building>();
+            foreach (IntVec3 v in map.AllCells.Except(MapShipCells.Keys)) //kill anything off ship
 			{
 				foreach (Thing t in v.GetThingList(map))
 				{
 					if (t is Pawn p)
-						pawns.Add(p);
-					things.Add(t);
-				}
+					{
+                        pawns.Add(p);
+                    }
+                    else if (t is Building building && building.def.building.isAttachment)
+					{
+						attatchments.Add(building);
+					}
+					else
+					{
+                        things.Add(t);
+                    }
+                }
 			}
-			foreach (Thing t in things)
+            foreach (Building t in attatchments)
+            {
+                t.Destroy();
+            }
+            foreach (Thing t in things)
 			{
 				t.Destroy();
 			}
@@ -2501,11 +2505,11 @@ namespace SaveOurShip2
 			float minThrustRatio = float.MaxValue;
 			foreach (SpaceShipCache ship in ShipsOnMap.Values)
 			{
-				if (ship.BuildingCount < 5 && ship.ThrustRatio == 0)
+				if (ship.BuildingCount < 5 && ship.CurrentThrustRatio == 0)
 					continue;
 				if (!ship.CanMove())
 					return 0;
-				float currenThrustRatio = ship.ThrustRatio;
+				float currenThrustRatio = ship.CurrentThrustRatio;
 				if (currenThrustRatio == 0)
 					return 0;
 				if (currenThrustRatio < minThrustRatio)
@@ -2581,7 +2585,7 @@ namespace SaveOurShip2
 						t.Destroy();
 					}
 				}
-				ShipInteriorMod2.MoveShip(core, ShipGraveyard, IntVec3.Zero);
+				ShipInteriorMod2.PlaceShip(ship, ShipGraveyard, IntVec3.Zero, false);
 			}
 			Log.Warning("SOS2: ".Colorize(Color.cyan) + map + " Ships remaining: " + ShipsOnMap.Count);
 			foreach (SpaceShipCache s in ShipsOnMap.Values)

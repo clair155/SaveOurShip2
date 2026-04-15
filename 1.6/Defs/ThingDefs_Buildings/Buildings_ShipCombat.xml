@@ -2187,7 +2187,6 @@
 				</affectedDamageDefs>
 			</li>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
-				<hermetic>true</hermetic>
 			</li>
 			<li Class="SaveOurShip2.CompProps_SpinalMount">
 				<emits>false</emits>
@@ -2298,7 +2297,6 @@
 				</affectedDamageDefs>
 			</li>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
-				<hermetic>true</hermetic>
 			</li>
 			<li Class="SaveOurShip2.CompProps_SpinalMount">
 				<emits>false</emits>
@@ -2429,7 +2427,6 @@
 				</affectedDamageDefs>
 			</li>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
-				<hermetic>true</hermetic>
 			</li>
 			<li Class="SaveOurShip2.CompProps_SpinalMount">
 				<emits>false</emits>

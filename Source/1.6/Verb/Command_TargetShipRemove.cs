@@ -28,7 +28,7 @@ namespace SaveOurShip2
 		}
 		public void AfterTarget(IntVec3 c)
 		{
-			if (c == IntVec3.Invalid || IntVec3.Zero.GetTerrain(targetMap) != ResourceBank.TerrainDefOf.EmptySpace) //moon
+			if (c == IntVec3.Invalid || IntVec3.Zero.GetTerrain(targetMap) != TerrainDefOf.Space) //moon
 				return;
 
 			var mapComp = targetMap.GetComponent<ShipMapComp>();

@@ -25,11 +25,28 @@ namespace SaveOurShip2
 		{
 			get { return props as CompProps_EngineTrail; }
 		}
-		public virtual int FuelUse
+		public virtual float FuelUse
 		{
             get
             {
-                return Props.fuelUse;
+                float fuelFactor = 1f;
+                float ratio = 1f;
+                if (parent.Map?.Parent is WorldObjectOrbitingShip wo)
+				{
+					if (wo.movingDrawPos)
+					{
+                        ShipInteriorMod2.EngineConsumption(wo.OutputLevel, out fuelFactor);
+					}
+					else
+					{
+                        ShipInteriorMod2.EngineConsumption(0, out fuelFactor);
+                    }
+                    if (ship != null)
+					{
+                        ratio = ship.CurrentThrustRatio;
+                    }
+                }
+                return Props.fuelUse * fuelFactor / ratio;
             }
         }
 		public virtual int Thrust
@@ -58,7 +75,8 @@ namespace SaveOurShip2
 		public CompFlickable flickComp;
 		public CompRefuelable refuelComp;
 		public CompPowerTrader powerComp;
-		Sustainer sustainer;
+        public SpaceShipCache ship;
+        Sustainer sustainer;
 
 		public virtual bool CanFire()
 		{
@@ -69,7 +87,7 @@ namespace SaveOurShip2
 					if (powerComp.PowerOn)
 						if (refuelComp != null)
 						{
-							return refuelComp.Fuel > FuelUse;
+							return refuelComp.Fuel != 0;
 						}
 						else
 						{
@@ -80,7 +98,7 @@ namespace SaveOurShip2
 				{
 					return true;
 				}
-				else if (refuelComp.Fuel > FuelUse)
+				else if (refuelComp.Fuel != 0)
 				{
 					return true;
 				}
@@ -97,7 +115,7 @@ namespace SaveOurShip2
 					{
 						if (refuelComp != null)
 						{
-							return refuelComp.Fuel > FuelUse;
+							return refuelComp.Fuel != 0;
 						}
 						else
 						{
@@ -111,7 +129,7 @@ namespace SaveOurShip2
 					{
 						return true;
 					}
-					else if (refuelComp.Fuel > FuelUse)
+					else if (refuelComp.Fuel != 0)
 					{
 						return true;
 					}
@@ -166,7 +184,7 @@ namespace SaveOurShip2
 			refuelComp = parent.TryGetComp<CompRefuelable>();
 			powerComp = parent.TryGetComp<CompPowerTrader>();
 			mapComp = parent.Map.GetComponent<ShipMapComp>();
-			size = parent.def.size.x;
+            size = parent.def.size.x;
 			if (Props.reactionless)
 				return;
 			ExhaustArea.Clear();
@@ -177,7 +195,7 @@ namespace SaveOurShip2
 				ExhaustArea.Add(v);
 			}
 		}
-		public override void PostDeSpawn(Map map, DestroyMode mode = DestroyMode.Vanish)
+        public override void PostDeSpawn(Map map, DestroyMode mode = DestroyMode.Vanish)
 		{
 			var mapComp = map.GetComponent<ShipMapComp>();
 			if (mapComp.ShipsOnMap.Values.Any(s => !s.IsWreck && s.Engines.Any()))

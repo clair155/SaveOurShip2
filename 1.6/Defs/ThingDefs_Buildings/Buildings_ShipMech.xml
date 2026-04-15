@@ -40,7 +40,6 @@
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
 				<isHull>true</isHull>
-				<hermetic>true</hermetic>
 				<mechanoid>true</mechanoid>
 				<roof>true</roof>
 			</li>
@@ -98,7 +97,6 @@
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
 				<isHull>true</isHull>
-				<hermetic>true</hermetic>
 				<mechanoid>true</mechanoid>
 				<roof>true</roof>
 			</li>
@@ -133,7 +131,6 @@
 		<description>Angled armor for a ship's outer hull.</description>
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
-				<hermetic>true</hermetic>
 			</li>
 			<li>
 				<compClass>CompColorable</compClass>
@@ -280,7 +277,6 @@
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
 				<isHull>true</isHull>
-				<hermetic>true</hermetic>
 				<mechanoid>true</mechanoid>
 				<roof>true</roof>
 			</li>
@@ -367,7 +363,6 @@
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
 				<isHull>true</isHull>
-				<hermetic>true</hermetic>
 				<mechanoid>true</mechanoid>
 				<roof>true</roof>
 			</li>
@@ -436,7 +431,6 @@
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
 				<isHull>true</isHull>
 				<isPlating>true</isPlating>
-				<hermetic>true</hermetic>
 				<mechanoid>true</mechanoid>
 				<roof>true</roof>
 			</li>
@@ -540,7 +534,6 @@
 		<comps>
 			<li Class="SaveOurShip2.CompProps_ShipCachePart">
 				<isPlating>true</isPlating>
-				<hermetic>true</hermetic>
 				<mechanoid>true</mechanoid>
 				<roof>true</roof>
 			</li>

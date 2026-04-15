@@ -50,13 +50,13 @@
 			<li>
 				<key>D</key>
 				<value>
-					<shapeOrDef>Apparel_SpaceSuitHelmet</shapeOrDef>
+					<shapeOrDef>Apparel_VacsuitHelmet</shapeOrDef>
 				</value>
 			</li>
 			<li>
 				<key>E</key>
 				<value>
-					<shapeOrDef>Apparel_SpaceSuitBodyHeavy</shapeOrDef>
+					<shapeOrDef>Apparel_Vacsuit</shapeOrDef>
 				</value>
 			</li>
 			<li>

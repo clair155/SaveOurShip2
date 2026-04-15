@@ -40,55 +40,7 @@
 						</value>
 					</match>
 				</li>
-
-				<!-- Warcasket DecompressionResistance -->
-				<li Class="PatchOperationConditional">
-					<xpath>Defs/VFEPirates.WarcasketDef[@Name="VFEP_WarcasketArmorBase"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
-					<match Class="PatchOperationAdd">
-						<xpath>Defs/VFEPirates.WarcasketDef[@Name="VFEP_WarcasketArmorBase"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
-						<value>
-							<DecompressionResistance>0.75</DecompressionResistance>
-						</value>
-					</match>
-				</li>
-
-				<!-- Warcasket Helmet DecompressionResistance -->
-				<li Class="PatchOperationConditional">
-					<xpath>Defs/VFEPirates.WarcasketDef[@Name="VFEP_WarcasketHelmetBase"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
-					<match Class="PatchOperationAdd">
-						<xpath>Defs/VFEPirates.WarcasketDef[@Name="VFEP_WarcasketHelmetBase"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
-						<value>
-							<DecompressionResistance>0.25</DecompressionResistance>
-						</value>
-					</match>
-				</li>
-
-				<!-- Warcasket Helmet HypoxiaResistance -->
-				<li Class="PatchOperationConditional">
-					<xpath>Defs/VFEPirates.WarcasketDef[@Name="VFEP_WarcasketHelmetBase"]/equippedStatOffsets[not(HypoxiaResistance)]</xpath>
-					<match Class="PatchOperationAdd">
-						<xpath>Defs/VFEPirates.WarcasketDef[@Name="VFEP_WarcasketHelmetBase"]/equippedStatOffsets[not(HypoxiaResistance)]</xpath>
-						<value>
-							<HypoxiaResistance>1</HypoxiaResistance>
-						</value>
-					</match>
-				</li>
 			</operations>
-		</match>
-	</Operation>
-
-	<!-- Starjack Vacuum Resistance Gene -->
-	
-	<Operation Class="PatchOperationFindMod">
-		<mods>
-			<li>Vanilla Races Expanded - Starjack</li>
-		</mods>
-		<match Class="PatchOperationAdd">
-			<xpath>Defs/GeneDef[defName="VREStarjack_VacuumResistance_Total"]/statOffsets</xpath>
-					<value>
-						<HypoxiaResistance>1</HypoxiaResistance>
-						<DecompressionResistance>1</DecompressionResistance>
-					</value>
 		</match>
 	</Operation>
 	
@@ -112,42 +64,6 @@
 			<xpath>Defs/HediffDef[defName="SoSArchotechLung"]/stages/li/statOffsets</xpath>
 			<value>
 				<ToxicEnvironmentResistance MayRequire="Ludeon.RimWorld.Biotech">0.5</ToxicEnvironmentResistance>
-			</value>
-		</nomatch>
-	</Operation>
-
-	<Operation Class="PatchOperationFindMod">
-		<mods>
-			<li>Combat Extended</li>
-		</mods>
-		<nomatch Class="PatchOperationAdd">
-			<xpath>Defs/ThingDef[defName="Apparel_SpaceSuitHelmet"]/apparel</xpath>
-			<value>
-				<immuneToToxGasExposure>true</immuneToToxGasExposure>
-			</value>
-		</nomatch>
-	</Operation>
-	
-	<Operation Class="PatchOperationFindMod">
-		<mods>
-			<li>Combat Extended</li>
-		</mods>
-		<nomatch Class="PatchOperationAdd">
-			<xpath>Defs/ThingDef[defName="Apparel_SpaceSuitHelmetChild"]/apparel</xpath>
-			<value>
-				<immuneToToxGasExposure>true</immuneToToxGasExposure>
-			</value>
-		</nomatch>
-	</Operation>
-	
-	<Operation Class="PatchOperationFindMod">
-		<mods>
-			<li>Combat Extended</li>
-		</mods>
-		<nomatch Class="PatchOperationAdd">
-			<xpath>Defs/ThingDef[defName="Apparel_SpaceSuitHelmetHeavy"]/apparel</xpath>
-			<value>
-				<immuneToToxGasExposure>true</immuneToToxGasExposure>
 			</value>
 		</nomatch>
 	</Operation>

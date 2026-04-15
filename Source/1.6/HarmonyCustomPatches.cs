@@ -79,7 +79,7 @@ namespace SaveOurShip2
 		private static Map traderDialogMap = null;
 		public static bool CallOrbitalTraderDialogOptionPrefix()
 		{
-			if (traderDialogMap != null && traderDialogMap.IsSpace())
+			if (traderDialogMap != null && traderDialogMap.IsSOS2Space())
 			{
 				cleaningShipsInOdysseyDialog = true;
 			}

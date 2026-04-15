@@ -116,7 +116,7 @@ namespace SaveOurShip2
 
 			if (!parent.def.building.shipPart) //add other parts
 			{
-				if (mapComp.CacheOff || ShipInteriorMod2.MoveShipFlag)
+				if (mapComp.CacheOff || parent.BeingTransportedOnGravship)
 					return;
 				foreach (IntVec3 vec in cellsUnder) //if any part spawned on ship
 				{
@@ -137,7 +137,7 @@ namespace SaveOurShip2
 			isWreckTile = parent.def == ResourceBank.ThingDefOf.ShipHullTileWrecked;
 			if (!respawningAfterLoad && Props.AnyPart)
 			{
-				if (!ShipInteriorMod2.MoveShipFlag)
+				if (!parent.BeingTransportedOnGravship)
 				{
 					foreach (IntVec3 v in cellsUnder) //clear floor on construction
 					{
@@ -149,7 +149,7 @@ namespace SaveOurShip2
 					SetShipTerrain(v);
 				}
 			}
-			if (ShipInteriorMod2.MoveShipFlag) //MoveShip - cache is off, dont make roof or floor
+			if (parent.BeingTransportedOnGravship) //MoveShip - cache is off, dont make roof or floor
 			{
 				return;
 			}
@@ -158,7 +158,7 @@ namespace SaveOurShip2
 				foreach (IntVec3 pos in cellsUnder) //set roof
 				{
 					var oldRoof = map.roofGrid.RoofAt(pos);
-					if (!ShipInteriorMod2.IsRoofDefAirtight(oldRoof) && Props.hermetic)
+					if (!ShipInteriorMod2.IsRoofDefAirtight(oldRoof))
 						map.roofGrid.SetRoof(pos, ResourceBank.RoofDefOf.RoofShip);
 					else
 						map.roofGrid.SetRoof(pos, RoofDefOf.RoofConstructed);
@@ -214,12 +214,12 @@ namespace SaveOurShip2
 		public void PreDeSpawn(DestroyMode mode) //called in building.destroy, before comps get removed
 		{
 			//Log.Warning("despawn " + parent);
-			if (ShipInteriorMod2.MoveShipFlag) //disable on moveship, detach destruction
+			if (parent.BeingTransportedOnGravship) //disable on moveship, detach destruction
 				return;
 
 			if (!parent.def.building.shipPart) //remove other parts
 			{
-				if (mapComp.CacheOff || ShipInteriorMod2.MoveShipFlag)
+				if (mapComp.CacheOff)
 					return;
 				foreach (IntVec3 vec in cellsUnder) //if any part was on ship remove it from cache
 				{

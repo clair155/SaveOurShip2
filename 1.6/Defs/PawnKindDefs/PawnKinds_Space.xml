@@ -12,8 +12,8 @@
 		<backstoryCryptosleepCommonality>1</backstoryCryptosleepCommonality>
 		<chemicalAddictionChance>0.08</chemicalAddictionChance>
 		<apparelRequired>
-			<li>Apparel_SpaceSuitHelmet</li>
-			<li>Apparel_SpaceSuitBody</li>
+			<li>Apparel_VacsuitHelmet</li>
+			<li>Apparel_Vacsuit</li>
 		</apparelRequired>
 		<forceNormalGearQuality>true</forceNormalGearQuality>
 		<apparelIgnoreSeasons>true</apparelIgnoreSeasons>
@@ -100,8 +100,8 @@
 			<li>IndustrialMilitaryAdvanced</li>
 		</apparelTags>
 		<apparelRequired>
-			<li>Apparel_SpaceSuitHelmet</li>
-			<li>Apparel_SpaceSuitBody</li>
+			<li>Apparel_VacsuitHelmet</li>
+			<li>Apparel_Vacsuit</li>
 		</apparelRequired>
 		<specificApparelRequirements>
 			<li>
@@ -152,8 +152,8 @@
 			<li>IndustrialMilitaryAdvanced</li>
 		</apparelTags>
 		<apparelRequired>
-			<li>Apparel_SpaceSuitHelmet</li>
-			<li>Apparel_SpaceSuitBody</li>
+			<li>Apparel_VacsuitHelmet</li>
+			<li>Apparel_Vacsuit</li>
 		</apparelRequired>
 		<specificApparelRequirements>
 			<li>
@@ -211,8 +211,8 @@
 			<li>IndustrialMilitaryAdvanced</li>
 		</apparelTags>
 		<apparelRequired>
-			<li>Apparel_SpaceSuitHelmetHeavy</li>
-			<li>Apparel_SpaceSuitBodyHeavy</li>
+			<li>Apparel_VacsuitHelmet</li>
+			<li>Apparel_Vacsuit</li>
 		</apparelRequired>
 		<specificApparelRequirements>
 			<li>
@@ -262,8 +262,6 @@
 		<statBases>
 			<ComfyTemperatureMax>20</ComfyTemperatureMax>
 			<ComfyTemperatureMin>-100</ComfyTemperatureMin>
-			<HypoxiaResistance>1</HypoxiaResistance>
-			<DecompressionResistance>1</DecompressionResistance>
 			<VacuumResistance MayRequire="Ludeon.RimWorld.Odyssey">1</VacuumResistance>
 			<LeatherAmount>0</LeatherAmount>
 		</statBases>

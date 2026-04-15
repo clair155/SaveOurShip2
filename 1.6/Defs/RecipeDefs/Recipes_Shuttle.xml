@@ -19,7 +19,7 @@
             <li>Uranium</li>
           </thingDefs>
         </filter>
-        <count>7</count>
+        <count>100</count>
       </li>
 			<li>
 				<filter>
@@ -27,7 +27,7 @@
             <li>Steel</li>
           </thingDefs>
         </filter>
-        <count>1</count>
+        <count>10</count>
 			</li>
     </ingredients>
     <fixedIngredientFilter>
@@ -64,7 +64,7 @@
             <li>Uranium</li>
           </thingDefs>
         </filter>
-        <count>70</count>
+        <count>1000</count>
       </li>
 			<li>
 				<filter>
@@ -72,7 +72,7 @@
             <li>Steel</li>
           </thingDefs>
         </filter>
-        <count>10</count>
+        <count>100</count>
 			</li>
     </ingredients>
     <fixedIngredientFilter>

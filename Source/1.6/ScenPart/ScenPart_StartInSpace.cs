@@ -1,6 +1,6 @@
-﻿using RimWorld.Planet;
-
+﻿using PipeSystem;
 using RimWorld;
+using RimWorld.Planet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +8,8 @@ using System.Text;
 using UnityEngine;
 using Verse;
 using Verse.AI.Group;
+using Verse.Noise;
+using static HarmonyLib.Code;
 
 namespace SaveOurShip2
 {
@@ -197,15 +199,18 @@ namespace SaveOurShip2
 			}
 
 			CameraJumper.TryJump(spaceMap.Center, spaceMap);
-			spaceMap.weatherManager.curWeather = ResourceBank.WeatherDefOf.OuterSpaceWeather;
-			spaceMap.weatherManager.lastWeather = ResourceBank.WeatherDefOf.OuterSpaceWeather;
+			//spaceMap.weatherManager.curWeather = ResourceBank.WeatherDefOf.OuterSpaceWeather;
+			//spaceMap.weatherManager.lastWeather = ResourceBank.WeatherDefOf.OuterSpaceWeather;
 			spaceMap.Parent.SetFaction(Faction.OfPlayer);
 			Find.MapUI.Notify_SwitchedMap();
 			spaceMap.regionAndRoomUpdater.RebuildAllRegionsAndRooms();
 			foreach (Room r in spaceMap.regionGrid.allRooms)
-				r.Temperature = 21;
-			try //do post game start?
 			{
+                r.Temperature = 21;
+            }
+
+            try //do post game start?
+            {
 				if (scen.startType == ShipStartFlags.Ship) //defog and homezone ships
 				{
 					spaceMap.fogGrid.ClearAllFog();
@@ -221,14 +226,30 @@ namespace SaveOurShip2
 						{
 							b.SetFaction(Faction.OfPlayer);
 						}
-					}
-				}
+                        CompResourceTrader pipeComp = b.TryGetComp<CompResourceTrader>();
+                        if (pipeComp != null)
+                        {
+                            if (pipeComp.PipeNet?.def.defName == "VGE_OxygenNet")
+                            {
+                                //PipeNetOverlayDrawer pipeNetOverlayDrawer = spaceMap.GetComponent<PipeNetOverlayDrawer>();
+                                //if (pipeComp.Props.resourceOffOverlay)
+                                //{
+                                //    pipeNetOverlayDrawer?.TogglePulsing(b, pipeComp.Props.pipeNet.offMat, !pipeComp.resourceOnInt);
+                                //}
+                                Room room = b.GetRoom();
+                                if (spaceMap.Biome.inVacuum && !room.ExposedToSpace)
+                                {
+                                    room.Vacuum = 0f;
+                                }
+                            }
+                        }
+                    }
+                }
 			}
 			catch (Exception e)
 			{
 				Log.Warning(e.Message + "\n" + e.StackTrace);
 			}
-			AccessExtensions.Utility.RecacheSpaceMaps();
 			return spaceMap;
 		}
 		public override void PostGameStart() //spawn pawns, things

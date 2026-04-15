@@ -5,8 +5,6 @@
 			<MarketValue>3000</MarketValue>
 			<ComfyTemperatureMin>-100</ComfyTemperatureMin>
 			<ComfyTemperatureMax>100</ComfyTemperatureMax>
-			<HypoxiaResistance>1</HypoxiaResistance>
-			<DecompressionResistance>1</DecompressionResistance>
 			<VacuumResistance MayRequire="Ludeon.RimWorld.Odyssey">1</VacuumResistance>
 		</statBases>
 		<race>
@@ -26,8 +24,6 @@
 			<MarketValue>3000</MarketValue>
 			<ComfyTemperatureMin>-100</ComfyTemperatureMin>
 			<ComfyTemperatureMax>100</ComfyTemperatureMax>
-			<HypoxiaResistance>1</HypoxiaResistance>
-			<DecompressionResistance>1</DecompressionResistance>
 			<VacuumResistance MayRequire="Ludeon.RimWorld.Odyssey">1</VacuumResistance>
 		</statBases>
 		<race>
@@ -50,8 +46,6 @@
 			<MarketValue>2000</MarketValue>
 			<ComfyTemperatureMin>-100</ComfyTemperatureMin>
 			<ComfyTemperatureMax>100</ComfyTemperatureMax>
-			<HypoxiaResistance>1</HypoxiaResistance>
-			<DecompressionResistance>1</DecompressionResistance>
 			<VacuumResistance MayRequire="Ludeon.RimWorld.Odyssey">1</VacuumResistance>
 			<LeatherAmount>0</LeatherAmount>
 		</statBases>

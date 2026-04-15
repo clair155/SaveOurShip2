@@ -54,13 +54,13 @@
 			<li>
 				<key>D</key>
 				<value>
-					<shapeOrDef>Apparel_SpaceSuitHelmet</shapeOrDef>
+					<shapeOrDef>Apparel_VacsuitHelmet</shapeOrDef>
 				</value>
 			</li>
 			<li>
 				<key>E</key>
 				<value>
-					<shapeOrDef>Apparel_SpaceSuitBody</shapeOrDef>
+					<shapeOrDef>Apparel_Vacsuit</shapeOrDef>
 				</value>
 			</li>
 			<li>
@@ -156,13 +156,13 @@
 			<li>
 				<key>U</key>
 				<value>
-					<shapeOrDef>Apparel_SpaceSuitBodyHeavy</shapeOrDef>
+					<shapeOrDef>Apparel_Vacsuit</shapeOrDef>
 				</value>
 			</li>
 			<li>
 				<key>V</key>
 				<value>
-					<shapeOrDef>Apparel_SpaceSuitHelmetHeavy</shapeOrDef>
+					<shapeOrDef>Apparel_VacsuitHelmet</shapeOrDef>
 				</value>
 			</li>
 			<li>

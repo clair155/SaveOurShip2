@@ -122,8 +122,6 @@
 	<Operation Class="PatchOperationAdd">
 		<xpath>Defs/ThingDef[@Name="BaseMechanoid"]/statBases</xpath>
 		<value>
-			<HypoxiaResistance>1</HypoxiaResistance>
-			<DecompressionResistance>1</DecompressionResistance>
 			<VacuumSpeedMultiplier>4</VacuumSpeedMultiplier>
 		</value>
 	</Operation>
@@ -168,39 +166,6 @@
 			<xpath>Defs/ThingDef[@ParentName="ApparelArmorReconBase" or @ParentName="ApparelArmorPowerBase" or @ParentName="ApparelArmorHelmetPowerBase" or @ParentName="ApparelArmorHelmetReconBase"][not(equippedStatOffsets)]</xpath>
 			<value>
 				<equippedStatOffsets />
-			</value>
-		</match>
-	</Operation>
-
-	<!-- Armor DecompressionResistance -->
-	<Operation Class="PatchOperationConditional">
-		<xpath>Defs/ThingDef[@ParentName="ApparelArmorReconBase" or @ParentName="ApparelArmorPowerBase"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
-		<match Class="PatchOperationAdd">
-			<xpath>Defs/ThingDef[@ParentName="ApparelArmorReconBase" or @ParentName="ApparelArmorPowerBase"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
-			<value>
-				<DecompressionResistance>0.75</DecompressionResistance>
-			</value>
-		</match>
-	</Operation>
-
-	<!-- Helmets DecompressionResistance -->
-	<Operation Class="PatchOperationConditional">
-		<xpath>Defs/ThingDef[@ParentName="ApparelArmorHelmetPowerBase" or @ParentName="ApparelArmorHelmetReconBase"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
-		<match Class="PatchOperationAdd">
-			<xpath>Defs/ThingDef[@ParentName="ApparelArmorHelmetPowerBase" or @ParentName="ApparelArmorHelmetReconBase"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
-			<value>
-				<DecompressionResistance>0.25</DecompressionResistance>
-			</value>
-		</match>
-	</Operation>
-
-	<!-- Helmets HypoxiaResistance -->
-	<Operation Class="PatchOperationConditional">
-		<xpath>Defs/ThingDef[@ParentName="ApparelArmorHelmetPowerBase" or @ParentName="ApparelArmorHelmetReconBase"]/equippedStatOffsets[not(HypoxiaResistance)]</xpath>
-		<match Class="PatchOperationAdd">
-			<xpath>Defs/ThingDef[@ParentName="ApparelArmorHelmetPowerBase" or @ParentName="ApparelArmorHelmetReconBase"]/equippedStatOffsets[not(HypoxiaResistance)]</xpath>
-			<value>
-				<HypoxiaResistance>1</HypoxiaResistance>
 			</value>
 		</match>
 	</Operation>
@@ -250,14 +215,6 @@
 		<xpath>/Defs/DesignationCategoryDef[defName="Orders"]/specialDesignatorClasses</xpath>
 		<value>
 			<li>SaveOurShip2.Designator_RestoreHull</li>
-		</value>
-	</Operation>
-	<!-- Insects -->
-	<Operation Class="PatchOperationAdd">
-		<xpath>Defs/ThingDef[@Name="BaseInsect"]/statBases</xpath>
-		<value>
-			<HypoxiaResistance>1</HypoxiaResistance>
-			<DecompressionResistance>1</DecompressionResistance>
 		</value>
 	</Operation>
 	

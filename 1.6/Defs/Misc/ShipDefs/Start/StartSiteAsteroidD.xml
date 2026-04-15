@@ -22,19 +22,19 @@
 			<li>
 				<key>?</key>
 				<value>
-					<shapeOrDef>Apparel_SpaceSuitHelmet</shapeOrDef>
+					<shapeOrDef>Apparel_VacsuitHelmet</shapeOrDef>
 				</value>
 			</li>
 			<li>
 				<key>@</key>
 				<value>
-					<shapeOrDef>Apparel_SpaceSuitBodyHeavy</shapeOrDef>
+					<shapeOrDef>Apparel_Vacsuit</shapeOrDef>
 				</value>
 			</li>
 			<li>
 				<key>A</key>
 				<value>
-					<shapeOrDef>Apparel_SpaceSuitBody</shapeOrDef>
+					<shapeOrDef>Apparel_Vacsuit</shapeOrDef>
 				</value>
 			</li>
 			<li>
@@ -500,7 +500,7 @@
 			<li>
 				<key></key>
 				<value>
-					<shapeOrDef>Apparel_SpaceSuitHelmetHeavy</shapeOrDef>
+					<shapeOrDef>Apparel_VacsuitHelmet</shapeOrDef>
 				</value>
 			</li>
 			<li>

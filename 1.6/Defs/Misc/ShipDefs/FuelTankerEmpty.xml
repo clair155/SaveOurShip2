@@ -269,13 +269,13 @@
 			<li>
 				<key>g</key>
 				<value>
-					<shapeOrDef>Apparel_SpaceSuitBody</shapeOrDef>
+					<shapeOrDef>Apparel_Vacsuit</shapeOrDef>
 				</value>
 			</li>
 			<li>
 				<key>h</key>
 				<value>
-					<shapeOrDef>Apparel_SpaceSuitHelmet</shapeOrDef>
+					<shapeOrDef>Apparel_VacsuitHelmet</shapeOrDef>
 				</value>
 			</li>
 			<li>

@@ -30,7 +30,7 @@
 			<li>
 				<key>A</key>
 				<value>
-					<shapeOrDef>Apparel_SpaceSuitBodyHeavy</shapeOrDef>
+					<shapeOrDef>Apparel_Vacsuit</shapeOrDef>
 				</value>
 			</li>
 			<li>
@@ -48,7 +48,7 @@
 			<li>
 				<key>D</key>
 				<value>
-					<shapeOrDef>Apparel_SpaceSuitHelmet</shapeOrDef>
+					<shapeOrDef>Apparel_VacsuitHelmet</shapeOrDef>
 				</value>
 			</li>
 			<li>

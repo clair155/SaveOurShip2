@@ -73,7 +73,6 @@
 			<ArmorRating_Sharp>0.8</ArmorRating_Sharp>
 			<ArmorRating_Heat>2.0</ArmorRating_Heat>
 			<Flammability>0.0</Flammability>
-			<DecompressionResistance>1</DecompressionResistance>
 			<VacuumSpeedMultiplier>4</VacuumSpeedMultiplier>
 		</statBases>
 		
@@ -656,7 +655,6 @@
 			<ArmorRating_Sharp>0.8</ArmorRating_Sharp>
 			<ArmorRating_Heat>2.0</ArmorRating_Heat>
 			<Flammability>0.0</Flammability>
-			<DecompressionResistance>1</DecompressionResistance>
 			<VacuumSpeedMultiplier>4</VacuumSpeedMultiplier>
 		</statBases>
 		
@@ -1341,7 +1339,6 @@
 			<ArmorRating_Sharp>0.9</ArmorRating_Sharp>
 			<ArmorRating_Heat>2.0</ArmorRating_Heat>
 			<Flammability>0.0</Flammability>
-			<DecompressionResistance>1</DecompressionResistance>
 			<VacuumSpeedMultiplier>4</VacuumSpeedMultiplier>
 		</statBases>
 		
@@ -2172,7 +2169,6 @@
 			<ArmorRating_Sharp>1</ArmorRating_Sharp>
 			<ArmorRating_Heat>2.0</ArmorRating_Heat>
 			<Flammability>0.0</Flammability>
-			<DecompressionResistance>1</DecompressionResistance>
 			<VacuumSpeedMultiplier>4</VacuumSpeedMultiplier>
 		</statBases>
 		

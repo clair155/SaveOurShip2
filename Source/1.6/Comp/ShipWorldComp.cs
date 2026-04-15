@@ -14,10 +14,10 @@ namespace SaveOurShip2
 		public List<string> Unlocks = new List<string>();
 		public bool startedEndgame;
 		public bool SoSWin = false;
-		public bool renderedThatAlready = false;
 		public List<Building_ShipSensor> Sensors = new List<Building_ShipSensor>();
-		public bool MoveShipFlag = false;
-		public bool SlowTimeFlag = false;
+        public bool MoveShipFlag = false;
+        public bool LaunchShipFlag = false;
+        public bool SlowTimeFlag = false;
 		// If player had already had space map, for tutorial-ish letter.
 		private bool hadSpaceMap = false;
 		private float? previousThreatScale = null;

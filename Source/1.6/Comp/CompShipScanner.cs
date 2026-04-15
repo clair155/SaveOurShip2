@@ -33,7 +33,7 @@ namespace SaveOurShip2
 		{
 			get
 			{
-				if (!parent.Spawned || !(powerComp?.PowerOn ?? true) || parent.Faction != Faction.OfPlayer || !parent.Map.IsSpace())
+				if (!parent.Spawned || !(powerComp?.PowerOn ?? true) || parent.Faction != Faction.OfPlayer || !parent.Map.IsSOS2Space())
 					return false;
 				return scanShips || scanSites || mapComp.ShipMapState == ShipMapState.inCombat;
 			}
@@ -310,7 +310,7 @@ namespace SaveOurShip2
 		[DebuggerHidden]
 		public override IEnumerable<Gizmo> CompGetGizmosExtra()
 		{
-			if (this.parent.Map.IsSpace() && this.parent.Faction == Faction.OfPlayer)
+			if (this.parent.Map.IsSOS2Space() && this.parent.Faction == Faction.OfPlayer)
 			{
 				Command_Toggle scanSitesCommand = new Command_Toggle
 				{

@@ -57,6 +57,21 @@ OG Testing Squad: Buns Buns Cat, Phsarjk, i am has yes, Fuji, Reviire, Ian, Gene
 			<steamWorkshopUrl>steam://url/CommunityFilePage/3014915404</steamWorkshopUrl>
 			<downloadUrl>https://github.com/SmashPhil/Vehicles/releases/latest</downloadUrl>
 		</li>
+		<li>
+			<packageId>vanillaexpanded.gravship</packageId>
+			<displayName>Vanilla Gravship Expanded - Chapter 1</displayName>
+			<steamWorkshopUrl>https://steamcommunity.com/workshop/filedetails/?id=3609835606</steamWorkshopUrl>
+		</li>
+		<li>
+			<packageId>eclair155.fireflamework</packageId>
+			<displayName>Fire Flamework</displayName>
+			<steamWorkshopUrl>https://steamcommunity.com/workshop/filedetails/?id=3658906809</steamWorkshopUrl>
+		</li>
+		<li>
+			<packageId>eclair155.patches</packageId>
+			<displayName>Eclair Patches</displayName>
+			<steamWorkshopUrl>https://steamcommunity.com/workshop/filedetails/?id=3658906809</steamWorkshopUrl>
+		</li>
 	</modDependencies>
 	<loadAfter>
 		<li>brrainz.harmony</li>

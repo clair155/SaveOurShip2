@@ -430,7 +430,7 @@
 			<li>
 				<key></key>
 				<value>
-					<shapeOrDef>Apparel_SpaceSuitBody</shapeOrDef>
+					<shapeOrDef>Apparel_Vacsuit</shapeOrDef>
 				</value>
 			</li>
 			<li>
@@ -442,7 +442,7 @@
 			<li>
 				<key></key>
 				<value>
-					<shapeOrDef>Apparel_SpaceSuitHelmet</shapeOrDef>
+					<shapeOrDef>Apparel_VacsuitHelmet</shapeOrDef>
 				</value>
 			</li>
 			<li>

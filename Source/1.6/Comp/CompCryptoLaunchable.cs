@@ -42,7 +42,7 @@ namespace SaveOurShip2
 			};
 			if (this.NotReadyToLaunch)
 				launch.Disable(TranslatorFormattedStringExtensions.Translate("SoS.LaunchCryptoNotLoaded"));
-			if (!this.parent.Map.IsSpace())
+			if (!this.parent.Map.IsSOS2Space())
 				launch.Disable();
 			yield return launch;
 		}

@@ -32,7 +32,7 @@ namespace SaveOurShip2
 				parent.Position + v * 2,
 				parent.Position + v * 3
 			};
-			if (parent.Map.IsSpace())
+			if (parent.Map.IsSOS2Space())
 				FullSunPower = 600;
 			else
 				FullSunPower = 300;

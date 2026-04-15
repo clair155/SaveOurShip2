@@ -50,8 +50,8 @@
 							<apparelMoney>750~1500</apparelMoney>
 							<gearHealthRange>1~1</gearHealthRange>
 							<apparelRequired>
-								<li>Apparel_SpaceSuitHelmet</li>
-								<li>Apparel_SpaceSuitBody</li>
+								<li>Apparel_VacsuitHelmet</li>
+								<li>Apparel_Vacsuit</li>
 							</apparelRequired>
 							<techHediffsMoney>50~800</techHediffsMoney>
 							<techHediffsTags>
@@ -213,39 +213,6 @@
 					</match>
 				</li>
 
-				<!-- Armor DecompressionResistance -->
-				<li Class="PatchOperationConditional">
-					<xpath>Defs/ThingDef[@ParentName="ApparelArmorCataphractBase"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
-					<match Class="PatchOperationAdd">
-						<xpath>Defs/ThingDef[@ParentName="ApparelArmorCataphractBase"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
-						<value>
-							<DecompressionResistance>0.75</DecompressionResistance>
-						</value>
-					</match>
-				</li>
-
-				<!-- Helmets DecompressionResistance -->
-				<li Class="PatchOperationConditional">
-					<xpath>Defs/ThingDef[@ParentName="ApparelArmorHelmetCataphractBase"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
-					<match Class="PatchOperationAdd">
-						<xpath>Defs/ThingDef[@ParentName="ApparelArmorHelmetCataphractBase"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
-						<value>
-							<DecompressionResistance>0.25</DecompressionResistance>
-						</value>
-					</match>
-				</li>
-
-				<!-- Helmets HypoxiaResistance -->
-				<li Class="PatchOperationConditional">
-					<xpath>Defs/ThingDef[@ParentName="ApparelArmorHelmetCataphractBase"]/equippedStatOffsets[not(HypoxiaResistance)]</xpath>
-					<match Class="PatchOperationAdd">
-						<xpath>Defs/ThingDef[@ParentName="ApparelArmorHelmetCataphractBase"]/equippedStatOffsets[not(HypoxiaResistance)]</xpath>
-						<value>
-							<HypoxiaResistance>1</HypoxiaResistance>
-						</value>
-					</match>
-				</li>
-
 				<!-- Locust Armor VacuumSpeedMultiplier -->
 				<li Class="PatchOperationConditional">
 					<xpath>Defs/ThingDef[defName="Apparel_ArmorLocust" or defName="Apparel_PackJump"]/equippedStatOffsets[not(VacuumSpeedMultiplier)]</xpath>
@@ -269,19 +236,6 @@
 						<Insulation_Cold>25</Insulation_Cold>
 					</value>
 				</li>
-				<!-- Gunlink Fixes -->
-				<li Class="PatchOperationAdd">
-					<xpath>Defs/ThingDef[defName="Apparel_Gunlink"]/equippedStatOffsets</xpath>
-						<value>
-							<DecompressionResistance>0</DecompressionResistance>
-						</value>
-				</li>	
-				<li Class="PatchOperationAdd">
-					<xpath>Defs/ThingDef[defName="Apparel_Gunlink"]/equippedStatOffsets</xpath>
-						<value>
-							<HypoxiaResistance>0</HypoxiaResistance>
-						</value>
-				</li>	
 				<!-- SaveOurShip2 comp for helmets -->
 				<li Class="PatchOperationAdd">
 					<xpath>Defs/ThingDef[defName="Apparel_ArmorHelmetReconPrestige"]/comps</xpath>
@@ -379,36 +333,6 @@
 							</li>
 						</value>
 					</match>
-				</li>	
-				<!-- Armor DecompressionResistance -->
-				<li Class="PatchOperationConditional">
-					<xpath>Defs/ThingDef[defName="Apparel_MechlordSuit"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
-					<match Class="PatchOperationAdd">
-					<xpath>Defs/ThingDef[defName="Apparel_MechlordSuit"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
-						<value>
-							<DecompressionResistance>0.75</DecompressionResistance>
-						</value>
-					</match>
-				</li>
-				<!-- Helmets DecompressionResistance -->
-				<li Class="PatchOperationConditional">
-					<xpath>Defs/ThingDef[defName="Apparel_ArmorHelmetMechCommander" or defName="Apparel_ArmorHelmetMechlordHelmet"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
-					<match Class="PatchOperationAdd">
-					<xpath>Defs/ThingDef[defName="Apparel_ArmorHelmetMechCommander" or defName="Apparel_ArmorHelmetMechlordHelmet"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
-						<value>
-							<DecompressionResistance>0.25</DecompressionResistance>
-						</value>
-					</match>
-				</li>
-				<!-- Helmets HypoxiaResistance -->
-				<li Class="PatchOperationConditional">
-					<xpath>Defs/ThingDef[defName="Apparel_ArmorHelmetMechCommander" or defName="Apparel_ArmorHelmetMechlordHelmet"]/equippedStatOffsets[not(HypoxiaResistance)]</xpath>
-					<match Class="PatchOperationAdd">
-					<xpath>Defs/ThingDef[defName="Apparel_ArmorHelmetMechCommander" or defName="Apparel_ArmorHelmetMechlordHelmet"]/equippedStatOffsets[not(HypoxiaResistance)]</xpath>
-						<value>
-							<HypoxiaResistance>1</HypoxiaResistance>
-						</value>
-					</match>
 				</li>
 				<!-- Mechlord Suit Armor Insulation_Cold -->
 				<li Class="PatchOperationReplace">
@@ -471,27 +395,6 @@
 							<marineDef>Fingerspike</marineDef>
 							<marineHeavyDef>Toughspike</marineHeavyDef>
 						</SaveOurShip2.NavyDef>
-					</value>
-				</li>
-				<li Class="PatchOperationAdd">
-					<xpath>Defs/ThingDef[@Name="BaseFleshbeast" or @Name="MysteriousSphereEntityBase" or @Name="Revenant" or defName="Metalhorror" or defName="Noctol"]/statBases</xpath>
-					<value>
-						<HypoxiaResistance>1</HypoxiaResistance>
-						<DecompressionResistance>1</DecompressionResistance>
-					</value>
-				</li>
-				<li Class="PatchOperationAdd">
-					<xpath>Defs/HediffDef[defName="Shambler"]/stages/li/statOffsets</xpath>
-					<value>
-						<HypoxiaResistance>1</HypoxiaResistance>
-						<DecompressionResistance>1</DecompressionResistance>
-					</value>
-				</li>
-				<li Class="PatchOperationAdd">
-					<xpath>Defs/HediffDef[defName="Ghoul"]/stages/li/statOffsets</xpath>
-					<value>
-						<HypoxiaResistance>1</HypoxiaResistance>
-						<DecompressionResistance>1</DecompressionResistance>
 					</value>
 				</li>
 				<!-- Disallow incidents in space -->
@@ -899,36 +802,7 @@
 				<li Class="PatchOperationAdd">
 					<xpath>Defs/ThingDef[@Name="BaseDrone"]/statBases</xpath>
 					<value>
-						<HypoxiaResistance>1</HypoxiaResistance>
-						<DecompressionResistance>1</DecompressionResistance>
 						<VacuumSpeedMultiplier>4</VacuumSpeedMultiplier>
-					</value>
-				</li>
-				<!-- Breathless Gene -->
-				<li Class="PatchOperationAdd">
-					<xpath>Defs/GeneDef[defName="VacuumResistance_Total"]/statOffsets</xpath>
-					<value>
-						<HypoxiaResistance>1</HypoxiaResistance>
-					</value>
-				</li>
-				<!-- Vacuum Resistant Gene -->
-				<li Class="PatchOperationAdd">
-					<xpath>Defs/GeneDef[defName="VacuumResistance_Partial"]/statOffsets</xpath>
-					<value>
-						<DecompressionResistance>0.75</DecompressionResistance>
-					</value>
-				</li>
-				<!-- Vacskin Gland -->
-				<li Class="PatchOperationAdd">
-					<xpath>Defs/HediffDef[defName="VacskinGland"]/stages/li/statOffsets</xpath>
-					<value>
-						<DecompressionResistance>1</DecompressionResistance>
-					</value>
-				</li>
-				<li Class="PatchOperationAdd">
-					<xpath>Defs/HediffDef[defName="VacskinGland"]/stages/li/statOffsets</xpath>
-					<value>
-						<HypoxiaResistance>0.75</HypoxiaResistance>
 					</value>
 				</li>
 				<li Class="PatchOperationReplace">
@@ -950,52 +824,11 @@
 						<preventVacuumBurns>true</preventVacuumBurns>
 					</value>
 				</li>
-				<!-- Odyssey Space Headgear -->
-				<li Class="PatchOperationAdd">
-					<xpath>Defs/ThingDef[defName="Apparel_VacsuitHelmet"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
-					<value>
-						<DecompressionResistance>0.25</DecompressionResistance>
-					</value>
-				</li>
-				<!-- Odyssey Space Headgear -->
-				<li Class="PatchOperationAdd">
-					<xpath>Defs/ThingDef[defName="Apparel_VacsuitHelmet"]/equippedStatOffsets[not(HypoxiaResistance)]</xpath>
-					<value>
-						<HypoxiaResistance>1</HypoxiaResistance>
-					</value>
-				</li>
-				<!-- Odyssey Space gear nas not enoug insulation for -100C space -->
-				<li Class="PatchOperationReplace">
-					<xpath>Defs/ThingDef[defName="Apparel_VacsuitHelmet"]/statBases/Insulation_Cold</xpath>
-					<value>
-						<Insulation_Cold>25</Insulation_Cold>
-					</value>
-				</li>
-				<!-- Odyssey Space Suits -->
-				<li Class="PatchOperationAdd">
-					<xpath>Defs/ThingDef[defName="Apparel_Vacsuit" or defName="Apparel_VacsuitChildren"]/equippedStatOffsets[not(DecompressionResistance)]</xpath>
-					<value>
-						<DecompressionResistance>0.75</DecompressionResistance>
-					</value>
-				</li>
 				<!-- Odyssey Space Suits -->
 				<li Class="PatchOperationAdd">
 					<xpath>Defs/ThingDef[defName="Apparel_Vacsuit" or defName="Apparel_VacsuitChildren"]/equippedStatOffsets[not(VacuumSpeedMultiplier)]</xpath>
 					<value>
 						<VacuumSpeedMultiplier>4</VacuumSpeedMultiplier>
-					</value>
-				</li>
-				<!-- Odyssey Space gear nas not enoug insulation for -100C space -->
-				<li Class= "PatchOperationReplace">
-					<xpath>Defs/ThingDef[defName="Apparel_Vacsuit"]/statBases/Insulation_Cold</xpath>
-					<value>
-						<Insulation_Cold>100</Insulation_Cold>
-					</value>
-				</li>
-				<li Class="PatchOperationReplace">
-					<xpath>Defs/ThingDef[defName="Apparel_VacsuitChildren"]/statBases/Insulation_Cold</xpath>
-					<value>
-						<Insulation_Cold>100</Insulation_Cold>
 					</value>
 				</li>
 				<!-- To make orbit empty tile selectable in dev mode -->
@@ -1021,55 +854,6 @@
 						<GravshipRange>56</GravshipRange>
 					</value>
 				</li>
-				<!-- Recon Helmet VacuumResistance -->
-				<li Class="PatchOperationReplace">
-					<xpath>Defs/ThingDef[@Name="ApparelArmorHelmetReconBase"]/equippedStatOffsets/VacuumResistance</xpath>
-					<value>
-						<VacuumResistance>0.7</VacuumResistance>
-					</value>
-				</li>
-				<!-- Marine Helmet VacuumResistance -->
-				<li Class="PatchOperationReplace">
-					<xpath>Defs/ThingDef[@Name="ApparelArmorHelmetPowerBase"]/equippedStatOffsets/VacuumResistance</xpath>
-					<value>
-						<VacuumResistance>0.7</VacuumResistance>
-					</value>
-				</li>
-				<!-- Vacsuit Helmet VacuumResistance -->
-				<li Class="PatchOperationReplace">
-					<xpath>Defs/ThingDef[defName="Apparel_VacsuitHelmet"]/equippedStatOffsets/VacuumResistance</xpath>
-					<value>
-						<VacuumResistance>0.7</VacuumResistance>
-					</value>
-				</li>
-				<!-- Vacsuit VacuumResistance -->
-				<li Class="PatchOperationReplace">
-					<xpath>Defs/ThingDef[defName="Apparel_Vacsuit" or defName="Apparel_VacsuitChildren"]/equippedStatOffsets/VacuumResistance</xpath>
-					<value>
-						<VacuumResistance>0.3</VacuumResistance>
-					</value>
-				</li>
-				<!-- SaveOurShip2 comp for Vac Gear -->
-				<li Class="PatchOperationConditional">
-					<xpath>Defs/ThingDef[defName="Apparel_Vacsuit" or defName="Apparel_VacsuitChildren" or defName="Apparel_VacsuitHelmet"][not(comps)]</xpath>
-					<match Class="PatchOperationAdd">
-					<xpath>Defs/ThingDef[defName="Apparel_Vacsuit" or defName="Apparel_VacsuitChildren" or defName="Apparel_VacsuitHelmet"][not(comps)]</xpath>
-						<value>
-							<comps />
-						</value>
-					</match>
-				</li>	
-				<li Class="PatchOperationConditional">
-					<xpath>Defs/ThingDef[defName="Apparel_Vacsuit" or defName="Apparel_VacsuitChildren" or defName="Apparel_VacsuitHelmet"]/comps[not(li/compClass="SaveOurShip2.CompEVA")]</xpath>
-					<match Class="PatchOperationAdd">
-					<xpath>Defs/ThingDef[defName="Apparel_Vacsuit" or defName="Apparel_VacsuitChildren" or defName="Apparel_VacsuitHelmet"]/comps[not(li/compClass="SaveOurShip2.CompEVA")]</xpath>
-						<value>
-							<li>
-								<compClass>SaveOurShip2.CompEVA</compClass>
-							</li>
-						</value>
-					</match>
-				</li>	
 			</operations>
 		</match>
 	</Operation>

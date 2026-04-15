@@ -36,7 +36,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\1.6\Assemblies\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\..\Program Files %28x86%29\Steam\steamapps\common\RimWorld\Mods\SaveOurShip2-main\1.6\Assemblies\</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -54,45 +54,49 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\..\..\workshop\content\294100\2009463077\Current\Assemblies\0Harmony.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\294100\2009463077\Current\Assemblies\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="PipeSystem">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\294100\2023507013\1.6\Assemblies\PipeSystem.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="SmashTools">
-      <HintPath>..\..\..\Vehicle-Framework\1.6\Assemblies\SmashTools.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\294100\3014915404\1.6\Assemblies\SmashTools.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="Unity.Collections">
-      <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\Unity.Collections.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\Unity.Collections.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.ImageConversionModule">
-      <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Vehicles">
-      <HintPath>..\..\..\Vehicle-Framework\1.6\Assemblies\Vehicles.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\294100\3014915404\1.6\Assemblies\Vehicles.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -103,7 +107,6 @@
     <Compile Include="Alert\AlertDodgeChanceEnemy.cs" />
     <Compile Include="Alert\AlertDodgeChancePlayer.cs" />
     <Compile Include="Alert_ArchotechSporeMoodLow.cs" />
-    <Compile Include="Alert_MechanitesInHomeArea.cs" />
     <Compile Include="ApparelHolographic.cs" />
     <Compile Include="ArrivalAction\AerialVehicleArrivalAction_ShipAssault.cs" />
     <Compile Include="ArrivalAction\PawnPublicizer.cs" />
@@ -119,6 +122,7 @@
     <Compile Include="Comp\CompCryptoCocoon.cs" />
     <Compile Include="Comp\CompShuttleAutoDoc.cs" />
     <Compile Include="Def\DodgeChanceSubmodScaleDef.cs" />
+    <Compile Include="Def\EP_DefOf.cs" />
     <Compile Include="Def\GlobalUnlockDef.cs" />
     <Compile Include="Designator_RestoreHull.cs" />
     <Compile Include="GenAdjExtension.cs" />
@@ -127,6 +131,7 @@
     <Compile Include="HediffComp_GearRepair.cs" />
     <Compile Include="Jobs\JobUtility.cs" />
     <Compile Include="MapDodgeAbility.cs" />
+    <Compile Include="MapGen\GenStep_FindPlayerStartSpotSpace.cs" />
     <Compile Include="ModIntegration.cs" />
     <Compile Include="Obs-Shuttle\TransportPodsArrivalAction_MoonBase.cs" />
     <Compile Include="Obs-Shuttle\TransportPodsArrivalAction_ShipAssault.cs" />
@@ -149,6 +154,7 @@
     <Compile Include="CompProps\CompProps_Archolife.cs" />
     <Compile Include="CompProps\CompProps_ArcholifeCosmetics.cs" />
     <Compile Include="CloakThresholdGizmo.cs" />
+    <Compile Include="HarmonyPatchesOdyssey.cs" />
     <Compile Include="ShipImorter.cs" />
     <Compile Include="SOS2MapUtility.cs" />
     <Compile Include="SoSDebugActions.cs" />
@@ -171,7 +177,6 @@
     <Compile Include="CompProps\CompProps_HibernatableShip.cs" />
     <Compile Include="CompProps\CompProps_Holodeck.cs" />
     <Compile Include="CompProps\CompProps_HullFoamDistributor.cs" />
-    <Compile Include="CompProps\CompProps_LifeSupport.cs" />
     <Compile Include="CompProps\CompProps_Overlay.cs" />
     <Compile Include="CompProps\CompProps_PowerPlantSolarShip.cs" />
     <Compile Include="CompProps\CompProps_RCSThruster.cs" />
@@ -226,7 +231,6 @@
     <Compile Include="Comp\CompShipHeatSink.cs" />
     <Compile Include="Comp\CompShipHeatSource.cs" />
     <Compile Include="Comp\CompShipHeatTacCon.cs" />
-    <Compile Include="Comp\CompShipLifeSupport.cs" />
     <Compile Include="Comp\CompShipScanner.cs" />
     <Compile Include="Comp\CompShipScannerAI.cs" />
     <Compile Include="Obs-Shuttle\CompShuttleCosmetics.cs" />
@@ -247,7 +251,6 @@
     <Compile Include="Comp\ShipMapComp.cs" />
     <Compile Include="Comp\TimedForcedExitShip.cs" />
     <Compile Include="Comp\TribalPillarSiteComp.cs" />
-    <Compile Include="DamageWorker_Mechanite.cs" />
     <Compile Include="DamageWorker_PsychicFlayer.cs" />
     <Compile Include="DeathActionWorker_AntigrainExplosion.cs" />
     <Compile Include="Designator_Ship.cs" />
@@ -304,7 +307,6 @@
     <Compile Include="Jobs\JobGiver_AIDefendBreacher.cs" />
     <Compile Include="Jobs\JobGiver_AIDefendShip.cs" />
     <Compile Include="Jobs\JobGiver_AIHackBridge.cs" />
-    <Compile Include="Jobs\JobGiver_FightMechanitesNearPoint.cs" />
     <Compile Include="Jobs\JobGiver_LoadShipBuilding.cs" />
     <Compile Include="Jobs\JobGiver_LoadTorpedoes.cs" />
     <Compile Include="Jobs\JobGiver_ManShipBridge.cs" />
@@ -314,14 +316,13 @@
     <Compile Include="Jobs\LordJob_DefendShip.cs" />
     <Compile Include="Jobs\LordToil_AssaultShip.cs" />
     <Compile Include="Jobs\LordToil_DefendShip.cs" />
-    <Compile Include="Jobs\WorkGiver_FightMechanites.cs" />
     <Compile Include="Jobs\WorkGiver_InstallConsciousness.cs" />
     <Compile Include="Jobs\WorkGiver_LoadTorpedoTube.cs" />
     <Compile Include="Jobs\WorkGiver_OperateScannerSpace.cs" />
     <Compile Include="Jobs\WorkGiver_Warden_SacrificeToArchotech.cs" />
     <Compile Include="Obsolete\GenStep_BlackBoxMission.cs" />
     <Compile Include="MapGen\GenStep_DownedShip.cs" />
-    <Compile Include="MapGen\GenStep_EmptySpace.cs" />
+    <Compile Include="MapGen\GenStep_Space.cs" />
     <Compile Include="MapGen\GenStep_EverythingIsRocks.cs" />
     <Compile Include="MapGen\GenStep_HackableSatellite.cs" />
     <Compile Include="MapGen\GenStep_InsectPillarCaves.cs" />
@@ -387,8 +388,6 @@
     <Compile Include="Obsolete\SymbolResolver_ShipRoomTriangle1.cs" />
     <Compile Include="Obsolete\SymbolResolver_ShipRoomTriangle2.cs" />
     <Compile Include="MapGen\SymbolResolver_Ship_Pregen_New.cs" />
-    <Compile Include="MechaniteFire.cs" />
-    <Compile Include="Projectile\Projectile_MechaniteSpark.cs" />
     <Compile Include="MinifiedThingShipMove.cs" />
     <Compile Include="Vehicles\CompShuttleLauncher.cs" />
     <Compile Include="Vehicles\CompVehicleLoadData.cs" />
@@ -494,6 +493,10 @@
     <Compile Include="WorldObject\WorldObjectOrbitingShip.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Publicize Include="Assembly-CSharp" IncludeVirtualMembers="false" />
+    <Publicize Include="Vehicles" IncludeVirtualMembers="true" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Krafs.Publicizer">
       <Version>2.3.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -501,7 +504,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Publicize Include="Assembly-CSharp" IncludeVirtualMembers="false" />
-    <Publicize Include="Vehicles" IncludeVirtualMembers="true" />
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
 </Project>

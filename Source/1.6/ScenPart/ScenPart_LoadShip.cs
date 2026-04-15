@@ -478,8 +478,8 @@ namespace SaveOurShip2
 				}
 
 				CameraJumper.TryJump(spaceMap.Center, spaceMap);
-				spaceMap.weatherManager.curWeather = ResourceBank.WeatherDefOf.OuterSpaceWeather;
-				spaceMap.weatherManager.lastWeather = ResourceBank.WeatherDefOf.OuterSpaceWeather;
+				//spaceMap.weatherManager.curWeather = ResourceBank.WeatherDefOf.OuterSpaceWeather;
+				//spaceMap.weatherManager.lastWeather = ResourceBank.WeatherDefOf.OuterSpaceWeather;
 				spaceMap.Parent.SetFaction(Faction.OfPlayer);
 				Find.MapUI.Notify_SwitchedMap();
 				spaceMap.regionAndRoomUpdater.RebuildAllRegionsAndRooms();
@@ -494,7 +494,6 @@ namespace SaveOurShip2
 					Log.Warning(e.Message + "\n" + e.StackTrace);
 				}
 
-				AccessExtensions.Utility.RecacheSpaceMaps();
 				foreach (Ideo ideo in Find.IdeoManager.IdeosInViewOrder)
 					ReCacheIdeo(ideo);
 

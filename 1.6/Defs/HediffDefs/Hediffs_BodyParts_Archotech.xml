@@ -291,7 +291,6 @@
 		<stages>
 			<li>
 				<statOffsets>
-					<HypoxiaResistance>1</HypoxiaResistance>
 					<VacuumResistance MayRequire="Ludeon.RimWorld.Odyssey">1</VacuumResistance>
 				</statOffsets>
 			</li>
@@ -624,7 +623,6 @@
 		<stages>
 			<li>
 				<statOffsets>
-					<DecompressionResistance>1</DecompressionResistance>
 					<ArmorRating_Sharp>0.4</ArmorRating_Sharp>
 					<ArmorRating_Blunt>0.2</ArmorRating_Blunt>
 					<ArmorRating_Heat>0.4</ArmorRating_Heat>

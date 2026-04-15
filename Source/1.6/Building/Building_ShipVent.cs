@@ -109,8 +109,8 @@ namespace SaveOurShip2
 			yield return toggleHeatWithPower;
 
 			// Avoid spending time on get room when not needed
-			Room room = Map.IsSpace() ? ventTo.GetRoom(Map) : null;
-			if (Map.IsSpace() && room != null)
+			Room room = Map.IsSOS2Space() ? ventTo.GetRoom(Map) : null;
+			if (Map.IsSOS2Space() && room != null)
 			{
 				ShipMapComp comp = Map.GetComponent<ShipMapComp>();
 				SpaceShipCache ship = comp.ShipsOnMap[comp.ShipIndexOnVec(Position)];
@@ -128,14 +128,9 @@ namespace SaveOurShip2
 							FleckMaker.ThrowDustPuff(cell, Map, 1);
 						foreach (Fire fire in room.ContainedThings<Fire>())
 							fire.Destroy();
-						foreach (Pawn pawn in room.ContainedThings<Pawn>())
-						{
-							if (pawn.DecompressionResistance() < 1)
-								WeatherEvent_VacuumDamage.DoPawnDecompressionDamage(pawn, 10);
-						}
 						room.Temperature = 0f;
 						Log.Message("Dealing " + pointsOfDamage + " to each of " + ship.LifeSupports.Count + " life supports.");
-						foreach (CompShipLifeSupport lifeSupport in ship.LifeSupports.ToList()) //Curse you, collection modification bugs!
+						foreach (CompOxygenPusher lifeSupport in ship.LifeSupports.ToList()) //Curse you, collection modification bugs!
 							lifeSupport.parent.TakeDamage(new DamageInfo(DamageDefOf.Deterioration, pointsOfDamage));
 						DefDatabase<SoundDef>.GetNamed("Explosion_Smoke").PlayOneShot(this);
 					},

@@ -41,7 +41,7 @@ namespace SaveOurShip2
 		public void ResetForceExitAndRemoveMapCountdown()
 		{
 			ticksLeftToForceExitAndRemoveMap = -1;
-			if (parent.Biome != null && parent.Biome == ResourceBank.BiomeDefOf.OuterSpaceBiome && parent.GetComponent<TimeoutComp>() != null)
+			if (parent.Biome != null && parent.Biome == BiomeDefOf.Space && parent.GetComponent<TimeoutComp>() != null)
 				ticksLeftToForceExitAndRemoveMap = parent.GetComponent<TimeoutComp>().TicksLeft;
 		}
 		public void StartForceExitAndRemoveMapCountdown()
@@ -90,7 +90,7 @@ namespace SaveOurShip2
 		}
 		public static void ForceReform(MapParent mapParent)
 		{
-			if (mapParent.Map.IsSpace())
+			if (mapParent.Map.IsSOS2Space())
 			{
 				mapParent.Map.GetComponent<ShipMapComp>().ShipMapState = ShipMapState.burnUpSet;
 			}

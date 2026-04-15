@@ -40,7 +40,7 @@ namespace SaveOurShip2
 		public CompEquippable GunCompEq => gun.TryGetComp<CompEquippable>();
 		public override LocalTargetInfo CurrentTarget => currentTargetInt;
 		public override Verb AttackVerb => GunCompEq.PrimaryVerb;
-		public override bool IsEverThreat => Faction == Faction.OfPlayer && !Map.IsSpace(); //prevent player pawns auto attacking
+		public override bool IsEverThreat => Faction == Faction.OfPlayer && !Map.IsSOS2Space(); //prevent player pawns auto attacking
 		public bool ConnectedToBridge
 		{
 			get
@@ -115,7 +115,7 @@ namespace SaveOurShip2
 			fuelComp = this.TryGetComp<CompRefuelable>();
 			spinalComp = this.TryGetComp<CompSpinalMount>();
 			torpComp = gun.TryGetComp<CompChangeableProjectile>();
-			if (!Map.IsSpace() && heatComp.Props.groundDefense)
+			if (!Map.IsSOS2Space() && heatComp.Props.groundDefense)
 				GroundDefenseMode = true;
 			else
 				GroundDefenseMode = false;
@@ -135,7 +135,7 @@ namespace SaveOurShip2
 		{
 			Map map = Map;
 			base.Destroy(mode);
-			if (torpComp != null && !ShipInteriorMod2.MoveShipFlag)
+			if (torpComp != null && !BeingTransportedOnGravship)
 			{
 				foreach (ThingDef def in torpComp.LoadedShells)
 				{

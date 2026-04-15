@@ -28,12 +28,12 @@ namespace SaveOurShip2
 			{
 				if (InstallBlueprintUtility.ExistingBlueprintFor(this) != null)
 				{
-					if (atmospheric) //transit from/to space, pick landing site and set vars instead of moving
+                    var mapComp = originMap.GetComponent<ShipMapComp>();
+                    var ship = mapComp.ShipsOnMap[((Building_ShipBridge)shipRoot).ShipIndex];
+                    if (atmospheric) //transit from/to space, pick landing site and set vars instead of moving
 					{
 						//ShipInteriorMod2.LaunchShip counterpart
-						bool originIsSpace = originMap.IsSpace();
-						var mapComp = originMap.GetComponent<ShipMapComp>();
-						var ship = mapComp.ShipsOnMap[((Building_ShipBridge)shipRoot).ShipIndex];
+						bool originIsSpace = originMap.IsSOS2Space();
 						IntVec3 adj = IntVec3.Zero;
 						WorldObjectOrbitingShip mapPar; //origin might not be WOS
 						
@@ -61,9 +61,9 @@ namespace SaveOurShip2
 							//mapComp.MoveToVec = adj.Inverse();
 
 							//move
-							ShipInteriorMod2.MoveShip(shipRoot, newMap, adj, fac, shipRotNum, includeRock);
-							if (!originIsSpace)
-								newMap.weatherManager.TransitionTo(ResourceBank.WeatherDefOf.OuterSpaceWeather);
+							ShipInteriorMod2.PlaceShip(ship, newMap, adj, false, true, fac);
+							//if (!originIsSpace)
+							//	newMap.weatherManager.TransitionTo(ResourceBank.WeatherDefOf.OuterSpaceWeather);
 						}
 						else //to ground with originMap - spacehome
 						{
@@ -79,14 +79,12 @@ namespace SaveOurShip2
 						{
 							mapPar.targetDrawPos = targetMap.Parent.DrawPos;
 							mapComp.Heading = -1;
-							mapComp.Altitude = mapComp.Altitude - 1;
 							mapComp.Takeoff = false;
 						}
 						else //to space with temp map
 						{
 							mapPar.targetDrawPos = ShipInteriorMod2.FindPlayerShipMap().Parent.DrawPos;
 							mapComp.Heading = 1;
-							mapComp.Altitude = ShipInteriorMod2.altitudeLand; //startup altitude
 							mapComp.Takeoff = true;
 						}
 
@@ -94,9 +92,8 @@ namespace SaveOurShip2
 						mapComp.BurnTimer = Find.TickManager.TicksGame;
 						mapComp.PrevMap = originMap;
 						mapComp.PrevTile = originMap.Tile;
-						mapComp.EnginesOn = true;
-						mapComp.ShipMapState = ShipMapState.inTransit;
-						CameraJumper.TryJump(mapComp.MapRootListAll.FirstOrDefault().Position, originMap);
+						mapComp.StartTransit();
+                        CameraJumper.TryJump(mapComp.MapRootListAll.FirstOrDefault().Position, originMap);
 					}
 					else //normal move to target map, claim moved ships for player
 					{
@@ -107,12 +104,12 @@ namespace SaveOurShip2
 							List<CompEngineTrail> engines = new List<CompEngineTrail>();
 							List<SpaceShipCache> ships = new List<SpaceShipCache>();
 							float fuel = 0;
-							foreach (SpaceShipCache ship in targetMapComp.ShipsOnMap.Values)
+							foreach (SpaceShipCache ship2 in targetMapComp.ShipsOnMap.Values)
 							{
-								if (ship.CanFire() && ship.HasMannedBridge() && ship.HasRCS())
+								if (ship2.CanFire() && ship2.HasMannedBridge() && ship2.HasRCS())
 								{
-									ships.Add(ship);
-									foreach (CompEngineTrail engine in ship.Engines.Where(e => e.FuelUse > 0))
+									ships.Add(ship2);
+									foreach (CompEngineTrail engine in ship2.Engines.Where(e => e.FuelUse > 0))
 									{
 										fuel += engine.refuelComp.Fuel;
 										if (engine.PodFueled)
@@ -121,7 +118,7 @@ namespace SaveOurShip2
 									}
 								}
 							}
-							foreach (SpaceShipCache ship in ships)
+							foreach (SpaceShipCache ship2 in ships)
 							{
 								foreach (CompEngineTrail engine in engines)
 								{
@@ -132,7 +129,7 @@ namespace SaveOurShip2
 								}
 							}
 						}
-						ShipInteriorMod2.MoveShip(shipRoot, targetMap, InstallBlueprintUtility.ExistingBlueprintFor(this).Position - bottomLeftPos, fac, shipRotNum, includeRock);
+						ShipInteriorMod2.PlaceShip(ship, targetMap, InstallBlueprintUtility.ExistingBlueprintFor(this).Position - bottomLeftPos, false, true, fac);
 					}
 				}
 				if (!Destroyed)

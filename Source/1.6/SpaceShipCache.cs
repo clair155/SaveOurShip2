@@ -1,12 +1,14 @@
-﻿using System;
+﻿using PipeSystem;
+using RimWorld;
+using RimWorld.Planet;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Verse;
-using Verse.AI;
-using RimWorld;
 using UnityEngine;
 using Vehicles;
+using Verse;
+using Verse.AI;
 using static HarmonyLib.Code;
 
 namespace SaveOurShip2
@@ -46,7 +48,7 @@ namespace SaveOurShip2
 		public List<CompShipBay> Bays = new List<CompShipBay>();
 		public List<Building_ShipSensor> Sensors = new List<Building_ShipSensor>();
 		public List<CompHullFoamDistributor> FoamDistributors = new List<CompHullFoamDistributor>();
-		public List<CompShipLifeSupport> LifeSupports = new List<CompShipLifeSupport>();
+		public List<CompOxygenPusher> LifeSupports = new List<CompOxygenPusher>();
 		private Map map;
 		public Map Map
 		{
@@ -62,7 +64,8 @@ namespace SaveOurShip2
 		}
 		public ShipMapComp mapComp;
 		public Building_ShipBridge Core; //main bridge
-		public int Index = -1;
+        public Building_GravEngine GravEngine; //main grav engine
+        public int Index = -1;
 		private string name;
 		public string Name
 		{
@@ -156,7 +159,6 @@ namespace SaveOurShip2
 		public int EngineMass = 0;
 		public int MassSum => Mass + EngineMass;
 		public float MassActual => Mathf.Pow(MassSum, 1.2f) / 14;
-		public bool HasGravEngine = false;
 		private int fuelOptimizerCount = 0;
 		public int EffectiveFuelOptimizerCount
         {
@@ -170,13 +172,24 @@ namespace SaveOurShip2
             get
             {
 				const float gravEnineMassMultiplier = 0.4f;
-				return HasGravEngine ? MassActual * gravEnineMassMultiplier : MassActual;
+				return GravEngine != null ? MassActual * gravEnineMassMultiplier : MassActual;
 			}
         }
 		public float MaxTakeoff = 0;
 		public float ThrustRaw = 0;
-		public float ThrustRatio => 14 * ThrustRaw * 500f / Mathf.Pow(MassSum, 1.2f);
-		public int Rot => Engines.First().parent.Rotation.AsInt;
+        public float CurrentThrustRatio
+		{
+			get
+			{
+				float thrustRaw = 0f;
+				foreach (CompEngineTrail engineTrail in Engines.Where((CompEngineTrail x) => x.CanFire()))
+				{
+					thrustRaw += engineTrail.PreciseThrust;
+                }
+                return 14 * thrustRaw * 500f / Mathf.Pow(MassSum, 1.2f);
+            }
+		}
+        public int Rot => Engines.First().parent.Rotation.AsInt;
 		public bool IsWreck => Core == null; //not a real ship
 		public bool IsStuck => IsWreck || Bridges.All(b => b.TacCon) || Engines.NullOrEmpty(); //ship but cant move on its own
 		public bool CanFire() //ship has any engine that can fire
@@ -281,57 +294,51 @@ namespace SaveOurShip2
 					return;
 			}
 		}
-		public void EnginesOff()
+        public void ForceRePowerOnTick()
+        {
+            if (Core?.PowerComp?.PowerNet == null)
+            {
+                ForceRePower = 0;
+                return;
+            }
+            try
+            {
+                if (ForceRePower == 2)
+                {
+                    List<CompPower> pComps = new List<CompPower>();
+                    foreach (CompPower p in Core.PowerComp.PowerNet.connectors)
+                    {
+                        pComps.Add(p);
+                    }
+                    foreach (CompPower p2 in pComps)
+                    {
+                        p2.TryManualReconnect();
+                    }
+                }
+                foreach (CompPowerTrader p3 in Core.PowerComp.PowerNet.powerComps)
+                {
+                    if (!p3.PowerOn && FlickUtility.WantsToBeOn(p3.parent) && !p3.parent.IsBrokenDown())
+                    {
+                        PowerNet.partsWantingPowerOn.Add(p3);
+                    }
+                }
+                foreach (CompPowerTrader p4 in PowerNet.partsWantingPowerOn)
+                {
+                    p4.PowerOn = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("SOS2: " + ex);
+            }
+            ForceRePower = 0;
+        }
+        public void EnginesOff()
 		{
 			foreach (var engine in Engines)
 			{
 				engine.Off();
 			}
-		}
-		//shipmove
-		public byte ForceRePower = 0; //0 - no, 1 - same map, 2 - different map
-		public void ForceRePowerOnTick()
-		{
-			if (Core?.PowerComp?.PowerNet == null)
-			{
-				ForceRePower = 0;
-				return;
-			}
-
-			//Log.Message("SOS2: ".Colorize(Color.cyan) + map + " Ship ".Colorize(Color.green) + Index + " ForceRePower mode: " + ForceRePower);
-
-			try
-			{
-				if (ForceRePower == 2) //reconnect
-				{
-					List<CompPower> pComps = new List<CompPower>();
-					foreach (CompPower p in Core.PowerComp.PowerNet.connectors)
-					{
-						pComps.Add(p);
-					}
-					foreach (CompPower p in pComps)
-					{
-						p.TryManualReconnect();
-					}
-				}
-				//repower
-				foreach (CompPowerTrader p in Core.PowerComp.PowerNet.powerComps)
-				{
-					if (!p.PowerOn && FlickUtility.WantsToBeOn(p.parent) && !p.parent.IsBrokenDown())
-					{
-						PowerNet.partsWantingPowerOn.Add(p);
-					}
-				}
-				foreach (CompPowerTrader p in PowerNet.partsWantingPowerOn)
-				{
-					p.PowerOn = true;
-				}
-			}
-			catch (Exception e)
-			{
-				Log.Warning("SOS2: " + e);
-			}
-			ForceRePower = 0;
 		}
 		public void CreateShipSketchIfFuelPct(float fuelPercentNeeded, Map map, byte rot = 0, bool atmospheric = false)
 		{
@@ -354,7 +361,89 @@ namespace SaveOurShip2
 			}
 			CreateShipSketch(map, rot, atmospheric);
 		}
-		public bool HasPilotRCSAndFuel(float fuelPercentNeeded, bool atmospheric)
+        public void TryApproachingToMap(float fuelPercentNeeded, Map map, bool atmospheric = false)
+        {
+            if (!HasMannedBridge())
+            {
+                Messages.Message(TranslatorFormattedStringExtensions.Translate("SoS.MoveFailPilot"), Core, MessageTypeDefOf.NeutralEvent);
+                return;
+            }
+            float fuelNeeded = MassActual;
+            if (!HasRCS())
+            {
+                Messages.Message(TranslatorFormattedStringExtensions.Translate("SoS.MoveFailRCS"), Core, MessageTypeDefOf.NeutralEvent);
+                return;
+            }
+            fuelNeeded *= fuelPercentNeeded;
+            if (FuelNeeded(atmospheric) < fuelNeeded)
+            {
+                Messages.Message(TranslatorFormattedStringExtensions.Translate("SoS.MoveFailFuel", fuelNeeded), Core, MessageTypeDefOf.NeutralEvent);
+                return;
+            }
+            bool originIsSpace = Map.IsSOS2Space();
+			Building shipRoot;
+            if (IsWreck)
+            {
+                shipRoot = Buildings.First();
+            }
+            else
+            {
+                shipRoot = Core;
+            }
+            SpaceShipCache ship = mapComp.ShipsOnMap[((Building_ShipBridge)shipRoot).ShipIndex];
+            IntVec3 adj = IntVec3.Zero;
+            foreach (Building building in ship.Buildings)
+            {
+                if (building is Building_ShipAirlock airlock && airlock.Outerdoor())
+                {
+                    airlock.SetForbidden(value: true);
+                }
+            }
+            WorldObjectOrbitingShip mapPar;
+            if (!originIsSpace || (originIsSpace && (mapComp.ShipsOnMap.Count > 1 || Map.mapPawns.AllPawns.Any((Pawn p) => !mapComp.MapShipCells.ContainsKey(p.Position)))))
+            {
+                WorldObjectOrbitingShip transit = (WorldObjectOrbitingShip)WorldObjectMaker.MakeWorldObject(ResourceBank.WorldObjectDefOf.WreckSpace);
+                transit.drawPos = Map.Parent.DrawPos;
+                transit.SetFaction(Faction.OfPlayer);
+                transit.Tile = ShipInteriorMod2.FindWorldTile();
+                Find.WorldObjects.Add(transit);
+                Map newMap = MapGenerator.GenerateMap(Map.Size, transit, transit.MapGeneratorDef);
+                newMap.fogGrid.ClearAllFog();
+                mapComp = newMap.GetComponent<ShipMapComp>();
+                mapPar = transit;
+                ShipInteriorMod2.PlaceShip(ship, newMap, newMap.Center, false);
+                //if (!originIsSpace)
+                //{
+                //    newMap.weatherManager.TransitionTo(ResourceBank.WeatherDefOf.OuterSpaceWeather);
+                //}
+            }
+            else
+            {
+                mapPar = (WorldObjectOrbitingShip)Map.Parent;
+            }
+            mapComp.MoveToMap = map;
+            mapComp.MoveToTile = map.Tile;
+            mapPar.originDrawPos = Map.Parent.DrawPos;
+            if (originIsSpace)
+            {
+                mapPar.targetDrawPos = map.Parent.DrawPos;
+                mapComp.Heading = -1;
+                mapComp.Takeoff = false;
+            }
+            else
+            {
+                mapPar.targetDrawPos = ShipInteriorMod2.FindPlayerShipMap().Parent.DrawPos;
+                mapComp.Heading = 1;
+                mapComp.Takeoff = true;
+            }
+            mapComp.BurnTimer = Find.TickManager.TicksGame;
+            mapComp.PrevMap = Map;
+            mapComp.PrevTile = Map.Tile;
+			mapComp.Approaching = true;
+            mapComp.StartTransit();
+            CameraJumper.TryJump(mapComp.MapRootListAll.FirstOrDefault().Position, Map);
+        }
+        public bool HasPilotRCSAndFuel(float fuelPercentNeeded, bool atmospheric)
 		{
 			if (!HasMannedBridge() || !HasRCS() || FuelNeeded(atmospheric) < MassActual * fuelPercentNeeded)
 				return false;
@@ -405,12 +494,23 @@ namespace SaveOurShip2
 		public float FuelNeeded(bool atmospheric)
 		{
 			float fuelHad = 0f;
-			foreach (CompEngineTrail engine in Engines.Where(e => !e.Props.energy && (!atmospheric || e.Props.takeOff)))
+            List<PipeNet> lastPipeNets = new List<PipeNet>();
+            foreach (CompEngineTrail engine in Engines.Where(e => !e.Props.energy && (!atmospheric || e.Props.takeOff)))
 			{
 				fuelHad += engine.refuelComp.Fuel;
 				if (engine.refuelComp.Props.fuelFilter.AllowedThingDefs.Contains(ResourceBank.ThingDefOf.ShuttleFuelPods))
 					fuelHad += engine.refuelComp.Fuel;
-			}
+                CompRefillWithPipes pipeComp = engine.parent.TryGetComp<CompRefillWithPipes>();
+                if (pipeComp != null)
+                {
+                    if (lastPipeNets.Contains(pipeComp.PipeNet))
+                    {
+                        continue;
+                    }
+                    fuelHad += pipeComp.PipeNet.CurrentStored();
+                    lastPipeNets.Add(pipeComp.PipeNet);
+                }
+            }
 			return fuelHad;
 		}
 		public void CreateShipSketch(Map targetMap, byte rotb = 0, bool atmospheric = false, float fuelPaidByTarget = 0)
@@ -569,9 +669,9 @@ namespace SaveOurShip2
 			//Log.Message("Ship adj: " + adj);
 			//Log.Message("Ship pos: " + min);
 			//Log.Message("Ship center: " + (adj - min));
-			return adj - min;
+			return adj - min + new IntVec3(-1, 0, 0);
 		}
-		public IEnumerable<Building> OuterNonShipWalls()
+        public IEnumerable<Building> OuterNonShipWalls()
 		{
 			foreach (Building b in Buildings.Where(b => !Parts.Contains(b) && b.def.passability == Traversability.Impassable && (b.def.Size.x == 1 || b.def.Size.z == 1)))
 			{
@@ -802,18 +902,24 @@ namespace SaveOurShip2
 							Mass += 1;
 							return;
 						}
-						if (b.TryGetComp<CompEngineTrail>() != null)
+						if (b.TryGetComp<CompEngineTrail>(out var engineTrail))
 						{
-							var refuelable = b.TryGetComp<CompRefuelable>();
-							ThrustRaw += b.TryGetComp<CompEngineTrail>().PreciseThrust;
+                            engineTrail.ship = this;
+                            var refuelable = b.TryGetComp<CompRefuelable>();
+							ThrustRaw += engineTrail.PreciseThrust;
 							if (refuelable != null)
 							{
 								MaxTakeoff += refuelable.Props.fuelCapacity;
 								if (refuelable.Props.fuelFilter.AllowedThingDefs.Contains(ResourceBank.ThingDefOf.ShuttleFuelPods))
 									MaxTakeoff += refuelable.Props.fuelCapacity;
 							}
-							EngineMass += b.def.Size.Area * 60;
-							Engines.Add(b.TryGetComp<CompEngineTrail>());
+                            CompResourceStorage compRS = b.TryGetComp<CompResourceStorage>();
+                            if (compRS != null)
+                            {
+                                MaxTakeoff += compRS.AmountStored;
+                            }
+                            EngineMass += b.def.Size.Area * 60;
+							Engines.Add(engineTrail);
 						}
 						if (b.TryGetComp<CompRCSThruster>() != null)
 							RCSs.Add(b.GetComp<CompRCSThruster>());
@@ -843,8 +949,8 @@ namespace SaveOurShip2
 							Sensors.Add(sensor);
 						if (b.TryGetComp<CompHullFoamDistributor>() != null)
 							FoamDistributors.Add(b.GetComp<CompHullFoamDistributor>());
-						if (b.TryGetComp<CompShipLifeSupport>() != null)
-							LifeSupports.Add(b.GetComp<CompShipLifeSupport>());
+						if (b.TryGetComp<CompOxygenPusher>() != null)
+							LifeSupports.Add(b.GetComp<CompOxygenPusher>());
 					}
 				}
 				var heatComp = b.TryGetComp<CompShipHeat>();
@@ -893,9 +999,10 @@ namespace SaveOurShip2
 				{
 					Mass += b.def.Size.x * b.def.Size.z * 3;
 				}
-				if (b.def == ResourceBank.ThingDefOf.GravEngine)
+				if (b is Building_GravEngine g)
                 {
-					HasGravEngine = true;
+					Log.Message("Added gravengine");
+					GravEngine = g;
                 }
 				if (b.def == ResourceBank.ThingDefOf.FuelOptimizer)
 				{
@@ -937,7 +1044,12 @@ namespace SaveOurShip2
 								if (refuelable.Props.fuelFilter.AllowedThingDefs.Contains(ResourceBank.ThingDefOf.ShuttleFuelPods))
 									MaxTakeoff -= refuelable.Props.fuelCapacity;
 							}
-							EngineMass -= b.def.Size.Area * 60;
+                            CompResourceStorage compRS = b.TryGetComp<CompResourceStorage>();
+                            if (compRS != null)
+                            {
+                                MaxTakeoff -= compRS.AmountStored;
+                            }
+                            EngineMass -= b.def.Size.Area * 60;
 							Engines.Remove(b.TryGetComp<CompEngineTrail>());
 						}
 						if (b.TryGetComp<CompRCSThruster>() != null)
@@ -963,8 +1075,8 @@ namespace SaveOurShip2
 							Sensors.Remove(sensor);
 						if (b.TryGetComp<CompHullFoamDistributor>() != null)
 							FoamDistributors.Remove(b.GetComp<CompHullFoamDistributor>());
-						if (b.TryGetComp<CompShipLifeSupport>() != null)
-							LifeSupports.Remove(b.GetComp<CompShipLifeSupport>());
+						if (b.TryGetComp<CompOxygenPusher>() != null)
+							LifeSupports.Remove(b.GetComp<CompOxygenPusher>());
 					}
 				}
 				var heatComp = b.TryGetComp<CompShipHeat>();
@@ -1010,9 +1122,10 @@ namespace SaveOurShip2
 					Mass -= b.def.Size.x * b.def.Size.z * 3;
 				}
 				// Only one should exist, so removal nmeans no grav engines left
-				if (b.def == ResourceBank.ThingDefOf.GravEngine)
+				if (b is Building_GravEngine)
 				{
-					HasGravEngine = false;
+                    Log.Message("Removed gravengine");
+                    GravEngine = null;
 				}
 				if (b.def == ResourceBank.ThingDefOf.FuelOptimizer)
 				{
@@ -1098,27 +1211,37 @@ namespace SaveOurShip2
 			PathDirty = false;
 			Log.Message("SOS2: ".Colorize(Color.cyan) + map + " Ship ".Colorize(Color.green) + Index + " Rebuilt corePath at " + Core.Position + " path max: " + LastSafePath);
 		}
-		//detach
-		public void Tick()
+        //detach
+
+        public byte ForceRePower = 0;
+
+        public void Tick()
 		{
 			foreach (HashSet<IntVec3> area in DetachedShipAreas)
 			{
 				FloatAndDestroy(area);
 			}
 			DetachedShipAreas.Clear();
-			if (ForceRePower > 0)
-			{
-				ForceRePowerOnTick();
-				if (WeBeCrashing > 0) //bad juju
-				{
-					CrashShip();
-				}
-			}
-			//if wreck, move to grave
-			else if (IsWreck && mapComp.ShipMapState == ShipMapState.inCombat && mapComp.MapEnginePower != 0)
+            if (ForceRePower > 0)
+            {
+                ForceRePowerOnTick();
+                //if (WeBeCrashing > 0f)
+                //{
+                //    CrashShip();
+                //}
+            }
+            else if (IsWreck && mapComp.ShipMapState == ShipMapState.inCombat && mapComp.MapEnginePower != 0)
 			{
 				mapComp.ShipsToMove.Add(Index);
 			}
+			if (ShipInteriorMod2.AfterPlaceFlag)
+			{
+				if (GravEngine.def == ResourceBank.ThingDefOf.TempGravEngine)
+				{
+					GravEngine.DeSpawn();
+                }
+				ShipInteriorMod2.AfterPlaceFlag = false;
+            }
 		}
 		public void SlowTick()
 		{
@@ -1143,8 +1266,43 @@ namespace SaveOurShip2
 					}
 				}
 			}
-		}
-		public void CheckForDetach(List<IntVec3> areaDestroyed)
+			if (map.Parent is WorldObjectOrbitingShip mp)
+			{
+                if (mapComp.Crashing && !mp.movingDrawPos) //up to orbit if crashing and has fuel
+                {
+                    if (mapComp.AnyShipCanMove())
+					{
+						mp.movingDrawPos = true;
+                        mapComp.MapEnginesOn();
+                        mapComp.UpToOrbit();
+                        Log.Message("uptoorbit");
+                    }
+                    mapComp.KillAllOffShip();
+                }
+                if (mp.movingDrawPos)
+                {
+                    mapComp.MapEnginesOn();
+                    mapComp.MapEnginePower *= ShipInteriorMod2.EngineConsumption(mp.OutputLevel, out _);
+                    mapComp.KillAllOffShip();
+                    Log.Message("ship is moving");
+                }
+                if (mapComp.AnyShipCanMove())
+                {
+                    if (!mp.movingDrawPos && mapComp.ShipMapState != ShipMapState.inTransit)
+                    {
+                        mapComp.MapEnginesOn();
+                        mapComp.MapEnginePower *= 50f;
+                        Log.Message("hovering");
+                    }
+                }
+                else //crashing
+                {
+                    mapComp.CrashToGround();
+                    Log.Message("crash started");
+                }
+            }
+        }
+        public void CheckForDetach(List<IntVec3> areaDestroyed)
 		{
 			if (areaDestroyed.Count == 1) //simple solutions for 1x1 detach:
 			{

@@ -25,7 +25,8 @@
 			<li>
 				<key>@</key>
 				<value>
-					<shapeOrDef>Ship_Beam_Unpowered</shapeOrDef>
+					<shapeOrDef>GravshipHull</shapeOrDef>
+					<stuff>Uranium</stuff>
 				</value>
 			</li>
 			<li>
@@ -73,7 +74,8 @@
 			<li>
 				<key>H</key>
 				<value>
-					<shapeOrDef>Ship_Beam</shapeOrDef>
+					<shapeOrDef>GravshipHull</shapeOrDef>
+					<stuff>Uranium</stuff>
 				</value>
 			</li>
 			<li>
