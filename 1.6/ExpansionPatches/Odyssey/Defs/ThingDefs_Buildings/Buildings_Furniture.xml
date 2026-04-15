@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+    <ThingDef ParentName="GravshipComponentBase">
+        <defName>TempGravEngine</defName>
+        <label>temp grav engine</label>
+        <description>A temporary grav engine.</description>
+        <thingClass>Building_GravEngine</thingClass>
+        <drawerType>RealtimeOnly</drawerType>
+        <tickerType>Normal</tickerType>
+        <graphicData>
+            <graphicClass>Graphic_Single</graphicClass>
+            <texPath>Things/Filth/Trash/TrashA</texPath>
+            <drawSize>(1,1)</drawSize>
+        </graphicData>
+        <statBases>
+            <MaxHitPoints>400</MaxHitPoints>
+            <Mass>10</Mass>
+            <GravshipRange>0</GravshipRange>
+            <SubstructureSupport>0</SubstructureSupport>
+            <MarketValue>0</MarketValue>
+            <WorkToBuild>10000</WorkToBuild>
+        </statBases>
+        <size>(1,1)</size>
+        <castEdgeShadows>true</castEdgeShadows>
+        <fillPercent>0.6</fillPercent>
+        <passability>PassThroughOnly</passability>
+        <pathCost>20</pathCost>
+        <canOverlapZones>false</canOverlapZones>
+        <building>
+            <ai_neverTrashThis>true</ai_neverTrashThis>
+            <deconstructible>true</deconstructible>
+        </building>
+        <!-- <costList>
+            <Gravcore>1</Gravcore>
+            <GravlitePanel>50</GravlitePanel>
+            <ComponentIndustrial>4</ComponentIndustrial>
+            <Steel>60</Steel>
+        </costList> -->
+        <comps>
+            <li Class="CompProperties_SubstructureFootprint">
+                <radius>7.9</radius>
+            </li>
+            <li Class="CompProperties_AffectedByFacilities">
+                <linkableFacilities>
+                    <li>GravFieldExtender</li>
+                    <li>ChemfuelTank</li>
+                    <li>LargeChemfuelTank</li>
+                    <li>SmallThruster</li>
+                    <li>LargeThruster</li>
+                    <li>FuelOptimizer</li>
+                    <li>SignalJammer</li>
+                    <li>PilotSubpersonaCore</li>
+                    <li>GravshipShieldGenerator</li>
+                </linkableFacilities>
+            </li>
+            <li Class="CompProperties_Breakdownable" />
+        </comps>
+        <notifyMapRemoved>true</notifyMapRemoved>
+        <uiOrder>2000</uiOrder>
+    </ThingDef>
+
+    <ThingDef ParentName="BuildingBase">
+        <defName>WallShipAirlockBeam</defName>
+        <label>wall docking clamp</label>
+		<description>One half of a system for attaching spacecraft. Place two of these directly adjacent to a vacuum-facing airlock, facing outward: |o| where | represents a docking clamp and o represents the airlock. The airlock will then gain the ability to extend a docking tube up to 3 tiles long.\n\nNo special equipment is necessary on the other end; simply line the tube up with the other ship's airlock. You can also connect it to other airlocks.\n\nThe tube is not rated for interplanetary travel or atmospheric re-entry so ships will automatically decouple.</description>
+        <rotatable>true</rotatable>
+        <graphicData>
+            <texPath>Things/Building/Furniture/WallDockAttach/DockAttach</texPath>
+            <graphicClass>Graphic_Multi</graphicClass>
+            <drawOffsetNorth>(0,0,0.9)</drawOffsetNorth>
+            <drawOffsetSouth>(0,0,-0.9)</drawOffsetSouth>
+            <drawOffsetWest>(-0.9,0,0)</drawOffsetWest>
+            <drawOffsetEast>(0.9,0,0)</drawOffsetEast>
+            <damageData>
+                <enabled>false</enabled>
+            </damageData>
+        </graphicData>
+		<uiIconPath>Things/Building/Ship/BeamRadiatorAdvUI</uiIconPath>
+        <altitudeLayer>BuildingOnTop</altitudeLayer>
+        <costList>
+			<Steel>25</Steel>
+			<Plasteel>20</Plasteel>
+			<ComponentIndustrial>5</ComponentIndustrial>
+		</costList>
+        <statBases>
+			<WorkToBuild>8000</WorkToBuild>
+			<MaxHitPoints>500</MaxHitPoints>
+			<Flammability>0</Flammability>
+		</statBases>
+        <passability>Standable</passability>
+        <terrainAffordanceNeeded IsNull="True" />
+        <pathCost>0</pathCost>
+        <overrideMinifiedRot>North</overrideMinifiedRot>
+        <minifiedDrawOffset>(0, 0, 0.2)</minifiedDrawOffset>
+        <building>
+            <shipPart>true</shipPart>
+            <isEdifice>false</isEdifice>
+            <isAttachment>true</isAttachment>
+            <paintable>true</paintable>
+        </building>
+        <placeWorkers>
+            <li>SaveOurShip2.PlaceWorker_SolarShip</li>
+            <li>Placeworker_AttachedToWall</li>
+        </placeWorkers>
+        <designationCategory>Ship</designationCategory>
+		<designationHotKey>Misc5</designationHotKey>
+		<researchPrerequisites>
+			<li>ShipBasics</li>
+		</researchPrerequisites>
+		<constructionSkillPrerequisite>6</constructionSkillPrerequisite>
+        <comps>
+            <li Class="SaveOurShip2.CompProps_ShipCachePart">
+			</li>
+			<li Class="SaveOurShip2.CompProps_DockExtender">
+				<extender>true</extender>
+			</li>
+			<li Class="CompProperties_Power">
+				<compClass>CompPowerTransmitter</compClass>
+				<transmitsPower>true</transmitsPower>
+			</li>
+			<li Class="SaveOurShip2.CompProps_ShipHeat">
+				<compClass>SaveOurShip2.CompShipHeat</compClass>
+			</li>
+			<li>
+				<compClass>CompColorable</compClass>
+			</li>
+        </comps>
+    </ThingDef>
+
+</Defs>

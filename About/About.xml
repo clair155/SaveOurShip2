@@ -67,11 +67,6 @@ OG Testing Squad: Buns Buns Cat, Phsarjk, i am has yes, Fuji, Reviire, Ian, Gene
 			<displayName>Fire Flamework</displayName>
 			<steamWorkshopUrl>https://steamcommunity.com/workshop/filedetails/?id=3658906809</steamWorkshopUrl>
 		</li>
-		<li>
-			<packageId>eclair155.patches</packageId>
-			<displayName>Eclair Patches</displayName>
-			<steamWorkshopUrl>https://steamcommunity.com/workshop/filedetails/?id=3658906809</steamWorkshopUrl>
-		</li>
 	</modDependencies>
 	<loadAfter>
 		<li>brrainz.harmony</li>

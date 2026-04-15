@@ -1,0 +1,1276 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+    <!-- FireFlamework -->
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="MechaniteFire"]</xpath>
+        <value>
+            <ThingDef ParentName="FF_FireBase">
+                <defName>MechaniteFire</defName>
+                <label>disassembler mechanites</label>
+                <thingClass>SOS2Fire.MechaniteFire</thingClass>
+                <graphicData>
+                <texPath>Things/Special/MechaniteFire</texPath>
+                <graphicClass>FireFlamework.Graphic_FireFrameFlicker</graphicClass>
+                <shaderType>TransparentPostLight</shaderType>
+                </graphicData> 
+                <comps Inherit="False">
+                </comps>
+                <modExtensions>
+                <li Class="FireFlamework.FireDefExtension">
+                    <!-- <SmokeFleckDef>Smoke</SmokeFleckDef> -->
+                    <MicroSparksFleckDef>MechaniteMicroSparks</MicroSparksFleckDef>
+                    <!-- <FireGlowFleckDef>MechaniteFireGlow</FireGlowFleckDef> -->
+                    <extinguishDamageDef>MechaniteExtinguish</extinguishDamageDef>
+                    <!-- <FireIconPath>UI/Icons/ColonistBar/MechaniteBurning</FireIconPath> -->
+                    <FireAdjective>Mechanite</FireAdjective>
+                    <CanBePutOutNormally>true</CanBePutOutNormally>
+                </li>
+                </modExtensions>
+            </ThingDef>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/DamageDef[defName="BombMechanite"]</xpath>
+        <value>
+            <explosionCellFleck>BlastMechaniteFlame</explosionCellFleck>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="MechaniteSpark"]/thingClass</xpath>
+        <value>
+            <thingClass>SOS2Fire.MechaniteSpark</thingClass>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/DamageDef[defName="BombMechanite"]/workerClass</xpath>
+        <value>
+            <workerClass>SOS2Fire.DamageWorker_MechaniteFlame</workerClass>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>Defs/DutyDef[defName="SoSDefendShip"]/thinkNode/subNodes/li[@Class="SaveOurShip2.JobGiver_FightMechanitesNearPoint"]</xpath>
+    </Operation>
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>Defs/WorkGiverDef[defName="FightMechanites"]</xpath>
+    </Operation>
+
+    <!-- Odyssey -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="Autodoor"]</xpath>
+        <value>
+            <thingClass>SaveOurShip2.Building_ShipAirlock</thingClass>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="Autodoor"]/comps</xpath>
+        <value>
+            <li Class="SaveOurShip2.CompProps_ShipHeat">
+				<compClass>SaveOurShip2.CompShipHeat</compClass>
+			</li>
+            <li Class="SaveOurShip2.CompProps_Unfold">
+				<extendRate>0.005</extendRate>
+				<retractRate>0.005</retractRate>
+				<retractTime>240</retractTime>
+				<extendDirection>(0,0,-1)</extendDirection>
+				<startOffset>0.5</startOffset>
+				<length>3.0</length>
+				<width>3.0</width>
+				<graphicPath>Things/Building/Ship/DockTube</graphicPath>
+				<graphicPathAlt>Things/Building/Ship/DockTubeV</graphicPathAlt>
+			</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="GravshipHull"]/comps</xpath>
+        <value>
+            <li Class="SaveOurShip2.CompProps_ShipCachePart">
+				<isHull>true</isHull>
+				<roof>true</roof>
+			</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="GravshipHull"]</xpath>
+        <value>
+            <placeWorkers>
+                <li>SaveOurShip2.PlaceWorker_ShipHull</li>
+            </placeWorkers>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="GravshipHull"]/building</xpath>
+        <value>
+            <shipPart>true</shipPart>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="GravshipHull"]/terrainAffordanceNeeded</xpath>
+        <value>
+            <terrainAffordanceNeeded>Heavy</terrainAffordanceNeeded>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/TerrainDef[defName="Space"]/affordances</xpath>
+        <value>
+            <affordances>
+                <li>Light</li>
+                <li>Medium</li>
+                <li>Heavy</li>
+            </affordances>
+        </value>
+    </Operation>
+    
+    <!-- SOS2 -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="ShipPilotSeatMini" or defName="ShipConsoleTactical" or defName="Ship_DroneCore" or defName="Ship_ComputerCore"]/comps</xpath>
+        <value>
+            <li Class="CompProperties_GravshipFacility">
+                <requiresLOS>false</requiresLOS>
+                <maxSimultaneous>9999</maxSimultaneous>
+                <maxDistance>500</maxDistance>
+            </li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationInsert">
+        <xpath>Defs/DutyDef[defName="SoSDefendShip" or defName="SoSAssaultShip"]/thinkNode/subNodes/li[@Class="JobGiver_TakeCombatEnhancingDrug"]</xpath>
+        <value>
+            <li Class="JobGiver_FindOxygen" />
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/TerrainDef[defName="FakeFloorInsideShip"]/texturePath</xpath>
+        <value>
+            <texturePath>Terrain/Surfaces/Substructure/Substructure</texturePath>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/TerrainDef[defName="FakeFloorInsideShip"]</xpath>
+        <value>
+            <renderPrecedence>399</renderPrecedence>
+            <isFoundation>true</isFoundation>
+            <preventCraters>true</preventCraters>
+            <affordances>
+                <li>Substructure</li>
+            </affordances>
+            <tags>
+                <li>Substructure</li>
+            </tags>
+        </value>
+    </Operation>
+
+    <!-- <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="ShipPilotSeatMini"]/label</xpath>
+        <value>
+            <label>pilot cockpit</label>
+        </value>
+    </Operation> -->
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="ShipHullTile"]/uiIconPath</xpath>
+        <value>
+            <uiIconPath>UI/MenuIcons/Substructure_MenuIcon</uiIconPath>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="ShipHeatsink"]/graphicData/texPath</xpath>
+        <value>
+            <texPath>Things/Structures/Heatsinks/Heatsink</texPath>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="ShipHeatsinkLarge"]/graphicData/texPath</xpath>
+        <value>
+            <texPath>Things/Structures/Heatsinks/HeatsinkLarge</texPath>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="ShipConsoleTactical"]/graphicData/texPath</xpath>
+        <value>
+            <texPath>Things/Structures/EngineeringConsole/EngineeringConsole</texPath>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="ShipConsoleScience"]/graphicData/texPath</xpath>
+        <value>
+            <texPath>Things/Structures/GravtechResearchBench/GravtechResearchBench</texPath>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="Ship_Engine_Interplanetary"]/graphicData/texPath</xpath>
+        <value>
+            <texPath>Things/Building/LateralThruster/LateralThruster</texPath>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="Ship_Engine_Interplanetary"]/graphicData/drawSize</xpath>
+        <value>
+            <drawSize>(3.2, 3.2)</drawSize>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="Ship_Engine_Interplanetary_Large"]/graphicData/texPath</xpath>
+        <value>
+            <texPath>Things/Structures/Thrusters/GiantAstrofuelThruster</texPath>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="Ship_Engine_Interplanetary_Large"]/graphicData/drawSize</xpath>
+        <value>
+            <drawSize>(6.7, 6.7)</drawSize>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="ShipHeatsink" or defName="ShipHeatsinkLarge"]</xpath>
+        <value>
+            <rotatable>true</rotatable>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="ShipHeatsink" or defName="ShipHeatsinkLarge" or defName="ShipConsoleTactical" or defName="ShipConsoleScience"]/graphicData/graphicClass</xpath>
+        <value>
+            <graphicClass>Graphic_Multi</graphicClass>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="ShipArchotechSpore"]</xpath>
+        <value>
+            <uiIconScale>1.5</uiIconScale>
+            <uiIconOffset>(0, 0.2)</uiIconOffset>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="ShipArchotechPillarA" or defName="ShipArchotechPillarB" or defName="ShipArchotechPillarC" or defName="ShipArchotechPillarD"]</xpath>
+        <value>
+            <uiIconScale>2.5</uiIconScale>
+            <uiIconOffset>(0, 0.2)</uiIconOffset>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="ShipHeatsink"]</xpath>
+        <value>
+            <uiIconScale>0.8</uiIconScale>
+            <uiIconOffset>(0, 0.1)</uiIconOffset>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="Ship_AvatarCasket"]</xpath>
+        <value>
+            <uiIconScale>0.9</uiIconScale>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="ShipConsoleTactical" or defName="ShipConsoleScience"]/defaultPlacingRot</xpath>
+        <value>
+            <defaultPlacingRot>North</defaultPlacingRot>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="ShipConsoleTactical" or defName="ShipConsoleScience"]/interactionCellOffset</xpath>
+        <value>
+            <interactionCellOffset>(0, 0, -1)</interactionCellOffset>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>Defs/ThingDef[defName="ShipConsoleTactical" or defName="ShipConsoleScience"]/interactionCellIconReverse</xpath>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="ShipHeatsink"]/graphicData/drawSize</xpath>
+        <value>
+            <drawSize>(3, 3)</drawSize>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="ShipConsoleTactical"]/graphicData/drawSize</xpath>
+        <value>
+            <drawSize>(4, 2)</drawSize>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="ShipConsoleScience"]/graphicData/drawSize</xpath>
+        <value>
+            <drawSize>(4, 2)</drawSize>
+        </value>
+    </Operation>
+
+    <!-- <Operation Class="PatchOperationReplace">
+        <xpath>Defs/WorldObjectDef[defName="ShipOrbiting" or defName="ShipEnemy" or defName="WreckSpace" or defName="SiteSpace"]/mapGenerator</xpath>
+        <value>
+            <mapGenerator>Space</mapGenerator>
+        </value>
+    </Operation> -->
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/Vehicles.VehicleDef[defName="SoS2_Shuttle_Personal" or defName="SoS2_Shuttle" or defName="SoS2_Shuttle_Heavy" or defName="SoS2_Shuttle_Superheavy"]/properties/customTerrainCosts/li/key</xpath>
+        <value>
+            <key>Space</key>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/Vehicles.VehicleBuildDef[defName="SoS2_Shuttle_Standard_Blueprint" or defName="SoS2_Shuttle_Heavy_Blueprint" or defName="SoS2_Shuttle_Superheavy_Blueprint"]/costList</xpath>
+        <value>
+            <ShuttleEngine>1</ShuttleEngine>
+        </value>
+    </Operation>
+
+    <!-- <Operation Class="PatchOperationRemove">
+        <xpath>Defs/BiomeDef[defName="OuterSpaceBiome"]</xpath>
+    </Operation>
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>Defs/TerrainDef[defName="EmptySpace"]</xpath>
+    </Operation> -->
+
+    <!-- <Operation Class="PatchOperationRemove">
+        <xpath>Defs/MapGeneratorDef[defName="EmptySpaceMap"]</xpath>
+    </Operation> -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/MapGeneratorDef[defName="EmptySpaceMap"]</xpath>
+        <value>
+            <disableCallAid>true</disableCallAid>
+            <renderWorld>true</renderWorld>
+            <disableMapClippers>true</disableMapClippers>
+            <defaultUnderGridTerrain>Space</defaultUnderGridTerrain>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/MapGeneratorDef[defName="EmptySpaceMap"]/genSteps</xpath>
+        <value>
+            <genSteps>
+                <li>EmptySpaceTerrain</li>
+                <li>FindPlayerStartSpotSpace</li>
+                <li>FogSpace</li>
+            </genSteps>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>Defs/ThingDef[defName="Ship_LifeSupport" or defName="Ship_LifeSupport_Small"]/comps/li[@Class="CompProperties_OxygenPusher"]</xpath>
+    </Operation>
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>Defs/ThingDef[defName="Ship_LifeSupport" or defName="Ship_LifeSupport_Small"]/comps/li[@Class="SaveOurShip2.CompProps_LifeSupport"]</xpath>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="Ship_LifeSupport"]/label</xpath>
+        <value>
+            <label>water support system</label>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="Ship_LifeSupport_Small"]/label</xpath>
+        <value>
+            <label>small water support system</label>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="Ship_Engine_Small" or defName="Ship_Engine" or defName="Ship_Engine_Large" or defName="Ship_Engine_Archotech"]</xpath>
+        <value>
+            <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="Ship_Engine_Small"]/comps</xpath>
+        <value>
+            <li Class="CompProperties_GravshipThruster">
+                <componentTypeDef>Thruster</componentTypeDef>
+                <exclusionAreaSize>(4, 0, 7)</exclusionAreaSize>
+                <exclusionAreaOffset>(-1, 0, -8)</exclusionAreaOffset>
+                <directionInfluence>20</directionInfluence>
+                <flameSize>4.0</flameSize>
+                <flameOffsetsPerDirection>
+                    <li>(0, 0, 1.0)</li>
+                    <li>(0, 0, 0.5)</li>
+                    <li>(0, 0, 0.5)</li>
+                    <li>(0, 0, 0.5)</li>
+                </flameOffsetsPerDirection>
+                <flameShaderType>MoteGlow</flameShaderType>
+                <flameShaderParameters>
+                    <_MainTex>/Things/Building/Ship/Ship_Engine_Trail_Single</_MainTex>
+                </flameShaderParameters>
+                <requiresLOS>false</requiresLOS>
+                <maxSimultaneous>99</maxSimultaneous>
+                <maxDistance>500</maxDistance>
+                <exhaustSettings>
+                    <exhaustFleckDef>GravshipThrusterExhaust</exhaustFleckDef>
+                    <emissionsPerSecond>40.0</emissionsPerSecond>
+                    <spawnRadiusRange>0.0~0.5</spawnRadiusRange>
+                    <velocity>(0.0,0.0,-20.0)</velocity>
+                    <velocityRotationRange>-10.0~10.0</velocityRotationRange>
+                    <velocityMultiplierRange>0.8~1.2</velocityMultiplierRange>
+                    <rotationOverTimeRange>-180.0~180.0</rotationOverTimeRange>
+                    <scaleRange>1.5~3.0</scaleRange>
+                </exhaustSettings>
+            </li>
+            <li Class="CompProperties_Breakdownable" />
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="Ship_Engine"]/comps</xpath>
+        <value>
+            <li Class="CompProperties_GravshipThruster">
+                <componentTypeDef>Thruster</componentTypeDef>
+                <exclusionAreaSize>(5, 0, 7)</exclusionAreaSize>
+                <exclusionAreaOffset>(-2, 0, -8)</exclusionAreaOffset>
+                <directionInfluence>30</directionInfluence>
+                <flameSize>4.0</flameSize>
+                <flameOffsetsPerDirection>
+                    <li>(0, 0, 1.0)</li>
+                    <li>(0, 0, 0.5)</li>
+                    <li>(0, 0, 0.5)</li>
+                    <li>(0, 0, 0.5)</li>
+                </flameOffsetsPerDirection>
+                <flameShaderType>MoteGlow</flameShaderType>
+                <flameShaderParameters>
+                    <_MainTex>/Things/Building/Ship/Ship_Engine_Trail_Double</_MainTex>
+                </flameShaderParameters>
+                <requiresLOS>false</requiresLOS>
+                <maxSimultaneous>99</maxSimultaneous>
+                <maxDistance>500</maxDistance>
+                <exhaustSettings>
+                    <exhaustFleckDef>GravshipThrusterExhaust</exhaustFleckDef>
+                    <emissionsPerSecond>40.0</emissionsPerSecond>
+                    <spawnRadiusRange>0.0~0.5</spawnRadiusRange>
+                    <velocity>(0.0,0.0,-20.0)</velocity>
+                    <velocityRotationRange>-10.0~10.0</velocityRotationRange>
+                    <velocityMultiplierRange>0.8~1.2</velocityMultiplierRange>
+                    <rotationOverTimeRange>-180.0~180.0</rotationOverTimeRange>
+                    <scaleRange>3.0~5.0</scaleRange>
+                </exhaustSettings>
+            </li>
+            <li Class="CompProperties_Breakdownable" />
+        </value>
+    </Operation>
+
+     <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="Ship_Engine_Large"]/comps</xpath>
+        <value>
+            <li Class="CompProperties_GravshipThruster">
+                <componentTypeDef>Thruster</componentTypeDef>
+                <exclusionAreaSize>(9, 0, 15)</exclusionAreaSize>
+                <exclusionAreaOffset>(-4, 0, -19)</exclusionAreaOffset>
+                <directionInfluence>30</directionInfluence>
+                <flameSize>4.0</flameSize>
+                <flameOffsetsPerDirection>
+                    <li>(0, 0, 1.0)</li>
+                    <li>(0, 0, 0.5)</li>
+                    <li>(0, 0, 0.5)</li>
+                    <li>(0, 0, 0.5)</li>
+                </flameOffsetsPerDirection>
+                <flameShaderType>MoteGlow</flameShaderType>
+                <flameShaderParameters>
+                    <_MainTex>/Things/Building/Ship/Ship_Engine_Trail_Single</_MainTex>
+                </flameShaderParameters>
+                <requiresLOS>false</requiresLOS>
+                <maxSimultaneous>99</maxSimultaneous>
+                <maxDistance>500</maxDistance>
+                <exhaustSettings>
+                    <exhaustFleckDef>GravshipThrusterExhaust</exhaustFleckDef>
+                    <emissionsPerSecond>40.0</emissionsPerSecond>
+                    <spawnRadiusRange>0.0~0.5</spawnRadiusRange>
+                    <velocity>(0.0,0.0,-20.0)</velocity>
+                    <velocityRotationRange>-10.0~10.0</velocityRotationRange>
+                    <velocityMultiplierRange>0.8~1.2</velocityMultiplierRange>
+                    <rotationOverTimeRange>-180.0~180.0</rotationOverTimeRange>
+                    <scaleRange>5.0~7.5</scaleRange>
+                </exhaustSettings>
+            </li>
+            <li Class="CompProperties_Breakdownable" />
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="GravEngine" or defName="VGE_GravhulkEngine" or defName="VGE_GravjumperEngine"]/comps/li[@Class="CompProperties_AffectedByFacilities"]/linkableFacilities</xpath>
+        <value>
+            <li>Ship_Engine_Small</li>
+            <li>Ship_Engine</li>
+            <li>Ship_Engine_Large</li>
+            <li>Ship_Engine_Archotech</li>
+        </value>
+    </Operation>
+
+    <!-- VGE -->
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="VGE_PilotBridge"]</xpath>
+        <value>
+            <ThingDef ParentName="BuildingBase">
+                <defName>VGE_PilotBridge</defName>
+                <label>pilot bridge</label>
+                <thingClass>SaveOurShip2.Building_ShipBridge</thingClass>
+                <graphicData>
+                    <texPath>Things/Structures/PilotConsoles/PilotBridge/PilotBridge</texPath>
+                    <graphicClass>Graphic_Multi</graphicClass>
+                    <shaderType>CutoutComplex</shaderType>
+                    <drawSize>(6, 4)</drawSize>
+                    <damageData>
+                        <cornerTL>Damage/Corner</cornerTL>
+                        <cornerTR>Damage/Corner</cornerTR>
+                        <cornerBL>Damage/Corner</cornerBL>
+                        <cornerBR>Damage/Corner</cornerBR>
+                    </damageData>
+                </graphicData>
+                <altitudeLayer>Building</altitudeLayer>
+                <hasInteractionCell>True</hasInteractionCell>
+                <interactionCellOffset>(0, 0, -2)</interactionCellOffset>
+                <stealable>false</stealable>
+                <size>(5, 3)</size>
+                <pathCost>30</pathCost>
+                <fillPercent>0.40</fillPercent>
+                <defaultPlacingRot>North</defaultPlacingRot>
+                <tickerType>Normal</tickerType>
+                <terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
+                <description>Allows colonists to pilot a massive starship.</description>
+                <designationCategory>VGE_Platform</designationCategory>
+                <constructionSkillPrerequisite>6</constructionSkillPrerequisite>
+                <costList>
+                    <Steel>260</Steel>
+                    <ComponentIndustrial>4</ComponentIndustrial>
+                    <ComponentSpacer>2</ComponentSpacer>
+                </costList>
+                <comps>
+                    <li Class="SaveOurShip2.CompProps_ShipCachePart"/>
+                    <li Class="CompProperties_ShipPart"/>
+                    <li Class="CompProperties_Mannable"/>
+                    <li Class="CompProperties_Flickable"/>
+                    <li Class="CompProperties_Power">
+                        <compClass>CompPowerTrader</compClass>
+                        <basePowerConsumption>200</basePowerConsumption>
+                        <transmitsPower>true</transmitsPower>
+                    </li>
+                    <li Class="SaveOurShip2.CompProps_GraphicOnOff"/>
+                    <li Class="SaveOurShip2.CompProps_ShipHeat">
+                        <compClass>SaveOurShip2.CompShipHeat</compClass>
+                    </li>
+                    <li Class="CompProperties_GravshipFacility">
+                        <compClass>CompPilotConsole</compClass>
+                        <componentTypeDef>Controls</componentTypeDef>
+                        <requiresLOS>false</requiresLOS>
+                        <showMaxSimultaneous>false</showMaxSimultaneous>
+                        <maxSimultaneous>9999</maxSimultaneous>
+                        <maxDistance>500</maxDistance>
+                    </li>
+                    <li Class="CompProperties_Breakdownable" />
+                </comps>
+                <statBases>
+                    <MaxHitPoints>300</MaxHitPoints>
+                    <Mass>70</Mass>
+                    <Flammability>0</Flammability>
+                    <Beauty>0</Beauty>
+                    <WorkToBuild>10000</WorkToBuild>
+                </statBases>
+                <building>
+                    <isSittable>true</isSittable>
+                </building>
+                <placeWorkers>
+                    <li>SaveOurShip2.PlaceWorker_OnShipHull</li>
+                </placeWorkers>
+                <researchPrerequisites>
+                    <li>AdvancedGravtech</li>
+                </researchPrerequisites>
+                <interactionCellIcon>DiningChair</interactionCellIcon>
+                <uiOrder>2101</uiOrder>
+            </ThingDef>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="PilotConsole"]</xpath>
+        <value>
+            <ThingDef ParentName="BuildingBase">
+                <defName>PilotConsole</defName>
+                <label>pilot console</label>
+                <thingClass>SaveOurShip2.Building_ShipBridge</thingClass>
+                <graphicData>
+                    <texPath>Things/Structures/PilotConsoles/PilotConsole/PilotConsole</texPath>
+                    <graphicClass>Graphic_Multi</graphicClass>
+                    <shaderType>CutoutComplex</shaderType>
+                    <drawSize>(3.7, 2.6)</drawSize>
+                    <damageData>
+                        <cornerTL>Damage/Corner</cornerTL>
+                        <cornerTR>Damage/Corner</cornerTR>
+                        <cornerBL>Damage/Corner</cornerBL>
+                        <cornerBR>Damage/Corner</cornerBR>
+                    </damageData>
+                </graphicData>
+                <altitudeLayer>Building</altitudeLayer>
+                <hasInteractionCell>True</hasInteractionCell>
+                <interactionCellOffset>(0, 0, -1)</interactionCellOffset>
+                <stealable>false</stealable>
+                <size>(3, 2)</size>
+                <pathCost>30</pathCost>
+                <fillPercent>0.40</fillPercent>
+                <defaultPlacingRot>North</defaultPlacingRot>
+                <tickerType>Normal</tickerType>
+                <terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
+                <description>Allows colonists to pilot a medium-sized starship.</description>
+                <designationCategory>VGE_Platform</designationCategory>
+                <constructionSkillPrerequisite>4</constructionSkillPrerequisite>
+                <costList>
+                    <Steel>140</Steel>
+                    <ComponentIndustrial>3</ComponentIndustrial>
+                </costList>
+                <comps>
+                    <li Class="SaveOurShip2.CompProps_ShipCachePart"/>
+                    <li Class="CompProperties_ShipPart"/>
+                    <li Class="CompProperties_Mannable"/>
+                    <li Class="CompProperties_Flickable"/>
+                    <li Class="CompProperties_Power">
+                        <compClass>CompPowerTrader</compClass>
+                        <basePowerConsumption>50</basePowerConsumption>
+                        <transmitsPower>true</transmitsPower>
+                    </li>
+                    <li Class="SaveOurShip2.CompProps_GraphicOnOff"/>
+                    <li Class="SaveOurShip2.CompProps_ShipHeat">
+                        <compClass>SaveOurShip2.CompShipHeat</compClass>
+                    </li>
+                    <li Class="CompProperties_GravshipFacility">
+                        <compClass>CompPilotConsole</compClass>
+                        <componentTypeDef>Controls</componentTypeDef>
+                        <requiresLOS>false</requiresLOS>
+                        <showMaxSimultaneous>false</showMaxSimultaneous>
+                        <maxSimultaneous>9999</maxSimultaneous>
+                        <maxDistance>500</maxDistance>
+                    </li>
+                    <li Class="CompProperties_Breakdownable" />
+                </comps>
+                <statBases>
+                    <MaxHitPoints>150</MaxHitPoints>
+                    <Mass>50</Mass>
+                    <Flammability>0</Flammability>
+                    <Beauty>0</Beauty>
+                    <WorkToBuild>2500</WorkToBuild>
+                </statBases>
+                <building>
+                    <isSittable>true</isSittable>
+                </building>
+                <placeWorkers>
+                    <li>SaveOurShip2.PlaceWorker_OnShipHull</li>
+                </placeWorkers>
+                <researchPrerequisites>
+                    <li>StandardGravtech</li>
+                </researchPrerequisites>
+                <interactionCellIcon>DiningChair</interactionCellIcon>
+                <uiOrder>2100</uiOrder>
+            </ThingDef>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="VGE_PilotCockpit"]</xpath>
+        <value>
+            <ThingDef ParentName="BuildingBase">
+                <defName>VGE_PilotCockpit</defName>
+                <label>pilot cockpit</label>
+                <thingClass>SaveOurShip2.Building_ShipBridge</thingClass>
+                <graphicData>
+                    <texPath>Things/Structures/PilotConsoles/PilotCockpit/PilotCockpit</texPath>
+                    <graphicClass>Graphic_Multi</graphicClass>
+                    <shaderType>CutoutComplex</shaderType>
+                    <drawSize>(2, 3)</drawSize>
+                    <damageData>
+                        <cornerTL>Damage/Corner</cornerTL>
+                        <cornerTR>Damage/Corner</cornerTR>
+                        <cornerBL>Damage/Corner</cornerBL>
+                        <cornerBR>Damage/Corner</cornerBR>
+                    </damageData>
+                </graphicData>
+                <altitudeLayer>Building</altitudeLayer>
+                <hasInteractionCell>True</hasInteractionCell>
+                <interactionCellOffset>(0, 0, -1)</interactionCellOffset>
+                <stealable>false</stealable>
+                <size>(1, 2)</size>
+                <pathCost>14</pathCost>
+                <fillPercent>0.40</fillPercent>
+                <defaultPlacingRot>North</defaultPlacingRot>
+                <tickerType>Normal</tickerType>
+                <terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
+                <description>Allows colonists to pilot a small starship.</description>
+                <designationCategory>VGE_Platform</designationCategory>
+                <costList>
+                    <Steel>70</Steel>
+                    <ComponentIndustrial>3</ComponentIndustrial>
+                </costList>
+                <comps>
+                    <li Class="SaveOurShip2.CompProps_ShipCachePart"/>
+                    <li Class="CompProperties_ShipPart"/>
+                    <li Class="CompProperties_Mannable"/>
+                    <li Class="CompProperties_Flickable"/>
+                    <li Class="CompProperties_Power">
+                        <compClass>CompPowerTrader</compClass>
+                        <basePowerConsumption>50</basePowerConsumption>
+                        <transmitsPower>true</transmitsPower>
+                    </li>
+                    <li Class="SaveOurShip2.CompProps_GraphicOnOff"/>
+                    <li Class="SaveOurShip2.CompProps_ShipHeat">
+                        <compClass>SaveOurShip2.CompShipHeat</compClass>
+                    </li>
+                    <li Class="CompProperties_GravshipFacility">
+                        <compClass>CompPilotConsole</compClass>
+                        <componentTypeDef>Controls</componentTypeDef>
+                        <requiresLOS>false</requiresLOS>
+                        <showMaxSimultaneous>false</showMaxSimultaneous>
+                        <maxSimultaneous>9999</maxSimultaneous>
+                        <maxDistance>500</maxDistance>
+                    </li>
+                    <li Class="CompProperties_Breakdownable" />
+                </comps>
+                <statBases>
+                    <MaxHitPoints>100</MaxHitPoints>
+                    <Mass>20</Mass>
+                    <Flammability>0</Flammability>
+                    <Beauty>0</Beauty>
+                    <WorkToBuild>2500</WorkToBuild>
+                </statBases>
+                <building>
+                    <isSittable>true</isSittable>
+                </building>
+                <placeWorkers>
+                    <li>SaveOurShip2.PlaceWorker_OnShipHull</li>
+                </placeWorkers>
+                <researchPrerequisites>
+                    <li>BasicGravtech</li>
+                </researchPrerequisites>
+                <interactionCellIcon>DiningChair</interactionCellIcon>
+                <uiOrder>2099</uiOrder>
+            </ThingDef>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="VGE_CopilotConsole"]</xpath>
+        <value>
+            <ThingDef ParentName="BuildingBase">
+                <defName>VGE_CopilotConsole</defName>
+                <label>copilot console</label>
+                <thingClass>SaveOurShip2.Building_ShipBridge</thingClass>
+                <graphicData>
+                    <texPath>Things/Structures/PilotConsoles/CoPilotConsole/CoPilotConsole</texPath>
+                    <graphicClass>Graphic_Multi</graphicClass>
+                    <shaderType>CutoutComplex</shaderType>
+                    <drawSize>(4, 3)</drawSize>
+                    <damageData>
+                        <cornerTL>Damage/Corner</cornerTL>
+                        <cornerTR>Damage/Corner</cornerTR>
+                        <cornerBL>Damage/Corner</cornerBL>
+                        <cornerBR>Damage/Corner</cornerBR>
+                    </damageData>
+                </graphicData>
+                <altitudeLayer>Building</altitudeLayer>
+                <hasInteractionCell>True</hasInteractionCell>
+                <interactionCellOffset>(0, 0, -1)</interactionCellOffset>
+                <stealable>false</stealable>
+                <size>(3, 1)</size>
+                <pathCost>30</pathCost>
+                <fillPercent>0.40</fillPercent>
+                <defaultPlacingRot>North</defaultPlacingRot>
+                <tickerType>Normal</tickerType>
+                <terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
+                <description>Allows a copilot to assist in launching and piloting a massive starship.</description>
+                <designationCategory>VGE_Platform</designationCategory>
+                <constructionSkillPrerequisite>4</constructionSkillPrerequisite>
+                <costList>
+                    <Steel>100</Steel>
+                    <ComponentIndustrial>3</ComponentIndustrial>
+                </costList>
+                <comps>
+                    <li Class="SaveOurShip2.CompProps_ShipCachePart"/>
+                    <li Class="CompProperties_ShipPart"/>
+                    <li Class="CompProperties_Mannable"/>
+                    <li Class="CompProperties_Flickable"/>
+                    <li Class="CompProperties_Power">
+                        <compClass>CompPowerTrader</compClass>
+                        <basePowerConsumption>50</basePowerConsumption>
+                        <transmitsPower>true</transmitsPower>
+                    </li>
+                    <li Class="SaveOurShip2.CompProps_GraphicOnOff"/>
+                    <li Class="SaveOurShip2.CompProps_ShipHeat">
+                        <compClass>SaveOurShip2.CompShipHeat</compClass>
+                    </li>
+                    <li Class="CompProperties_GravshipFacility">
+                        <requiresLOS>false</requiresLOS>
+                        <maxSimultaneous>9999</maxSimultaneous>
+                        <maxDistance>500</maxDistance>
+                    </li>
+                    <li Class="CompProperties_Breakdownable" />
+                </comps>
+                <statBases>
+                    <MaxHitPoints>100</MaxHitPoints>
+                    <Mass>30</Mass>
+                    <Flammability>0</Flammability>
+                    <Beauty>0</Beauty>
+                    <WorkToBuild>2000</WorkToBuild>
+                </statBases>
+                <building>
+                    <isSittable>true</isSittable>
+                </building>
+                <placeWorkers>
+                    <li>SaveOurShip2.PlaceWorker_OnShipHull</li>
+                </placeWorkers>
+                <researchPrerequisites>
+                    <li>AdvancedGravtech</li>
+                </researchPrerequisites>
+                <interactionCellIcon>DiningChair</interactionCellIcon>
+                <uiOrder>2102</uiOrder>
+            </ThingDef>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationFindMod">
+        <mods>
+        <li>Vanilla Gravship Expanded - Chapter 1</li>
+        </mods>
+        <match Class="PatchOperationSequence">
+        <operations>
+
+            <li Class="PatchOperationReplace">
+                <xpath>Defs/ThingDef[defName="Ship_Engine_Small" or defName="Ship_Engine"]/comps/li[@Class="CompProperties_Refuelable"]/fuelFilter/thingDefs</xpath>
+                <value>
+                    <thingDefs>
+						<li>VGE_Astrofuel</li>
+					</thingDefs>
+                </value>
+            </li>
+
+            <li Class="PatchOperationReplace">
+                <xpath>Defs/ThingDef[defName="Ship_Engine_Small"]/comps/li[@Class="CompProperties_Refuelable"]/fuelCapacity</xpath>
+                <value>
+                    <fuelCapacity>100.0</fuelCapacity>
+                </value>
+            </li>
+
+            <li Class="PatchOperationReplace">
+                <xpath>Defs/ThingDef[defName="Ship_Engine"]/comps/li[@Class="CompProperties_Refuelable"]/fuelCapacity</xpath>
+                <value>
+                    <fuelCapacity>200.0</fuelCapacity>
+                </value>
+            </li>
+
+            <li Class="PatchOperationReplace">
+                <xpath>Defs/ThingDef[defName="ChemfuelTank"]/comps/li[@Class="PipeSystem.CompProperties_ResourceStorage"]/storageCapacity</xpath>
+                <value>
+                    <storageCapacity>800</storageCapacity>
+                </value>
+            </li>
+
+            <li Class="PatchOperationReplace">
+                <xpath>Defs/ThingDef[defName="LargeChemfuelTank"]/comps/li[@Class="PipeSystem.CompProperties_ResourceStorage"]/storageCapacity</xpath>
+                <value>
+                    <storageCapacity>2400</storageCapacity> <!-- 3x -->
+                </value>
+            </li>
+
+            <li Class="PatchOperationReplace">
+                <xpath>Defs/ThingDef[defName="VGE_GiantAstrofuelTank"]/comps/li[@Class="PipeSystem.CompProperties_ResourceStorage"]/storageCapacity</xpath>
+                <value>
+                    <storageCapacity>5760</storageCapacity> <!-- 7.2x -->
+                </value>
+            </li>
+
+            <!-- defName="VGE_CompactStove" or defName="VGE_CompactDrugLab" or defName="VGE_CompactMachiningTable" or defName="VGE_CompactSmithy" or defName="VGE_CompactTailor" or defName="VGE_CompactRefinery" or defName="VGE_CompactFabBench" -->
+
+            <li Class="PatchOperationReplace">
+                <xpath>Defs/ThingDef[defName="PassengerShuttle" or defName="ShipPilotSeatMini" or defName="ShipHullTileMech" or defName="ShipHullTileArchotech" or defName="ShipCapacitorSmall" or defName="ShipCapacitor" or defName="ShipInside_PassiveVent" or defName="ShipInside_PassiveVentMechanoid" or defName="ShipInside_PassiveVentArchotech" or defName="Ship_Beam_Unpowered" or defName="Ship_BeamMech_Unpowered" or defName="Ship_BeamArchotech_Unpowered" or defName="Ship_Beam" or defName="Ship_BeamMech" or defName="Ship_BeamArchotech" or @Name="ShipCorner" or @Name="ShipCornerMech" or @Name="ShipCornerArchotech" or defName="ShipInside_SolarGenerator" or defName="ShipInside_SolarGeneratorMech" or defName="ShipInside_SolarGeneratorArchotech" or defName="VGE_GravtechConsole" or defName="VGE_EngineeringConsole" or @Name="VGE_GravshipArtilleryBase" or defName="VGE_TargetingTerminal" or defName="VGE_PointDefenseTurret" or defName="VGE_AmmoBox_GaussShell" or defName="VGE_OperatorSubpersonaCore" or @Name="ThrusterBase" or defName="ShipAirlock" or defName="ShipAirlockArchotech"]/designationCategory</xpath>
+                <value>
+                    <designationCategory Inherit="False"/>
+                </value>
+            </li>
+
+            <li Class="PatchOperationAdd">
+                <xpath>Defs/ThingDef[defName="VGE_CommsTerminal"]</xpath>
+                <value>
+                    <designationCategory Inherit="False"/>
+                </value>
+            </li>
+
+            <li Class="PatchOperationRemove">
+                <xpath>Defs/TerrainDef[defName="Substructure" or defName="VGE_GravshipSubscaffold"]/designationCategory</xpath>
+            </li>
+
+            <li Class="PatchOperationReplace">
+                <xpath>Defs/TerrainDef[defName="Substructure" or defName="VGE_GravshipSubscaffold"]/texturePath</xpath>
+                <value>
+                    <texturePath>UI/Misc/BadTexture</texturePath>
+                </value>
+            </li>
+
+             <li Class="PatchOperationReplace">
+                <xpath>Defs/TerrainDef[defName="Substructure" or defName="VGE_GravshipSubscaffold"]/uiIconPath</xpath>
+                <value>
+                    <uiIconPath>UI/Misc/BadTexture</uiIconPath>
+                </value>
+            </li>
+
+            <li Class="PatchOperationReplace">
+                <xpath>Defs/TerrainDef[defName="Substructure" or defName="VGE_GravshipSubscaffold"]/label</xpath>
+                <value>
+                    <label>do not use this</label>
+                </value>
+            </li>
+
+            <li Class="PatchOperationReplace">
+                <xpath>Defs/TerrainDef[defName="Substructure" or defName="VGE_GravshipSubscaffold"]/description</xpath>
+                <value>
+                    <description>Do not use this, this is just a placeholder for suppressing errors.</description>
+                </value>
+            </li>
+
+            <!-- Moving category and tab -->
+
+            <!-- <li Class="PatchOperationReplace">
+                <xpath>Defs/ResearchProjectDef[@Name="VGE_GravtechResearchBase"]/tab</xpath>
+                <value>
+                    <tab>ResearchTabShip</tab>
+                </value>
+            </li>
+
+            <li Class="PatchOperationReplace">
+                <xpath>Defs/ResearchProjectDef[defName="BasicGravtech" or defName="OrbitalTech" or defName="StandardGravtech" or defName="AdvancedGravtech"]/tab</xpath>
+                <value>
+                    <tab>ResearchTabShip</tab>
+                </value>
+            </li> -->
+
+            <li Class="PatchOperationReplace">
+                <xpath>/Defs/ThingDef[defName="ShipHullTile"]/designationCategory</xpath>
+                <value>
+                    <designationCategory>VGE_Platform</designationCategory>
+                </value>
+            </li>
+
+            <li Class="PatchOperationAdd">
+                <xpath>/Defs/ThingDef[defName="ShipHullTile"]</xpath>
+                <value>
+                    <uiOrder>1000</uiOrder>
+                </value>
+            </li>
+
+            <li Class="PatchOperationReplace">
+                <xpath>/Defs/ThingDef[defName="ShipHullTile"]/costList</xpath>
+                <value>
+                    <costList>
+                        <GravlitePanel>1</GravlitePanel>
+                        <Steel>4</Steel>
+                    </costList>
+                </value>
+            </li>
+
+            <li Class="PatchOperationRemove">
+                <xpath>Defs/ThingDef[defName="ShipHullTile"]/designatorDropdown</xpath>
+            </li>
+
+            <!-- BasicGravtech -->
+
+            <li Class="PatchOperationAdd">
+                <xpath>/Defs/ResearchProjectDef[defName="BasicGravtech"]</xpath>
+                <value>
+                    <prerequisites>
+                        <li>Electricity</li>
+                    </prerequisites>
+                </value>
+            </li>
+            <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="BasicGravtech"]/baseCost</xpath>
+                <value>
+                    <baseCost>300</baseCost>
+                </value>
+            </li>
+            <!-- <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="BasicGravtech"]/researchViewX</xpath>
+                <value>
+                    <researchViewX>0.00</researchViewX>
+                </value>
+            </li>
+            <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="BasicGravtech"]/researchViewY</xpath>
+                <value>
+                    <researchViewY>7.25</researchViewY>
+                </value>
+            </li> -->
+
+            <!-- OrbitalTech -->
+
+            <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="OrbitalTech"]/baseCost</xpath>
+                <value>
+                    <baseCost>1000</baseCost>
+                </value>
+            </li>
+            <!-- <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="OrbitalTech"]/researchViewX</xpath>
+                <value>
+                    <researchViewX>1.00</researchViewX>
+                </value>
+            </li>
+            <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="OrbitalTech"]/researchViewY</xpath>
+                <value>
+                    <researchViewY>7.50</researchViewY>
+                </value>
+            </li> -->
+            <li Class="PatchOperationAdd">
+                <xpath>/Defs/ResearchProjectDef[defName="OrbitalTech"]</xpath>
+                <value>
+                    <requiredResearchBuilding>HiTechResearchBench</requiredResearchBuilding>
+                </value>
+            </li>
+
+            <!-- StandardGravtech -->
+
+            <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="StandardGravtech"]/baseCost</xpath>
+                <value>
+                    <baseCost>1200</baseCost>
+                </value>
+            </li>
+            <!-- <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="StandardGravtech"]/researchViewX</xpath>
+                <value>
+                    <researchViewX>2.00</researchViewX>
+                </value>
+            </li>
+            <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="StandardGravtech"]/researchViewY</xpath>
+                <value>
+                    <researchViewY>7.25</researchViewY>
+                </value>
+            </li> -->
+            <li Class="PatchOperationAdd">
+                <xpath>/Defs/ResearchProjectDef[defName="StandardGravtech"]</xpath>
+                <value>
+                    <requiredResearchBuilding>HiTechResearchBench</requiredResearchBuilding>
+                </value>
+            </li>
+
+            <!-- AdvancedGravtech -->
+
+            <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="AdvancedGravtech"]/baseCost</xpath>
+                <value>
+                    <baseCost>2000</baseCost>
+                </value>
+            </li>
+            <!-- <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="AdvancedGravtech"]/researchViewX</xpath>
+                <value>
+                    <researchViewX>4.00</researchViewX>
+                </value>
+            </li>
+            <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="AdvancedGravtech"]/researchViewY</xpath>
+                <value>
+                    <researchViewY>7.25</researchViewY>
+                </value>
+            </li> -->
+            <li Class="PatchOperationAdd">
+                <xpath>/Defs/ResearchProjectDef[defName="AdvancedGravtech"]</xpath>
+                <value>
+                    <requiredResearchBuilding>HiTechResearchBench</requiredResearchBuilding>
+                </value>
+            </li>
+
+            <!-- VGE_GravshipWeaponry -->
+
+            <li Class="PatchOperationRemove">
+                <xpath>/Defs/ResearchProjectDef[defName="VGE_GravshipWeaponry"]</xpath>
+            </li>
+
+            <li Class="PatchOperationRemove">
+                <xpath>/Defs/ThingDef[@Name="VGE_GravshipBuildingBase"]/researchPrerequisites</xpath>
+            </li>
+
+            <li Class="PatchOperationRemove">
+                <xpath>/Defs/ThingDef[defName="VGE_AmmoBox_GaussShell" or defName="VGE_OperatorSubpersonaCore"]/researchPrerequisites/li[text()="VGE_GravshipWeaponry"]</xpath>
+            </li>
+
+            <li Class="PatchOperationRemove">
+                <xpath>/Defs/ResearchProjectDef[defName="AdvancedGravtech"]/prerequisites/li[text()="VGE_GravshipWeaponry"]</xpath>
+            </li>
+
+            <!-- VGE_CompactWorkspaces -->
+
+            <!-- <li Class="PatchOperationRemove">
+                <xpath>/Defs/ResearchProjectDef[defName="VGE_CompactWorkspaces"]</xpath>
+            </li>
+
+            <li Class="PatchOperationRemove">
+                <xpath>/Defs/ThingDef[defName="VGE_CompactStove" or defName="VGE_CompactDrugLab" or defName="VGE_CompactMachiningTable" or defName="VGE_CompactSmithy" or defName="VGE_CompactTailor" or defName="VGE_CompactRefinery" or defName="VGE_CompactFabBench"]/researchPrerequisites</xpath>
+            </li>
+
+            <li Class="PatchOperationRemove">
+                <xpath>/Defs/ResearchProjectDef[defName="AdvancedGravtech"]/prerequisites/li[text()="VGE_CompactWorkspaces"]</xpath>
+            </li> -->
+
+            <!-- VGE_HeatDissipation -->
+
+            <!-- <li Class="PatchOperationRemove">
+                <xpath>/Defs/ResearchProjectDef[defName="VGE_HeatDissipation"]</xpath>
+            </li>
+
+            <li Class="PatchOperationRemove">
+                <xpath>/Defs/ThingDef[@Name="VGE_BaseHeatsink"]/researchPrerequisites</xpath>
+            </li>
+
+            <li Class="PatchOperationRemove">
+                <xpath>/Defs/ResearchProjectDef[defName="AdvancedGravtech"]/prerequisites/li[text()="VGE_HeatDissipation"]</xpath>
+            </li> -->
+
+            <!-- VGE_OxygenNetwork -->
+
+            <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="VGE_OxygenNetwork"]/baseCost</xpath>
+                <value>
+                    <baseCost>1000</baseCost>
+                </value>
+            </li>
+
+            <!-- <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="VGE_OxygenNetwork"]/researchViewY</xpath>
+                <value>
+                    <researchViewY>7.00</researchViewY>
+                </value>
+            </li> -->
+
+            <!-- VGE_AstrofuelRefining -->
+
+            <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="VGE_AstrofuelRefining"]/baseCost</xpath>
+                <value>
+                    <baseCost>2000</baseCost>
+                </value>
+            </li>
+
+            <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="VGE_AstrofuelRefining"]/researchViewY</xpath>
+                <value>
+                    <researchViewY>3.00</researchViewY>
+                </value>
+            </li>
+
+            <!-- VGE_GravshipPower -->
+
+            <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="VGE_GravshipPower"]/baseCost</xpath>
+                <value>
+                    <baseCost>1000</baseCost>
+                </value>
+            </li>
+
+            <!-- <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="VGE_GravshipPower"]/researchViewY</xpath>
+                <value>
+                    <researchViewY>6.50</researchViewY>
+                </value>
+            </li> -->
+
+            <!-- VGE_GravshipLiving -->
+
+            <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="VGE_GravshipLiving"]/baseCost</xpath>
+                <value>
+                    <baseCost>1000</baseCost>
+                </value>
+            </li>
+
+            <!-- <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="VGE_GravshipLiving"]/researchViewY</xpath>
+                <value>
+                    <researchViewY>8.00</researchViewY>
+                </value>
+            </li> -->
+
+            <!-- VGE_GravheatAbsorber -->
+
+            <!-- <li Class="PatchOperationRemove">
+                <xpath>/Defs/ThingDef[defName="VGE_GravheatAbsorber"]</xpath>
+            </li>
+
+            <li Class="PatchOperationRemove">
+                <xpath>/Defs/ThingDef[defName="GravEngine" or defName="VGE_GravjumperEngine" or defName="VGE_GravhulkEngine"]/comps/li[@Class="CompProperties_AffectedByFacilities"]/linkableFacilities/li[text()="VGE_GravheatAbsorber"]</xpath>
+            </li> -->
+
+            <!-- VGE_SmallHeatsink -->
+
+            <li Class="PatchOperationRemove">
+                <xpath>/Defs/ThingDef[defName="VGE_SmallHeatsink"]</xpath>
+            </li>
+
+            <li Class="PatchOperationRemove">
+                <xpath>/Defs/ThingDef[defName="GravEngine" or defName="VGE_GravjumperEngine" or defName="VGE_GravhulkEngine"]/comps/li[@Class="CompProperties_AffectedByFacilities"]/linkableFacilities/li[text()="VGE_SmallHeatsink"]</xpath>
+            </li>
+
+             <!-- VGE_LargeHeatsink -->
+
+            <li Class="PatchOperationRemove">
+                <xpath>/Defs/ThingDef[defName="VGE_LargeHeatsink"]</xpath>
+            </li>
+
+            <li Class="PatchOperationRemove">
+                <xpath>/Defs/ThingDef[defName="GravEngine" or defName="VGE_GravjumperEngine" or defName="VGE_GravhulkEngine"]/comps/li[@Class="CompProperties_AffectedByFacilities"]/linkableFacilities/li[text()="VGE_LargeHeatsink"]</xpath>
+            </li>
+
+        </operations>
+        </match>
+    </Operation>
+
+    <!-- <Operation Class="PatchOperationFindMod">
+        <mods>
+        <li>Altered Carbon 2: ReSleeved</li>
+        </mods>
+        <match Class="PatchOperationSequence">
+        <operations>
+            
+            <li Class="PatchOperationRemove">
+                <xpath>/Defs/ThingDef[defName="AC_CompactNeuralEditor"]/researchPrerequisites/li[text()="VGE_CompactWorkspaces"]</xpath>
+            </li>
+
+        </operations>
+        </match>
+    </Operation> -->
+
+</Patch>

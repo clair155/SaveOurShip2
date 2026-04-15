@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+    <ThingDef ParentName="EtherealThingBase">
+        <defName>MechaniteExplosion</defName>
+        <label>Mechanite explosion</label>
+        <thingClass>SOS2Fire.MechaniteExplosion</thingClass>
+        <tickerType>Normal</tickerType>
+    </ThingDef>
+
+</Defs>

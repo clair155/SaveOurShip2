@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+    <DamageDef>
+        <defName>MechaniteExtinguish</defName>
+        <label>Mechanite extinguish</label>
+        <workerClass>SOS2Fire.DamageWorker_MechaniteExtinguish</workerClass>
+        <canInterruptJobs>false</canInterruptJobs>
+        <makesBlood>false</makesBlood>
+        <defaultDamage>999999</defaultDamage>
+        <hediff>CoveredInFirefoam</hediff>
+        <explosionCellFleck>BlastExtinguisher</explosionCellFleck>
+        <explosionColorEdge>(1, 1, 1, 0.05)</explosionColorEdge>
+        <soundExplosion>Explosion_Stun</soundExplosion>
+        <harmsHealth>false</harmsHealth>
+        <combatLogRules>Damage_Extinguish</combatLogRules>
+        <consideredHelpful>true</consideredHelpful>
+    </DamageDef>
+
+</Defs>
