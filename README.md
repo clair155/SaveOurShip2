@@ -1,3 +1,18 @@
+This is unofficial forked version of Save Our Ship 2 by KentHaeger.
+This greatly overhauls SOS2 for integration with Odyssey and VGE chapter 1.
+
+Specifically, I deleted lots of harmony patch and overlapped feature. (decompression, hypoxia, eva suits, space biome,  space terrain, space mapgenerator... etc) But lots of improvements are done at the same time.
+
+For example, the time for moving ship is not calculated by altitude anymore, now the time of arriving depends on the exact each vector positions. So such as burn north actually does something. And it's using odyssey rendering planet features I think it's better and faster.
+Also, moving ship (launch and arrive and move) is completely replaced by odyssey ship landing feature. So now ship requires grav engines to launch.
+
+You can install any buildings for gravship from odyssey and VGE.
+
+This version is currently under development, so be careful if you use. It's obviously incompatible with existing save of original SOS2.
+If you want to use in actual game experience, be sure to not forget to save before launching or arriving or moving.
+
+Originala description below:
+
 Save Our Ship 2 is an unofficial expansion for RimWorld. Build a liveable spaceship and continue your colonists' stories in orbit - engaging in ship-to-ship combat with pirates, searching derelicts for treasure, and perhaps even discovering a phenomenal cosmic secret or two! SoS2 includes two custom endings: build the Johnson-Tanaka drive to transport your colonists to a different rimworld for a New Game+ experience, or evolve one your colonists to machine godhood using the Archotech Spore.
 
 Save Our Ship 2.8 Tactical Update
