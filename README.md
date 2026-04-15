@@ -11,6 +11,8 @@ You can install any buildings for gravship from odyssey and VGE.
 This version is currently under development, so be careful if you use. It's obviously incompatible with existing save of original SOS2.
 If you want to use in actual game experience, be sure to not forget to save before launching or arriving or moving.
 
+Warning: Currently incompatible with Save Our Ship Creation Kit! Will work on it later.
+
 Originala description below:
 
 Save Our Ship 2 is an unofficial expansion for RimWorld. Build a liveable spaceship and continue your colonists' stories in orbit - engaging in ship-to-ship combat with pirates, searching derelicts for treasure, and perhaps even discovering a phenomenal cosmic secret or two! SoS2 includes two custom endings: build the Johnson-Tanaka drive to transport your colonists to a different rimworld for a New Game+ experience, or evolve one your colonists to machine godhood using the Archotech Spore.
