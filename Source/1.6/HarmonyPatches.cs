@@ -1290,7 +1290,7 @@ namespace SaveOurShip2
             {
                 newResult.Add("SOS.NeedGravEngine".Translate());
             }
-            if (GenTicks.TicksGame < comp.engine.cooldownCompleteTick)
+            else if (GenTicks.TicksGame < comp.engine.cooldownCompleteTick)
             {
                 newResult.Add("CannotLaunchOnCooldown".Translate((comp.engine.cooldownCompleteTick - GenTicks.TicksGame).ToStringTicksToPeriod()).CapitalizeFirst());
             }

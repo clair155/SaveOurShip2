@@ -253,6 +253,7 @@ namespace SaveOurShip2
             ShipMapComp mapComp = engine.Map.GetComponent<ShipMapComp>();
             int shipIndex = mapComp.ShipIndexOnVec(engine.Position);
             PostSetupAfterPlacing.Ship = mapComp.ShipsOnMap[shipIndex];
+            PostSetupAfterPlacing.GravArea.AddRange(engine.ValidSubstructure);
 
             List<IntVec3> fireExplosions = new List<IntVec3>();
             List<IntVec3> astroFireExplosions = new List<IntVec3>();
@@ -306,6 +307,8 @@ namespace SaveOurShip2
 
         public static IEnumerable<CompEngineTrail> engines;
 
+        public static HashSet<IntVec3> GravArea = new HashSet<IntVec3>();
+
         public static void Postfix(Gravship gravship, IntVec3 root, Map map)
         {
             if (Ship == null)
@@ -320,7 +323,6 @@ namespace SaveOurShip2
 
             Map sourceMap = Ship.Map;
             HashSet<IntVec3> shipArea = new HashSet<IntVec3>(Ship.Area);
-            HashSet<IntVec3> gravArea = new HashSet<IntVec3>(gravship.Engine.ValidSubstructure);
             HashSet<IntVec3> targetArea = new HashSet<IntVec3>();
             HashSet<int> shipIndexes = new HashSet<int> { Ship.Index };
             bool targetMapIsSpace = map.IsSOS2Space();
@@ -332,9 +334,9 @@ namespace SaveOurShip2
 
             foreach (IntVec3 pos2 in shipArea)
             {
-                IntVec3 adjustedPos = Transform(pos2);
-                if (ShipInteriorMod2.ArriveShipFlag || gravArea.Contains(pos2))
+                if (ShipInteriorMod2.ArriveShipFlag || GravArea.Contains(pos2))
                 {
+                    IntVec3 adjustedPos = Transform(pos2);
                     tmpCells.Add(adjustedPos, new Tuple<int, int>(sourceMapComp.MapShipCells[pos2].Item1, sourceMapComp.MapShipCells[pos2].Item2));
                     targetArea.Add(adjustedPos);
                 }
@@ -472,10 +474,6 @@ namespace SaveOurShip2
             {
                 targetMapComp.Hovering = true;
             }
-            else
-            {
-                targetMapComp.Hovering = false;
-            }
             ShipInteriorMod2.MoveShipFlag = false;
             ShipInteriorMod2.HoverShipFlag = false;
             ShipInteriorMod2.LaunchShipFlag = false;
@@ -599,22 +597,36 @@ namespace SaveOurShip2
         }
     }
 
-    [HarmonyPatch(typeof(Dialog_NamePlayerGravship), "Named")]
-    public static class SyncName
+    //[HarmonyPatch(typeof(Dialog_NamePlayerGravship), "Named")]
+    //public static class SyncName
+    //{
+    //    public static bool Prefix(Dialog_NamePlayerGravship __instance, string s)
+    //    {
+    //        Building_ShipBridge core = (Building_ShipBridge)__instance.engine.AffectedByFacilities.linkedFacilities.FirstOrDefault((Thing x) => x is Building_ShipBridge);
+    //        SpaceShipCache ship = core?.Ship;
+    //        if (ship != null)
+    //        {
+    //            ship.Name = s;
+    //        }
+    //        else
+    //        {
+    //            Log.Message("Ship name sync failed.");
+    //        }
+    //        return false;
+    //    }
+    //}
+
+    [HarmonyPatch(typeof(CompAffectedByFacilities), "CanLinkTo")]
+    public static class FixMultiEnginesBug
     {
-        public static bool Prefix(Dialog_NamePlayerGravship __instance, string s)
+        public static bool Prefix(ref bool __result, CompAffectedByFacilities __instance, Thing facility)
         {
-            Building_ShipBridge core = (Building_ShipBridge)__instance.engine.AffectedByFacilities.linkedFacilities.FirstOrDefault((Thing x) => x is Building_ShipBridge);
-            SpaceShipCache ship = core?.Ship;
-            if (ship != null)
+            if (__instance.parent is Building_GravEngine building_GravEngine && !building_GravEngine.AllConnectedSubstructureNoRegen.Contains(facility.Position))
             {
-                ship.Name = s;
+                __result = false;
+                return false;
             }
-            else
-            {
-                Log.Message("Ship name sync failed.");
-            }
-            return false;
+            return true;
         }
     }
 

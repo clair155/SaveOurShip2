@@ -781,6 +781,7 @@ namespace SaveOurShip2
 					path++;
 				//Log.Message("parts at i: "+ current.Count + "/" + i);
 			}
+			ShipInteriorMod2.RelinkAllFacilities(ship);
 			Log.Message("SOS2: ".Colorize(Color.cyan) + map + " Ship ".Colorize(Color.green) + mergeToIndex + " Attached cells: " + cellsDone.Count);
 		}
 		public void RemoveShipFromCache(int index)
@@ -2157,10 +2158,9 @@ namespace SaveOurShip2
 			 * in orbit on spacehome with other ships: move to transit map via (MinifiedThingShipMove) and transit to ground, at destination attempt auto move to placeworker, if fail make new map and land on it
 			 all vars are stored in this except WO drawPos (current, target, origin)
 			*/
-			if (ShipInteriorMod2.LaunchShipFlag && Ship != null)
+			if (ShipInteriorMod2.LaunchShipFlag && Ship != null && !WorldComponent_GravshipController.CutsceneInProgress)
 			{
 				ShipInteriorMod2.PlaceShip(Ship, map, map.Center, false);
-                //map.weatherManager.TransitionTo(ResourceBank.WeatherDefOf.OuterSpaceWeather);
 				//CameraJumper.TryJump(map.Center, map);
 				return;
             }

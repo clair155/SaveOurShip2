@@ -873,7 +873,8 @@ namespace SaveOurShip2
 					path++;
 				//Log.Message("parts at i: "+ current.Count + "/" + i);
 			}
-			LastSafePath = path;
+            ShipInteriorMod2.RelinkAllFacilities(this);
+            LastSafePath = path;
 			PathDirty = false;
 			Log.Message("SOS2: ".Colorize(Color.cyan) + map + " Ship ".Colorize(Color.green) + Index + " Rebuilt cache, Parts: " + Parts.Count + " Buildings: " + Buildings.Count + " Bridges: " + Bridges.Count + " Area: " + Area.Count + " Core: " + Core + " Name: " + Name + " path max: " + LastSafePath);
 		}
@@ -1004,7 +1005,7 @@ namespace SaveOurShip2
 					Log.Message("Added gravengine");
 					GravEngine = g;
                 }
-				if (b.def == ResourceBank.ThingDefOf.FuelOptimizer)
+                if (b.def == ResourceBank.ThingDefOf.FuelOptimizer)
 				{
 					fuelOptimizerCount++;
 				}

@@ -875,9 +875,9 @@ namespace SaveOurShip2
 			}
 			return bestTile;
 		}
-		public static Map GeneratePlayerShipMap(IntVec3 size)
+		public static Map GeneratePlayerShipMap(IntVec3 size, bool existingMap = true)
 		{
-			if (Current.ProgramState != ProgramState.MapInitializing)
+			if (existingMap && Current.ProgramState != ProgramState.MapInitializing)
 			{
 				var m = FindPlayerShipMap();
 				if (m != null)
@@ -2362,7 +2362,14 @@ namespace SaveOurShip2
 			}
 			return true;
 		}
-		public static void LaunchShip(Building core, bool hovering) //make new spacehome, move ship to it and transit to orbit
+        public static void RelinkAllFacilities(SpaceShipCache ship)
+        {
+            if (ship.GravEngine != null)
+            {
+                ship.GravEngine.AffectedByFacilities.Notify_ThingChanged();
+            }
+        }
+        public static void LaunchShip(Building core, bool hovering) //make new spacehome, move ship to it and transit to orbit
 		{
 			Map originMap = core.Map;
 
@@ -2393,7 +2400,7 @@ namespace SaveOurShip2
                 size = Find.World.info.initialMapSize;
                 mapIsLarger = true;
             }
-            Map map = GeneratePlayerShipMap(size);
+            Map map = GeneratePlayerShipMap(size, false);
             map.fogGrid.ClearAllFog();
             var mapComp = map.GetComponent<ShipMapComp>();
 
@@ -3252,10 +3259,17 @@ namespace SaveOurShip2
 			{
                 if (ship.Core.TryGetComp<CompGravshipFacility>(out var gravComp) && gravComp.engine != null)
 				{
-					PlaceGravship(gravComp.engine, ship.Map, targetMap, vec, arrive, moveInMap);
+                    Log.Message("Has core, linked engine.");
+                    PlaceGravship(gravComp.engine, ship.Map, targetMap, vec, arrive, moveInMap);
+                }
+                else if (ship.GravEngine != null)
+                {
+                    Log.Message("Has core, no linked engine.");
+                    PlaceGravship(ship.GravEngine, ship.Map, targetMap, vec, arrive, moveInMap);
                 }
                 else //grav engine is null, then exception queue
                 {
+					Log.Message("Has core, no engine.");
                     GenerateTempGravEngine(ship, true, out var gravEngine, out var core);
                     PlaceGravship(gravEngine, ship.Map, targetMap, vec, arrive, moveInMap, core);
                 }

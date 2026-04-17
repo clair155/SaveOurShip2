@@ -1159,9 +1159,11 @@ namespace SaveOurShip2
 							groupable = false,
 							action = delegate
 							{
-								Ship.CreateShipSketchIfFuelPct(ShipInteriorMod2.pctFuelMap, playerMap);
-							}
-						};
+                                this.Map.GetComponent<ShipMapComp>().MoveToMap = playerMap;
+                                ShipInteriorMod2.ArriveShipFlag = true;
+                                ((Precept_Ritual)Faction.OfPlayer.ideos.GetPrecept(PreceptDefOf.GravshipLaunch)).ShowRitualBeginWindow(this);
+                            }
+                        };
 						if (mapComp.ShipFaction == Faction.OfPlayer)
 						{
 							returnShip.defaultLabel = TranslatorFormattedStringExtensions.Translate("SoS.ReturnShip");
@@ -1198,10 +1200,14 @@ namespace SaveOurShip2
 						if (CanLaunchNow)
 						{
 							Map playerShipMap = ShipInteriorMod2.FindPlayerShipMap();
-							if (playerShipMap != null) //player ship in orbit already, move to temp map
-								Ship.CreateShipSketchIfFuelPct(1f, playerShipMap, 0, true);
-							else
-							{
+                            if (playerShipMap != null)
+                            {
+                                this.Map.GetComponent<ShipMapComp>().MoveToMap = playerShipMap;
+                                ShipInteriorMod2.ArriveShipFlag = true;
+                                ((Precept_Ritual)Faction.OfPlayer.ideos.GetPrecept(PreceptDefOf.GravshipLaunch)).ShowRitualBeginWindow(this);
+                            } //player ship in orbit already, move to temp map
+                            else
+                            {
                                 if (ShipInteriorMod2.SaveShipFlag)
                                 {
                                     ShipInteriorMod2.SaveShipToFile(Ship.Core);
@@ -1231,8 +1237,12 @@ namespace SaveOurShip2
                         if (CanLaunchNow)
                         {
                             Map playerShipMap = ShipInteriorMod2.FindPlayerShipMap();
-                            if (playerShipMap != null) //player ship in orbit already, move to temp map
-                                Ship.CreateShipSketchIfFuelPct(1f, playerShipMap, 0, true);
+                            if (playerShipMap != null)
+							{
+								this.Map.GetComponent<ShipMapComp>().MoveToMap = playerShipMap;
+                                ShipInteriorMod2.ArriveShipFlag = true;
+                                ((Precept_Ritual)Faction.OfPlayer.ideos.GetPrecept(PreceptDefOf.GravshipLaunch)).ShowRitualBeginWindow(this);
+                            } //player ship in orbit already, move to temp map
                             else
                             {
                                 if (ShipInteriorMod2.SaveShipFlag)
