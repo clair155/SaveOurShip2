@@ -1342,12 +1342,12 @@ namespace SaveOurShip2
 			Scribe_Values.Look<string>(ref ShipName, "ShipName");
 			Scribe_Values.Look<string>(ref LoadedDefName, "LoadedDefName");
 		}
-		public override string GetInspectString()
-		{
-			string text = base.GetInspectString();
-			text += "\n" + TranslatorFormattedStringExtensions.Translate("SoS.StatsShipName", Ship.Name);
-			return text;
-		}
+		//public override string GetInspectString()
+		//{
+		//	string text = base.GetInspectString();
+		//	text += "\n" + TranslatorFormattedStringExtensions.Translate("SoS.StatsShipName", Ship.Name);
+		//	return text;
+		//}
 		public override void SpawnSetup(Map map, bool respawningAfterLoad)
 		{
 			base.SpawnSetup(map, respawningAfterLoad);

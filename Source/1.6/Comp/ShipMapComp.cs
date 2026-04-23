@@ -781,7 +781,6 @@ namespace SaveOurShip2
 					path++;
 				//Log.Message("parts at i: "+ current.Count + "/" + i);
 			}
-			ShipInteriorMod2.RelinkAllFacilities(ship);
 			Log.Message("SOS2: ".Colorize(Color.cyan) + map + " Ship ".Colorize(Color.green) + mergeToIndex + " Attached cells: " + cellsDone.Count);
 		}
 		public void RemoveShipFromCache(int index)

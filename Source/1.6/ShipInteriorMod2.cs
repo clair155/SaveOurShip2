@@ -2364,10 +2364,18 @@ namespace SaveOurShip2
 		}
         public static void RelinkAllFacilities(SpaceShipCache ship)
         {
-            if (ship.GravEngine != null)
-            {
-                ship.GravEngine.AffectedByFacilities.Notify_ThingChanged();
+			foreach (Building_GravEngine engine in ship.GravEngines)
+			{
+                if (engine != null)
+                {
+                    engine.AffectedByFacilities.Notify_ThingChanged();
+                }
             }
+        }
+        public static SpaceShipCache GetShipFromGrav(Building_GravEngine building_GravEngine)
+        {
+            Building_ShipBridge core = (Building_ShipBridge)building_GravEngine.AffectedByFacilities.LinkedFacilitiesListForReading.FirstOrDefault((Thing x) => x is Building_ShipBridge);
+            return core?.Ship;
         }
         public static void LaunchShip(Building core, bool hovering) //make new spacehome, move ship to it and transit to orbit
 		{
@@ -3262,10 +3270,10 @@ namespace SaveOurShip2
                     Log.Message("Has core, linked engine.");
                     PlaceGravship(gravComp.engine, ship.Map, targetMap, vec, arrive, moveInMap);
                 }
-                else if (ship.GravEngine != null)
+                else if (!ship.GravEngines.NullOrEmpty())
                 {
                     Log.Message("Has core, no linked engine.");
-                    PlaceGravship(ship.GravEngine, ship.Map, targetMap, vec, arrive, moveInMap);
+                    PlaceGravship(ship.GravEngines.FirstOrDefault(), ship.Map, targetMap, vec, arrive, moveInMap);
                 }
                 else //grav engine is null, then exception queue
                 {
@@ -3276,9 +3284,9 @@ namespace SaveOurShip2
             }
 			else
 			{
-				if (ship.GravEngine != null)
+				if (!ship.GravEngines.NullOrEmpty())
 				{
-                    PlaceGravship(ship.GravEngine, ship.Map, targetMap, vec, arrive, moveInMap);
+                    PlaceGravship(ship.GravEngines.FirstOrDefault(), ship.Map, targetMap, vec, arrive, moveInMap);
                 }
                 else //grav engine and core are null, then exception queue
 				{

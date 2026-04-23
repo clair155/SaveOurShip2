@@ -64,7 +64,7 @@ namespace SaveOurShip2
 		}
 		public ShipMapComp mapComp;
 		public Building_ShipBridge Core; //main bridge
-        public Building_GravEngine GravEngine; //main grav engine
+        public HashSet<Building_GravEngine> GravEngines = new HashSet<Building_GravEngine>(); //main grav engine
         public int Index = -1;
 		private string name;
 		public string Name
@@ -172,7 +172,7 @@ namespace SaveOurShip2
             get
             {
 				const float gravEnineMassMultiplier = 0.4f;
-				return GravEngine != null ? MassActual * gravEnineMassMultiplier : MassActual;
+				return !GravEngines.NullOrEmpty() ? MassActual * gravEnineMassMultiplier : MassActual;
 			}
         }
 		public float MaxTakeoff = 0;
@@ -873,7 +873,6 @@ namespace SaveOurShip2
 					path++;
 				//Log.Message("parts at i: "+ current.Count + "/" + i);
 			}
-            ShipInteriorMod2.RelinkAllFacilities(this);
             LastSafePath = path;
 			PathDirty = false;
 			Log.Message("SOS2: ".Colorize(Color.cyan) + map + " Ship ".Colorize(Color.green) + Index + " Rebuilt cache, Parts: " + Parts.Count + " Buildings: " + Buildings.Count + " Bridges: " + Bridges.Count + " Area: " + Area.Count + " Core: " + Core + " Name: " + Name + " path max: " + LastSafePath);
@@ -901,7 +900,8 @@ namespace SaveOurShip2
 						if (part.Props.isPlating)
 						{
 							Mass += 1;
-							return;
+                            ShipInteriorMod2.RelinkAllFacilities(this);
+                            return;
 						}
 						if (b.TryGetComp<CompEngineTrail>(out var engineTrail))
 						{
@@ -1002,8 +1002,9 @@ namespace SaveOurShip2
 				}
 				if (b is Building_GravEngine g)
                 {
-					Log.Message("Added gravengine");
-					GravEngine = g;
+					Log.Message("Added gravengine: " + g.def.defName);
+                    GravEngines.Add(g);
+                    ShipInteriorMod2.RelinkAllFacilities(this);
                 }
                 if (b.def == ResourceBank.ThingDefOf.FuelOptimizer)
 				{
@@ -1033,7 +1034,8 @@ namespace SaveOurShip2
 						if (part.Props.isPlating)
 						{
 							Mass -= 1;
-							return;
+                            ShipInteriorMod2.RelinkAllFacilities(this);
+                            return;
 						}
 						if (b.TryGetComp<CompEngineTrail>() != null)
 						{
@@ -1123,12 +1125,13 @@ namespace SaveOurShip2
 					Mass -= b.def.Size.x * b.def.Size.z * 3;
 				}
 				// Only one should exist, so removal nmeans no grav engines left
-				if (b is Building_GravEngine)
+				if (b is Building_GravEngine g)
 				{
-                    Log.Message("Removed gravengine");
-                    GravEngine = null;
-				}
-				if (b.def == ResourceBank.ThingDefOf.FuelOptimizer)
+                    Log.Message("Removed gravengine: " + g.def.defName);
+                    GravEngines.Remove(g);
+                    ShipInteriorMod2.RelinkAllFacilities(this);
+                }
+                if (b.def == ResourceBank.ThingDefOf.FuelOptimizer)
 				{
 					fuelOptimizerCount--;
 				}
@@ -1237,11 +1240,15 @@ namespace SaveOurShip2
 			}
 			if (ShipInteriorMod2.AfterPlaceFlag)
 			{
-				if (GravEngine.def == ResourceBank.ThingDefOf.TempGravEngine)
+				foreach (Building_GravEngine engine in GravEngines)
 				{
-					GravEngine.DeSpawn();
+                    if (engine.def == ResourceBank.ThingDefOf.TempGravEngine)
+                    {
+                        engine.DeSpawn();
+						GravEngines.Remove(engine);
+                    }
                 }
-				ShipInteriorMod2.AfterPlaceFlag = false;
+                ShipInteriorMod2.AfterPlaceFlag = false;
             }
 		}
 		public void SlowTick()

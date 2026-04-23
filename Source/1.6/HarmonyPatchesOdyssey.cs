@@ -5,8 +5,10 @@ using RimWorld.Planet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 using Verse;
+using Verse.AI;
 
 namespace SaveOurShip2
 {
@@ -526,6 +528,16 @@ namespace SaveOurShip2
         }
     }
 
+    [HarmonyPatch(typeof(PlaceWorker_InRangeOfGravEngine), "AllowsPlacing")]
+    public static class DisableFootprint2
+    {
+        public static bool Prefix(ref AcceptanceReport __result)
+        {
+            __result = AcceptanceReport.WasAccepted;
+            return false;
+        }
+    }
+
     [HarmonyPatch(typeof(SubstructureGrid), "DrawSubstructureFootprint")]
     public static class DisableFieldedges
     {
@@ -564,6 +576,7 @@ namespace SaveOurShip2
                 if (ShipInteriorMod2.ArriveShipFlag)
                 {
                     SetQuality(jobRitual, progress, __instance);
+                    CleanupJob(jobRitual);
                     mapComp.MapFullStop();
                     mapComp.BurnTimer = 0;
                     ShipInteriorMod2.PlaceShip(((Building_ShipBridge)jobRitual.selectedTarget.Thing).Ship, mapComp.MoveToMap, IntVec3.Zero, true);
@@ -595,26 +608,62 @@ namespace SaveOurShip2
                 doNegativeOutcome = Rand.Chance(GravshipUtility.NegativeLandingOutcomeFromQuality(quality))
             };
         }
+
+        public static void CleanupJob(LordJob_Ritual jobRitual)
+        {
+            Building_GravEngine building_GravEngine = jobRitual.selectedTarget.Thing?.TryGetComp<CompPilotConsole>()?.engine;
+            List<Pawn> tmpPawnToEndJob = new List<Pawn>();
+            if (building_GravEngine != null)
+            {
+                if (building_GravEngine.pawnsToBoard != null)
+                {
+                    tmpPawnToEndJob.AddRange(building_GravEngine.pawnsToBoard);
+                }
+                if (building_GravEngine.pawnsToLeave != null)
+                {
+                    tmpPawnToEndJob.AddRange(building_GravEngine.pawnsToLeave);
+                }
+                building_GravEngine.pawnsToBoard = null;
+                building_GravEngine.pawnsToLeave = null;
+            }
+            foreach (Pawn item in tmpPawnToEndJob)
+            {
+                item.jobs.EndCurrentJob(JobCondition.InterruptForced);
+            }
+        }
     }
 
-    //[HarmonyPatch(typeof(Dialog_NamePlayerGravship), "Named")]
-    //public static class SyncName
-    //{
-    //    public static bool Prefix(Dialog_NamePlayerGravship __instance, string s)
-    //    {
-    //        Building_ShipBridge core = (Building_ShipBridge)__instance.engine.AffectedByFacilities.linkedFacilities.FirstOrDefault((Thing x) => x is Building_ShipBridge);
-    //        SpaceShipCache ship = core?.Ship;
-    //        if (ship != null)
-    //        {
-    //            ship.Name = s;
-    //        }
-    //        else
-    //        {
-    //            Log.Message("Ship name sync failed.");
-    //        }
-    //        return false;
-    //    }
-    //}
+    [HarmonyPatch(typeof(Building_GravEngine), "RenamableLabel", MethodType.Setter)]
+    public static class SyncName
+    {
+        public static void Postfix(Building_GravEngine __instance, string value)
+        {
+            SpaceShipCache ship = ShipInteriorMod2.GetShipFromGrav(__instance);
+            if (ship != null)
+            {
+                ship.Name = value;
+            }
+            else
+            {
+                Log.Message("Ship name sync failed.");
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(CompPilotConsole), "CompInspectStringExtra")]
+    public static class RemoveUnwantedStrings
+    {
+        public static void Postfix(CompPilotConsole __instance, ref string __result)
+        {
+            string st = __result;
+            int count = Mathf.Abs(st.IndexOf("Stored") - st.IndexOf("Gravship range"));
+            st = st.Remove(st.IndexOf("Gravship range") - 1, count);
+            count = Mathf.Abs(st.IndexOf("Fuel consumption") - st.Count());
+            st = st.Remove(st.IndexOf("Fuel consumption"), count);
+            st = st.Trim();
+            __result = st;
+        }
+    }
 
     [HarmonyPatch(typeof(CompAffectedByFacilities), "CanLinkTo")]
     public static class FixMultiEnginesBug

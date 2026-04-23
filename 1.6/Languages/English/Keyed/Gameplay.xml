@@ -657,5 +657,19 @@ Successful dodge means miss by a lot, projectile doesn't even enter target map.<
 	<SoS.DodgeLeftDesc>Dodge incoming shots, engaging right side RCS thrusters and moving ship to the left.</SoS.DodgeLeftDesc>
 	<SoS.DodgeRight>Dodge right</SoS.DodgeRight>
 	<SoS.DodgeRightDesc>Dodge incoming shots, engaging left side RCS thrusters and moving ship to the right.</SoS.DodgeRightDesc>
+
+	<SOS.NeedGravEngine>Ship requires a grav engine to launch.</SOS.NeedGravEngine>
+	<SOS.MultipleGravEngines>Ship cannot launch because multiple grav engines are present.</SOS.MultipleGravEngines>
+	<SOS.NeedMannedConsoles>Ship requires manned consoles.</SOS.NeedMannedConsoles>
+	<SOS.NeedMannedPilotConsole>Ship requires a manned pilot console to launch this size.</SOS.NeedMannedPilotConsole>
+	<SOS.NeedMannedPilotBridge>Ship requires a manned pilot bridge to launch this size.</SOS.NeedMannedPilotBridge>
+	<SOS.NeedMannedCopilotConsole>Ship requires a manned copilot console to launch this size.</SOS.NeedMannedCopilotConsole>
+	<SOS.NeedMannedTwoCopilotConsole>Ship requires two manned copilot consoles to launch this size.</SOS.NeedMannedTwoCopilotConsole>
+	<SOS.NeedAI>Ship requires AI assistance to launch this size.</SOS.NeedAI>
+	<SoS.ChangePower>Change power output</SoS.ChangePower>
+	<SoS.ChangePowerDesc>Change the ship's power output. \nThe higher the power, the more energy it wastes. Wasting energy offset is 0.2 for each level, so it's more efficient to keep it at a moderate level if you are not in a hurry. \n\nCurrent level: {0}</SoS.ChangePowerDesc>
+	<SoS.HoveringShip>Hover ship</SoS.HoveringShip>
+	<SoS.HoveringShipDesc>Start the ship hover sequence with the current configuration. Ship will hover over the surface, it's useful if you intend to land at locations on the planet.</SoS.HoveringShipDesc>
+	<SoS.SpeedDownForLanding>Speed slowed down as approaching the destination.</SoS.SpeedDownForLanding>
 	
 </LanguageData>

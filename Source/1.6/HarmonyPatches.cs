@@ -1293,6 +1293,10 @@ namespace SaveOurShip2
             else if (GenTicks.TicksGame < comp.engine.cooldownCompleteTick)
             {
                 newResult.Add("CannotLaunchOnCooldown".Translate((comp.engine.cooldownCompleteTick - GenTicks.TicksGame).ToStringTicksToPeriod()).CapitalizeFirst());
+			}
+			else if (ship.GravEngines.Count >= 2)
+			{
+                newResult.Add("SOS.MultipleGravEngines".Translate());
             }
             if (ship.Engines.NullOrEmpty() || !ship.Engines.Any((CompEngineTrail compEngine) => compEngine.CanFire()))
             {

@@ -116,6 +116,16 @@
         </value>
     </Operation>
 
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="GravshipHull"]</xpath>
+        <value>
+            <costList>
+                <Steel>4</Steel>
+                <GravlitePanel>1</GravlitePanel>
+            </costList>
+        </value>
+    </Operation>
+
     <Operation Class="PatchOperationReplace">
         <xpath>Defs/ThingDef[defName="GravshipHull"]/terrainAffordanceNeeded</xpath>
         <value>
@@ -175,13 +185,6 @@
             </tags>
         </value>
     </Operation>
-
-    <!-- <Operation Class="PatchOperationReplace">
-        <xpath>Defs/ThingDef[defName="ShipPilotSeatMini"]/label</xpath>
-        <value>
-            <label>pilot cockpit</label>
-        </value>
-    </Operation> -->
 
     <Operation Class="PatchOperationReplace">
         <xpath>Defs/ThingDef[defName="ShipHullTile"]/uiIconPath</xpath>
@@ -285,7 +288,29 @@
     </Operation>
 
     <Operation Class="PatchOperationAdd">
-        <xpath>Defs/ThingDef[defName="Ship_AvatarCasket"]</xpath>
+        <xpath>Defs/ThingDef[defName="Ship_Engine_Archotech"]</xpath>
+        <value>
+            <uiIconScale>0.8</uiIconScale>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="ShipPurgePort"]</xpath>
+        <value>
+            <uiIconScale>1.4</uiIconScale>
+            <uiIconOffset>(0, 0.1)</uiIconOffset>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="Ship_Reactor_Small"]</xpath>
+        <value>
+            <uiIconScale>1.05</uiIconScale>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="Ship_AvatarCasket" or defName="Ship_Engine_Large" or defName="Ship_Engine"]</xpath>
         <value>
             <uiIconScale>0.9</uiIconScale>
         </value>
@@ -912,20 +937,219 @@
                 </value>
             </li>
 
-            <!-- defName="VGE_CompactStove" or defName="VGE_CompactDrugLab" or defName="VGE_CompactMachiningTable" or defName="VGE_CompactSmithy" or defName="VGE_CompactTailor" or defName="VGE_CompactRefinery" or defName="VGE_CompactFabBench" -->
+            <li Class="PatchOperationReplace">
+                <xpath>Defs/ThingDef[defName="GravFieldExtender"]/comps/li[@Class="CompProperties_GravshipFacility"]/maxSimultaneous</xpath>
+                <value>
+                    <maxSimultaneous>320</maxSimultaneous>
+                </value>
+            </li>
 
             <li Class="PatchOperationReplace">
-                <xpath>Defs/ThingDef[defName="PassengerShuttle" or defName="ShipPilotSeatMini" or defName="ShipHullTileMech" or defName="ShipHullTileArchotech" or defName="ShipCapacitorSmall" or defName="ShipCapacitor" or defName="ShipInside_PassiveVent" or defName="ShipInside_PassiveVentMechanoid" or defName="ShipInside_PassiveVentArchotech" or defName="Ship_Beam_Unpowered" or defName="Ship_BeamMech_Unpowered" or defName="Ship_BeamArchotech_Unpowered" or defName="Ship_Beam" or defName="Ship_BeamMech" or defName="Ship_BeamArchotech" or @Name="ShipCorner" or @Name="ShipCornerMech" or @Name="ShipCornerArchotech" or defName="ShipInside_SolarGenerator" or defName="ShipInside_SolarGeneratorMech" or defName="ShipInside_SolarGeneratorArchotech" or defName="VGE_GravtechConsole" or defName="VGE_EngineeringConsole" or @Name="VGE_GravshipArtilleryBase" or defName="VGE_TargetingTerminal" or defName="VGE_PointDefenseTurret" or defName="VGE_AmmoBox_GaussShell" or defName="VGE_OperatorSubpersonaCore" or @Name="ThrusterBase" or defName="ShipAirlock" or defName="ShipAirlockArchotech"]/designationCategory</xpath>
+                <xpath>Defs/ThingDef[defName="VGE_GravFieldAmplifier"]/comps/li[@Class="CompProperties_GravshipFacility"]/maxSimultaneous</xpath>
+                <value>
+                    <maxSimultaneous>150</maxSimultaneous>
+                </value>
+            </li>
+
+            <!-- defName="VGE_CompactStove" or defName="VGE_CompactDrugLab" or defName="VGE_CompactMachiningTable" or defName="VGE_CompactSmithy" or defName="VGE_CompactTailor" or defName="VGE_CompactRefinery" or defName="VGE_CompactFabBench" -->
+
+            <li Class="PatchOperationFindMod">
+                <mods>
+                <li>Biotech</li>
+                </mods>
+                <match Class="PatchOperationSequence">
+                <operations>
+                    <li Class="PatchOperationReplace">
+                        <xpath>Defs/ThingDef[defName="VGE_GravshipStandardRecharger"]/comps/li[@Class="CompProperties_Power"]/basePowerConsumption</xpath>
+                        <value>
+                            <basePowerConsumption>800</basePowerConsumption>
+                        </value>
+                    </li>
+
+                    <li Class="PatchOperationReplace">
+                        <xpath>Defs/ThingDef[defName="VGE_GravshipBasicRecharger"]/comps/li[@Class="CompProperties_Power"]/basePowerConsumption</xpath>
+                        <value>
+                            <basePowerConsumption>400</basePowerConsumption>
+                        </value>
+                    </li>
+
+                    <li Class="PatchOperationAdd">
+                        <xpath>Defs/ThingDef[defName="VGE_GravshipBasicRecharger" or defName="VGE_GravshipStandardRecharger"]/comps</xpath>
+                        <value>
+                            <li Class="CompProperties_Flickable"/>
+                        </value>
+                    </li>
+                </operations>
+                </match>
+            </li>
+
+            <li Class="PatchOperationFindMod">
+                <mods>
+                <li>Ideology</li>
+                </mods>
+                <match Class="PatchOperationSequence">
+                <operations>
+                    <li Class="PatchOperationAdd">
+                        <xpath>Defs/ThingDef[defName="VGE_CompactBiosculpterPod"]/comps</xpath>
+                        <value>
+                            <li Class="CompProperties_Power">
+                                <compClass>CompPowerTrader</compClass>
+                                <basePowerConsumption>400</basePowerConsumption>
+                                <idlePowerDraw>100</idlePowerDraw>
+                            </li>
+                            <li Class="CompProperties_Flickable"/>
+                        </value>
+                    </li>
+                </operations>
+                </match>
+            </li>
+
+            <li Class="PatchOperationAdd">
+                <xpath>Defs/ThingDef[defName="VGE_CompactMultiAnalyzer"]/comps</xpath>
+                <value>
+                    <li Class="CompProperties_Power">
+                        <compClass>CompPowerTrader</compClass>
+                        <basePowerConsumption>400</basePowerConsumption>
+                        <shortCircuitInRain>true</shortCircuitInRain>
+                    </li>
+                    <li Class="CompProperties_Flickable"/>
+                </value>
+            </li>
+
+            <li Class="PatchOperationAdd">
+                <xpath>Defs/ThingDef[defName="VGE_CompactResearchBench"]/comps</xpath>
+                <value>
+                    <li Class="CompProperties_Power">
+                        <compClass>CompPowerTrader</compClass>
+                        <basePowerConsumption>500</basePowerConsumption>
+                        <shortCircuitInRain>true</shortCircuitInRain>
+                    </li>
+                    <li Class="CompProperties_Flickable"/>
+                </value>
+            </li>
+
+            <li Class="PatchOperationAdd">
+                <xpath>Defs/ThingDef[defName="VGE_CompactSmithy"]/comps</xpath>
+                <value>
+                    <li Class="CompProperties_Power">
+                        <compClass>CompPowerTrader</compClass>
+                        <basePowerConsumption>420</basePowerConsumption>
+                        <shortCircuitInRain>true</shortCircuitInRain>
+                    </li>
+                    <li Class="CompProperties_Flickable"/>
+                </value>
+            </li>
+
+            <li Class="PatchOperationAdd">
+                <xpath>Defs/ThingDef[defName="VGE_CompactFabBench"]/comps</xpath>
+                <value>
+                    <li Class="CompProperties_Power">
+                        <compClass>CompPowerTrader</compClass>
+                        <basePowerConsumption>500</basePowerConsumption>
+                        <shortCircuitInRain>true</shortCircuitInRain>
+                    </li>
+                    <li Class="CompProperties_Flickable"/>
+                </value>
+            </li>
+
+            <li Class="PatchOperationAdd">
+                <xpath>Defs/ThingDef[defName="VGE_CompactTailor"]/comps</xpath>
+                <value>
+                    <li Class="CompProperties_Power">
+                        <compClass>CompPowerTrader</compClass>
+                        <basePowerConsumption>240</basePowerConsumption>
+                        <shortCircuitInRain>true</shortCircuitInRain>
+                    </li>
+                    <li Class="CompProperties_Flickable"/>
+                </value>
+            </li>
+
+            <li Class="PatchOperationAdd">
+                <xpath>Defs/ThingDef[defName="VGE_CompactMachiningTable"]/comps</xpath>
+                <value>
+                    <li Class="CompProperties_Power">
+                        <compClass>CompPowerTrader</compClass>
+                        <basePowerConsumption>700</basePowerConsumption>
+                        <shortCircuitInRain>true</shortCircuitInRain>
+                    </li>
+                    <li Class="CompProperties_Flickable"/>
+                </value>
+            </li>
+
+            <li Class="PatchOperationAdd">
+                <xpath>Defs/ThingDef[defName="VGE_CompactStove"]/comps</xpath>
+                <value>
+                    <li Class="CompProperties_Power">
+                        <compClass>CompPowerTrader</compClass>
+                        <basePowerConsumption>700</basePowerConsumption>
+                        <shortCircuitInRain>true</shortCircuitInRain>
+                    </li>
+                    <li Class="CompProperties_Flickable"/>
+                </value>
+            </li>
+
+            <li Class="PatchOperationAdd">
+                <xpath>Defs/ThingDef[defName="VGE_CompactRefinery"]/comps</xpath>
+                <value>
+                    <li Class="CompProperties_Power">
+                        <compClass>CompPowerTrader</compClass>
+                        <basePowerConsumption>340</basePowerConsumption>
+                        <shortCircuitInRain>true</shortCircuitInRain>
+                    </li>
+                    <li Class="CompProperties_Flickable"/>
+                </value>
+            </li>
+
+            <li Class="PatchOperationReplace">
+                <xpath>Defs/ThingDef[defName="VGE_CommsTerminal"]/comps/li[@Class="CompProperties_Power"]/basePowerConsumption</xpath>
+                <value>
+                    <basePowerConsumption>400</basePowerConsumption>
+                </value>
+            </li>
+
+            <li Class="PatchOperationReplace">
+                <xpath>Defs/ThingDef[defName="PassengerShuttle" or defName="VGE_FlightComputer" or defName="VGE_GravshipBlackBox" or defName="VGE_GravtechConsole" or defName="ShipAirlockBeam" or defName="ShipPilotSeatMini" or defName="ShipHullTileMech" or defName="ShipHullTileArchotech" or defName="ShipCapacitorSmall" or defName="ShipCapacitor" or defName="ShipInside_PassiveVent" or defName="ShipInside_PassiveVentMechanoid" or defName="ShipInside_PassiveVentArchotech" or defName="Ship_Beam_Unpowered" or defName="Ship_BeamMech_Unpowered" or defName="Ship_BeamArchotech_Unpowered" or defName="Ship_Beam" or defName="Ship_BeamMech" or defName="Ship_BeamArchotech" or @Name="ShipCorner" or @Name="ShipCornerMech" or @Name="ShipCornerArchotech" or defName="ShipInside_SolarGenerator" or defName="ShipInside_SolarGeneratorMech" or defName="ShipInside_SolarGeneratorArchotech" or defName="VGE_GravtechConsole" or defName="VGE_EngineeringConsole" or @Name="VGE_GravshipArtilleryBase" or defName="VGE_TargetingTerminal" or defName="VGE_PointDefenseTurret" or defName="VGE_AmmoBox_GaussShell" or defName="VGE_OperatorSubpersonaCore" or @Name="ThrusterBase" or defName="ShipAirlock" or defName="ShipAirlockArchotech"]/designationCategory</xpath>
                 <value>
                     <designationCategory Inherit="False"/>
                 </value>
             </li>
 
-            <li Class="PatchOperationAdd">
-                <xpath>Defs/ThingDef[defName="VGE_CommsTerminal"]</xpath>
-                <value>
-                    <designationCategory Inherit="False"/>
-                </value>
+            <li Class="PatchOperationRemove">
+                <xpath>Defs/ResearchTabDef[defName="VGE_Gravtech"]/modExtensions</xpath>
+            </li>
+
+            <li Class="PatchOperationRemove">
+                <xpath>Defs/ThingDef[defName="SmallThruster" or defName="LargeThruster" or defName="VGE_GiantThruster" or defName="VGE_EngineeringConsole" or defName="VGE_GravtechConsole"]/researchPrerequisites</xpath>
+            </li>
+
+            <li Class="PatchOperationRemove">
+                <xpath>Defs/TerrainDef[defName="VGE_GravshipSubscaffold"]/researchPrerequisites</xpath>
+            </li>
+
+            <li Class="PatchOperationConditional">
+                <xpath>/Defs/ThingDef[defName="GravEngine" or defName="GravFieldExtender" or defName="VGE_GravjumperEngine" or defName="VGE_GravhulkEngine" or defName="VGE_GravFieldAmplifier"]/building/relatedBuildCommands</xpath>
+                <nomatch Class="PatchOperationAdd">
+                    <xpath>/Defs/ThingDef[defName="GravEngine" or defName="GravFieldExtender" or defName="VGE_GravjumperEngine" or defName="VGE_GravhulkEngine" or defName="VGE_GravFieldAmplifier"]/building</xpath>
+                    <value>
+                        <relatedBuildCommands>
+                            <li>ShipHullTile</li>
+                        </relatedBuildCommands>
+                    </value>
+                </nomatch>
+                <match Class="PatchOperationAdd">
+                    <xpath>/Defs/ThingDef[defName="GravEngine" or defName="GravFieldExtender" or defName="VGE_GravjumperEngine" or defName="VGE_GravhulkEngine" or defName="VGE_GravFieldAmplifier"]/building/relatedBuildCommands</xpath>
+                    <value>
+                        <li>ShipHullTile</li>
+                    </value>
+                </match>
+            </li>
+
+            <li Class="PatchOperationRemove">
+                <xpath>Defs/ThingDef[defName="GravEngine" or defName="GravFieldExtender" or defName="VGE_GravjumperEngine" or defName="VGE_GravhulkEngine" or defName="VGE_GravFieldAmplifier"]/building/relatedTerrain/li[text()="Substructure"]</xpath>
+            </li>
+            
+            <li Class="PatchOperationRemove">
+                <xpath>Defs/ThingDef[defName="VGE_Astropurifier" or defName="VGE_GiantAstrofuelTank" or defName="VGE_GiantThruster" or defName="VGE_SmallOxygenTank" or defName="VGE_LargeOxygenTank" or defName="VGE_LifeSupportSystem" or defName="VGE_OxygenReclaimer" or defName="VGE_GravjumperEngine" or defName="VGE_GravhulkEngine" or defName="VGE_GravFieldAmplifier" or defName="VGE_PilotCockpit" or defName="VGE_PilotBridge" or defName="VGE_CopilotConsole" or defName="VGE_SmallHeatsink" or defName="VGE_LargeHeatsink" or defName="VGE_GravheatAbsorber" or defName="VGE_EngineeringConsole" or defName="VGE_GravcorePowerCoil" or defName="VGE_GravshipCapacitor" or defName="VGE_GravtechConsole" or defName="VGE_FlightComputer" or defName="VGE_MaintenanceHub" or defName="VGE_CapacitorHarmonizer" or defName="GravFieldExtender" or defName="PilotConsole" or defName="FuelOptimizer" or defName="ChemfuelTank" or defName="LargeChemfuelTank" or defName="GravcorePowerCell" or defName="GravEngine" or defName="SmallThruster" or defName="LargeThruster"]/comps/li[@Class="VanillaGravshipExpanded.CompProperties_GravMaintainable"]</xpath>
             </li>
 
             <li Class="PatchOperationRemove">
@@ -1065,7 +1289,7 @@
             <li Class="PatchOperationReplace">
                 <xpath>/Defs/ResearchProjectDef[defName="StandardGravtech"]/baseCost</xpath>
                 <value>
-                    <baseCost>1200</baseCost>
+                    <baseCost>3000</baseCost>
                 </value>
             </li>
             <!-- <li Class="PatchOperationReplace">
@@ -1092,7 +1316,7 @@
             <li Class="PatchOperationReplace">
                 <xpath>/Defs/ResearchProjectDef[defName="AdvancedGravtech"]/baseCost</xpath>
                 <value>
-                    <baseCost>2000</baseCost>
+                    <baseCost>5000</baseCost>
                 </value>
             </li>
             <!-- <li Class="PatchOperationReplace">
@@ -1134,6 +1358,13 @@
 
             <!-- VGE_CompactWorkspaces -->
 
+            <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="VGE_CompactWorkspaces"]/baseCost</xpath>
+                <value>
+                    <baseCost>2000</baseCost>
+                </value>
+            </li>
+
             <!-- <li Class="PatchOperationRemove">
                 <xpath>/Defs/ResearchProjectDef[defName="VGE_CompactWorkspaces"]</xpath>
             </li>
@@ -1147,6 +1378,13 @@
             </li> -->
 
             <!-- VGE_HeatDissipation -->
+
+            <li Class="PatchOperationReplace">
+                <xpath>/Defs/ResearchProjectDef[defName="VGE_HeatDissipation"]/baseCost</xpath>
+                <value>
+                    <baseCost>2000</baseCost>
+                </value>
+            </li>
 
             <!-- <li Class="PatchOperationRemove">
                 <xpath>/Defs/ResearchProjectDef[defName="VGE_HeatDissipation"]</xpath>
@@ -1185,12 +1423,12 @@
                 </value>
             </li>
 
-            <li Class="PatchOperationReplace">
+            <!-- <li Class="PatchOperationReplace">
                 <xpath>/Defs/ResearchProjectDef[defName="VGE_AstrofuelRefining"]/researchViewY</xpath>
                 <value>
                     <researchViewY>3.00</researchViewY>
                 </value>
-            </li>
+            </li> -->
 
             <!-- VGE_GravshipPower -->
 
