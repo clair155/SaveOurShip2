@@ -583,7 +583,7 @@ namespace SaveOurShip2
         }
         public void CrashToGround()
         {
-			if (mapParent.targetDrawPos != mapParent.groundPos)
+			if (!Crashing)
 			{
                 MapFullStop();
                 ShipMapState = ShipMapState.inTransit;
@@ -2170,7 +2170,19 @@ namespace SaveOurShip2
 				if (MoveToMap != null && Approaching)
 				{
                     ShipInteriorMod2.ArriveShipFlag = true;
-                    ((Precept_Ritual)Faction.OfPlayer.ideos.GetPrecept(PreceptDefOf.GravshipLaunch)).ShowRitualBeginWindow(ShipsOnMap.Values.First().Core);
+					Building_ShipBridge bridge = null;
+                    foreach (Building_ShipBridge bridge2 in ShipsOnMap.Values.First().Bridges)
+					{
+						if (bridge2.TryGetComp<CompPilotConsole>()?.engine != null)
+						{
+							bridge = bridge2;
+							break;
+                        }
+                    }
+					if (bridge != null)
+					{
+                        ((Precept_Ritual)Faction.OfPlayer.ideos.GetPrecept(PreceptDefOf.GravshipLaunch)).ShowRitualBeginWindow(bridge);
+                    }
                 }
                 Messages.Message("SoS.SpeedDownForLanding".Translate(), MessageTypeDefOf.NeutralEvent);
             }

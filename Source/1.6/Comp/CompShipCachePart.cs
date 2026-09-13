@@ -332,42 +332,38 @@ namespace SaveOurShip2
 		public override void PostDeSpawn(Map map, DestroyMode mode = DestroyMode.Vanish) //proper parts only - terrain, roof removal, foam replacers
 		{
 			base.PostDeSpawn(map, mode);
-			if (!Props.AnyPart && !Props.isCorner)
+			if (parent.BeingTransportedOnGravship || !Props.Hull)
 				return;
 
 			foreach (IntVec3 pos in cellsUnder)
 			{
-				bool stillHasTile = false;
-				foreach(Thing t in pos.GetThingList(map))
-				{
-					var shipComp = t.TryGetComp<CompShipCachePart>();
-					if (shipComp != null && (shipComp.Props.isPlating || shipComp.Props.isHardpoint))
-					{
-						stillHasTile = true;
-						break;
-					}
-				}
-				if (!stillHasTile)
-				{
-					TerrainDef manualTerrain = map.terrainGrid.TerrainAt(pos); //RimWorld freaks out about regions if we don't do the leavings manually
-					map.terrainGrid.RemoveTopLayer(pos, false);
-					List<ThingDefCountClass> list = manualTerrain.CostListAdjusted(null);
-					for (int i = 0; i < list.Count; i++)
-					{
-						ThingDefCountClass thingDefCountClass = list[i];
-						int num = GenMath.RoundRandom((float)thingDefCountClass.count * manualTerrain.resourcesFractionWhenDeconstructed);
-						if (num > 0)
-						{
-							Thing thing = ThingMaker.MakeThing(thingDefCountClass.thingDef);
-							thing.stackCount = num;
-							//Log.Message(string.Format("Spawning wrecks {0} at {1}", thing.def.defName, pos));
-							GenPlace.TryPlaceThing(thing, pos, map, ThingPlaceMode.Near);
-						}
-					}
-					if (Props.roof)
-						map.roofGrid.SetRoof(pos, null);
-				}
-			}
+                ThingDef thingDef;
+                if (Props.archotech)
+                {
+                    thingDef = ResourceBank.ThingDefOf.ShipHullTileArchotech;
+                }
+                else if (Props.mechanoid)
+                {
+                    thingDef = ResourceBank.ThingDefOf.ShipHullTileMech;
+                }
+                else if (Props.foam)
+                {
+                    thingDef = ResourceBank.ThingDefOf.ShipHullfoamTile;
+                }
+                else if (Props.wreckage)
+                {
+                    thingDef = ResourceBank.ThingDefOf.ShipHullTileWrecked;
+                }
+                else
+                {
+                    thingDef = ResourceBank.ThingDefOf.ShipHullTile;
+                }
+                Thing thing = ThingMaker.MakeThing(thingDef);
+                if (pos.GetFirstBuilding(map) == null)
+                {
+                    GenSpawn.Spawn(thing, pos, map);
+                }
+            }
 		}
 		public override void PostDraw()
 		{

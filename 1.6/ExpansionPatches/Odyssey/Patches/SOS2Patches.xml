@@ -116,7 +116,7 @@
         </value>
     </Operation>
 
-    <Operation Class="PatchOperationAdd">
+    <!-- <Operation Class="PatchOperationAdd">
         <xpath>Defs/ThingDef[defName="GravshipHull"]</xpath>
         <value>
             <costList>
@@ -124,16 +124,16 @@
                 <GravlitePanel>1</GravlitePanel>
             </costList>
         </value>
-    </Operation>
+    </Operation> -->
 
-    <Operation Class="PatchOperationReplace">
+    <!-- <Operation Class="PatchOperationReplace">
         <xpath>Defs/ThingDef[defName="GravshipHull"]/terrainAffordanceNeeded</xpath>
         <value>
             <terrainAffordanceNeeded>Heavy</terrainAffordanceNeeded>
         </value>
-    </Operation>
+    </Operation> -->
 
-    <Operation Class="PatchOperationReplace">
+    <!-- <Operation Class="PatchOperationReplace">
         <xpath>Defs/TerrainDef[defName="Space"]/affordances</xpath>
         <value>
             <affordances>
@@ -142,7 +142,7 @@
                 <li>Heavy</li>
             </affordances>
         </value>
-    </Operation>
+    </Operation> -->
     
     <!-- SOS2 -->
 
@@ -556,7 +556,14 @@
             <li>Ship_Engine</li>
             <li>Ship_Engine_Large</li>
             <li>Ship_Engine_Archotech</li>
+            <li>ShipConsoleTactical</li>
+            <li>Ship_DroneCore</li>
+            <li>Ship_ComputerCore</li>
         </value>
+    </Operation>
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>Defs/ThingDef[defName="GravEngine" or defName="VGE_GravhulkEngine" or defName="VGE_GravjumperEngine"]/placeWorkers/li[text()="VanillaGravshipExpanded.PlaceWorker_OnlySingleGravEngine"]</xpath>
     </Operation>
 
     <!-- VGE -->
@@ -1115,6 +1122,10 @@
             </li>
 
             <li Class="PatchOperationRemove">
+                <xpath>Defs/ThingDef[defName="GravFieldExtender" or defName="VGE_GravFieldAmplifier"]/placeWorkers</xpath>
+            </li>
+
+            <li Class="PatchOperationRemove">
                 <xpath>Defs/ResearchTabDef[defName="VGE_Gravtech"]/modExtensions</xpath>
             </li>
 
@@ -1156,12 +1167,16 @@
                 <xpath>Defs/TerrainDef[defName="Substructure" or defName="VGE_GravshipSubscaffold"]/designationCategory</xpath>
             </li>
 
-            <li Class="PatchOperationReplace">
+            <li Class="PatchOperationRemove">
+                <xpath>Defs/TerrainDef[defName="Substructure" or defName="VGE_GravshipSubscaffold"]/tags/li[text()="Substructure"]</xpath>
+            </li>
+
+            <!-- <li Class="PatchOperationReplace">
                 <xpath>Defs/TerrainDef[defName="Substructure" or defName="VGE_GravshipSubscaffold"]/texturePath</xpath>
                 <value>
                     <texturePath>UI/Misc/BadTexture</texturePath>
                 </value>
-            </li>
+            </li> -->
 
              <li Class="PatchOperationReplace">
                 <xpath>Defs/TerrainDef[defName="Substructure" or defName="VGE_GravshipSubscaffold"]/uiIconPath</xpath>
@@ -1211,6 +1226,7 @@
                 <xpath>/Defs/ThingDef[defName="ShipHullTile"]</xpath>
                 <value>
                     <uiOrder>1000</uiOrder>
+                    <resourcesFractionWhenDeconstructed>1</resourcesFractionWhenDeconstructed>
                 </value>
             </li>
 

@@ -400,14 +400,14 @@ namespace SaveOurShip2
                 }
             }
             WorldObjectOrbitingShip mapPar;
-            if (!originIsSpace || (originIsSpace && (mapComp.ShipsOnMap.Count > 1 || Map.mapPawns.AllPawns.Any((Pawn p) => !mapComp.MapShipCells.ContainsKey(p.Position)))))
+            if (!originIsSpace || (originIsSpace && (mapComp.ShipsOnMap.Count > 1 || Map.mapPawns.AllPawns.Any((Pawn p) => p.ParentHolder == null && !mapComp.MapShipCells.ContainsKey(p.Position)))))
             {
                 WorldObjectOrbitingShip transit = (WorldObjectOrbitingShip)WorldObjectMaker.MakeWorldObject(ResourceBank.WorldObjectDefOf.WreckSpace);
-                transit.drawPos = Map.Parent.DrawPos;
                 transit.SetFaction(Faction.OfPlayer);
                 transit.Tile = ShipInteriorMod2.FindWorldTile();
                 Find.WorldObjects.Add(transit);
                 Map newMap = MapGenerator.GenerateMap(Map.Size, transit, transit.MapGeneratorDef);
+                transit.drawPos = Map.Parent.DrawPos;
                 newMap.fogGrid.ClearAllFog();
                 mapComp = newMap.GetComponent<ShipMapComp>();
                 mapPar = transit;

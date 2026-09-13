@@ -656,12 +656,22 @@ namespace SaveOurShip2
         public static void Postfix(CompPilotConsole __instance, ref string __result)
         {
             string st = __result;
-            int count = Mathf.Abs(st.IndexOf("Stored") - st.IndexOf("Gravship range"));
-            st = st.Remove(st.IndexOf("Gravship range") - 1, count);
-            count = Mathf.Abs(st.IndexOf("Fuel consumption") - st.Count());
-            st = st.Remove(st.IndexOf("Fuel consumption"), count);
-            st = st.Trim();
-            __result = st;
+            int stored = st.IndexOf("Stored");
+            int gravRange = st.IndexOf("Gravship range");
+
+            if (!(stored == -1 || gravRange == -1))
+            {
+                int count = Mathf.Abs(stored - gravRange);
+                st = st.Remove(gravRange - 1, count);
+                int fuelCon = st.IndexOf("Fuel consumption");
+                if (!(fuelCon == -1))
+                {
+                    count = Mathf.Abs(fuelCon - st.Count());
+                    st = st.Remove(fuelCon, count);
+                }
+                st = st.Trim();
+                __result = st;
+            }
         }
     }
 
